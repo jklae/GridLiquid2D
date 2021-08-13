@@ -50,25 +50,12 @@ vector<unsigned int> EulerianSimulation::iGetIndice()
 	return _indices;
 }
 
-vector<XMFLOAT4> EulerianSimulation::iGetColor()
+XMFLOAT4 EulerianSimulation::iGetColor(int index)
 {
-	vector<XMFLOAT4> color;
-
-	for (int k = 0; k < _objectCount[2]; k++)
-	{
-		for (int j = 0; j < _objectCount[1]; j++)
-		{
-			for (int i = 0; i < _objectCount[0]; i++)
-			{
-				if ( true)
-					color.push_back(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-				else
-					color.push_back(XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));
-			}
-		}
-	}
-
-	return color;
+	if (_fluid[index])
+		return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	else
+		return XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 }
 
 int* EulerianSimulation::iGetObjectCountXYZ()
