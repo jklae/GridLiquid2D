@@ -17,6 +17,7 @@ void EulerianSimulation::initialize()
 	assert((_objectCount[0] != 0) && (_objectCount[1] != 0) && (_objectCount[2] != 0));
 	assert(_objectScale != 0.0f);
 
+	// Set _fluid
 	for (int k = 0; k < _objectCount[2]; k++)
 	{
 		for (int j = 0; j < _objectCount[1]; j++)
@@ -33,11 +34,15 @@ void EulerianSimulation::initialize()
 
 }
 
+void EulerianSimulation::_step(double timestep)
+{
+}
+
 #pragma region Implementation
 // ################################## Implementation ####################################
 void EulerianSimulation::iUpdate(double timestep)
 {
-	//cout << "timestep : " << timestep << endl;
+	_step(timestep);
 }
 
 vector<Vertex> EulerianSimulation::iGetVertice()

@@ -72,5 +72,7 @@ private:
 		4, 0, 3,
 		4, 3, 7
 	};
+
+	void _update(double timestep);
 };
 
