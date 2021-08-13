@@ -2,11 +2,11 @@
 #include <iostream>
 #include "Win32App.h" // This includes ISimulation.h
 
-class AdhocSimulation : public ISimulation
+class EulerianSimulation : public ISimulation
 {
 public:
-	AdhocSimulation();
-	~AdhocSimulation();
+	EulerianSimulation();
+	~EulerianSimulation();
 
 	void iUpdate(double timestep) override;
 	std::vector<Vertex> iGetVertice() override;
@@ -25,19 +25,19 @@ private:
 	float _objectScale = 0.0f;
 	float _objectSize = 2.0f;
 
-	vector<Vertex> _vertices =
+	std::vector<Vertex> _vertices =
 	{
-		Vertex({ XMFLOAT3(-1.0f, -1.0f, -1.0f) }),
-		Vertex({ XMFLOAT3(-1.0f, +1.0f, -1.0f) }),
-		Vertex({ XMFLOAT3(+1.0f, +1.0f, -1.0f) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, -1.0f) }),
-		Vertex({ XMFLOAT3(-1.0f, -1.0f, +1.0f) }),
-		Vertex({ XMFLOAT3(-1.0f, +1.0f, +1.0f) }),
-		Vertex({ XMFLOAT3(+1.0f, +1.0f, +1.0f) }),
-		Vertex({ XMFLOAT3(+1.0f, -1.0f, +1.0f) }) //, XMFLOAT4(Colors::Black)
+		Vertex({ DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f) }),
+		Vertex({ DirectX::XMFLOAT3(-1.0f, +1.0f, -1.0f) }),
+		Vertex({ DirectX::XMFLOAT3(+1.0f, +1.0f, -1.0f) }),
+		Vertex({ DirectX::XMFLOAT3(+1.0f, -1.0f, -1.0f) }),
+		Vertex({ DirectX::XMFLOAT3(-1.0f, -1.0f, +1.0f) }),
+		Vertex({ DirectX::XMFLOAT3(-1.0f, +1.0f, +1.0f) }),
+		Vertex({ DirectX::XMFLOAT3(+1.0f, +1.0f, +1.0f) }),
+		Vertex({ DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f) }) //, XMFLOAT4(Colors::Black)
 	};
 
-	vector<unsigned int> _indices =
+	std::vector<unsigned int> _indices =
 	{
 		// front face
 		0, 1, 2,

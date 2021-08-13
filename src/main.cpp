@@ -5,7 +5,7 @@
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #endif
 
-#include "AdhocSimulation.h" // This includes Win32App.h
+#include "EulerianSimulation.h" // This includes Win32App.h
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -16,7 +16,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     Win32App winApp(width, height);
     winApp.initialize(hInstance);
 
-    AdhocSimulation* adhocsim = new AdhocSimulation();
+    EulerianSimulation* adhocsim = new EulerianSimulation();
     adhocsim->iSetObjectCountXYZ(20, 20, 1);
     adhocsim->iSetObjectScale(0.05f);
 

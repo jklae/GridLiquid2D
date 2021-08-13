@@ -1,32 +1,32 @@
-#include "AdhocSimulation.h"
+#include "EulerianSimulation.h"
 
 using namespace DirectX;
 using namespace std;
 
-AdhocSimulation::AdhocSimulation()
+EulerianSimulation::EulerianSimulation()
 {
 }
 
-AdhocSimulation::~AdhocSimulation()
+EulerianSimulation::~EulerianSimulation()
 {
 }
 
-void AdhocSimulation::iUpdate(double timestep)
+void EulerianSimulation::iUpdate(double timestep)
 {
 	//cout << "timestep : " << timestep << endl;
 }
 
-vector<Vertex> AdhocSimulation::iGetVertice()
+vector<Vertex> EulerianSimulation::iGetVertice()
 {
 	return _vertices;
 }
 
-vector<unsigned int> AdhocSimulation::iGetIndice()
+vector<unsigned int> EulerianSimulation::iGetIndice()
 {
 	return _indices;
 }
 
-vector<XMFLOAT4> AdhocSimulation::iGetColor()
+vector<XMFLOAT4> EulerianSimulation::iGetColor()
 {
 	vector<XMFLOAT4> color;
 
@@ -47,22 +47,22 @@ vector<XMFLOAT4> AdhocSimulation::iGetColor()
 	return color;
 }
 
-int* AdhocSimulation::iGetObjectCountXYZ()
+int* EulerianSimulation::iGetObjectCountXYZ()
 {
 	return _objectCount;
 }
 
-float AdhocSimulation::iGetObjectScale()
+float EulerianSimulation::iGetObjectScale()
 {
 	return _objectScale;
 }
 
-float AdhocSimulation::iGetObjectSize()
+float EulerianSimulation::iGetObjectSize()
 {
 	return _objectSize;
 }
 
-void AdhocSimulation::iSetObjectCountXYZ(int xCount, int yCount, int zCount)
+void EulerianSimulation::iSetObjectCountXYZ(int xCount, int yCount, int zCount)
 {
 	// 0 is not allowed.
 	assert((xCount != 0) && (yCount != 0) && (zCount != 0));
@@ -72,7 +72,7 @@ void AdhocSimulation::iSetObjectCountXYZ(int xCount, int yCount, int zCount)
 	_objectCount[2] = zCount;
 }
 
-void AdhocSimulation::iSetObjectScale(float objectScale)
+void EulerianSimulation::iSetObjectScale(float objectScale)
 {
 	// 0 is not allowed.
 	assert(objectScale != 0.0f);
