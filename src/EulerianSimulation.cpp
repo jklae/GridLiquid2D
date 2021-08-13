@@ -16,6 +16,21 @@ void EulerianSimulation::initialize()
 	// 0 is not allowed.
 	assert((_objectCount[0] != 0) && (_objectCount[1] != 0) && (_objectCount[2] != 0));
 	assert(_objectScale != 0.0f);
+
+	for (int k = 0; k < _objectCount[2]; k++)
+	{
+		for (int j = 0; j < _objectCount[1]; j++)
+		{
+			for (int i = 0; i < _objectCount[0]; i++)
+			{
+				if (i == 1 && j == 0 && k == 0)
+					_fluid.push_back(true);
+				else
+					_fluid.push_back(false);
+			}
+		}
+	}
+
 }
 
 #pragma region Implementation
@@ -45,7 +60,7 @@ vector<XMFLOAT4> EulerianSimulation::iGetColor()
 		{
 			for (int i = 0; i < _objectCount[0]; i++)
 			{
-				if (i == 1 && j == 0 && k == 0)
+				if ( true)
 					color.push_back(XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
 				else
 					color.push_back(XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f));

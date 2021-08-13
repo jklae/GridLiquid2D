@@ -28,6 +28,8 @@ public:
 #pragma endregion
 
 private:
+	std::vector<bool> _fluid;
+
 	int _objectCount[3] = { 0, 0, 0 };
 	float _objectScale = 0.0f;
 	float _objectSize = 2.0f;
