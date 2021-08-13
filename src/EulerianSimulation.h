@@ -8,7 +8,10 @@ public:
 	EulerianSimulation();
 	~EulerianSimulation();
 
+#pragma region Implementation
+	// ################################## Implementation ####################################
 	void iUpdate(double timestep) override;
+
 	std::vector<Vertex> iGetVertice() override;
 	std::vector<unsigned int> iGetIndice() override;
 	std::vector<DirectX::XMFLOAT4> iGetColor() override;
@@ -19,6 +22,8 @@ public:
 
 	void iSetObjectCountXYZ(int xCount, int yCount, int zCount) override;
 	void iSetObjectScale(float objectScale) override;
+	// #######################################################################################
+#pragma endregion
 
 private:
 	int _objectCount[3] = { 0, 0, 0 };
@@ -34,7 +39,7 @@ private:
 		Vertex({ DirectX::XMFLOAT3(-1.0f, -1.0f, +1.0f) }),
 		Vertex({ DirectX::XMFLOAT3(-1.0f, +1.0f, +1.0f) }),
 		Vertex({ DirectX::XMFLOAT3(+1.0f, +1.0f, +1.0f) }),
-		Vertex({ DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f) }) //, XMFLOAT4(Colors::Black)
+		Vertex({ DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f) })
 	};
 
 	std::vector<unsigned int> _indices =

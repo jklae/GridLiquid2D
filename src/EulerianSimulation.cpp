@@ -11,6 +11,8 @@ EulerianSimulation::~EulerianSimulation()
 {
 }
 
+#pragma region Implementation
+// ################################## Implementation ####################################
 void EulerianSimulation::iUpdate(double timestep)
 {
 	//cout << "timestep : " << timestep << endl;
@@ -79,3 +81,5 @@ void EulerianSimulation::iSetObjectScale(float objectScale)
 
 	_objectScale = objectScale;
 }
+// #######################################################################################
+#pragma endregion
