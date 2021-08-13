@@ -11,6 +11,13 @@ EulerianSimulation::~EulerianSimulation()
 {
 }
 
+void EulerianSimulation::initialize()
+{
+	// 0 is not allowed.
+	assert((_objectCount[0] != 0) && (_objectCount[1] != 0) && (_objectCount[2] != 0));
+	assert(_objectScale != 0.0f);
+}
+
 #pragma region Implementation
 // ################################## Implementation ####################################
 void EulerianSimulation::iUpdate(double timestep)
@@ -66,9 +73,6 @@ float EulerianSimulation::iGetObjectSize()
 
 void EulerianSimulation::iSetObjectCountXYZ(int xCount, int yCount, int zCount)
 {
-	// 0 is not allowed.
-	assert((xCount != 0) && (yCount != 0) && (zCount != 0));
-
 	_objectCount[0] = xCount;
 	_objectCount[1] = yCount;
 	_objectCount[2] = zCount;
@@ -76,9 +80,6 @@ void EulerianSimulation::iSetObjectCountXYZ(int xCount, int yCount, int zCount)
 
 void EulerianSimulation::iSetObjectScale(float objectScale)
 {
-	// 0 is not allowed.
-	assert(objectScale != 0.0f);
-
 	_objectScale = objectScale;
 }
 // #######################################################################################

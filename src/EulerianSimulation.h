@@ -8,6 +8,8 @@ public:
 	EulerianSimulation();
 	~EulerianSimulation();
 
+	void initialize();
+
 #pragma region Implementation
 	// ################################## Implementation ####################################
 	void iUpdate(double timestep) override;

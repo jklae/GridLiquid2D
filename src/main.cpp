@@ -16,12 +16,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     Win32App winApp(width, height);
     winApp.initialize(hInstance);
 
-    EulerianSimulation* adhocsim = new EulerianSimulation();
-    adhocsim->iSetObjectCountXYZ(20, 20, 1);
-    adhocsim->iSetObjectScale(0.05f);
+    EulerianSimulation* eulersim = new EulerianSimulation();
+    eulersim->iSetObjectCountXYZ(20, 20, 1);
+    eulersim->iSetObjectScale(0.05f);
+    eulersim->initialize();
 
     DX12App* dxapp = new DX12App();
-    dxapp->setSimulation(adhocsim, 0.05);
+    dxapp->setSimulation(eulersim, 0.05);
 
     winApp.initDirectX(dxapp);
 
