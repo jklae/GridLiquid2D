@@ -104,5 +104,25 @@ float EulerianSimulation::iGetObjectSize()
 {
 	return _gridSize;
 }
+
+XMFLOAT4X4  EulerianSimulation::iComputeObjectWorldM(int i, int j)
+{
+	const float stride = (_gridSize * _gridScale) * 1.1f;
+	XMFLOAT2 offset = XMFLOAT2(
+		//		radius    *     count
+		-((stride / 2.0f) * static_cast<float>(_gridCount[0] - 1)),
+		-((stride / 2.0f) * static_cast<float>(_gridCount[1] - 1)));
+
+	XMFLOAT2 pos = XMFLOAT2(
+		offset.x + (float)i * stride,
+		offset.y + (float)j * stride);
+
+	return transformMatrix(pos.x, pos.y, 0.0f, _gridScale);
+}
+
+int EulerianSimulation::iGetParticleCount()
+{
+	return _particleCount;
+}
 // #######################################################################################
 #pragma endregion

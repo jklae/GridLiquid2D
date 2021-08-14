@@ -24,6 +24,10 @@ public:
 	int* iGetObjectCountXY() override;
 	float iGetObjectScale() override;
 	float iGetObjectSize() override;
+
+	DirectX::XMFLOAT4X4 iComputeObjectWorldM(int i, int j) override;
+
+	int iGetParticleCount() override;
 	// #######################################################################################
 #pragma endregion
 
@@ -34,14 +38,13 @@ private:
 
 	std::vector<_STATE> _grid;
 	std::vector<DirectX::XMFLOAT2> _velocity;
-
-	std::vector<DirectX::XMFLOAT2> _particle;
-
-	int _particleCount = 0;
-
 	int _gridCount[2] = { 0, 0 };
 	float _gridScale = 0.0f;
 	float _gridSize = 2.0f;
+
+	std::vector<DirectX::XMFLOAT2> _particle;
+	int _particleCount = 0;
+
 
 	std::vector<Vertex> _vertices =
 	{
