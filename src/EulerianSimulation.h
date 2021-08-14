@@ -28,6 +28,8 @@ public:
 #pragma endregion
 
 private:
+	inline int INDEX(int i, int j) { return (_objectCount[1] * j + i); };
+
 	std::vector<bool> _fluid;
 	std::vector<DirectX::XMFLOAT2> _velocity;
 

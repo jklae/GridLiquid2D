@@ -1,5 +1,6 @@
 #include "EulerianSimulation.h"
 
+
 using namespace DirectX;
 using namespace std;
 
@@ -22,14 +23,11 @@ void EulerianSimulation::initialize()
 	{
 		for (int i = 0; i < _objectCount[0]; i++)
 		{
-			if (i == 1 && j == 0)
-				_fluid.push_back(true);
-			else
-				_fluid.push_back(false);
+			_fluid.push_back(false);
 		}
 	}
 	
-
+	_fluid[INDEX(3, 2)] = true;
 }
 
 void EulerianSimulation::_update(double timestep)
