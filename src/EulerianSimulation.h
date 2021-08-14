@@ -33,15 +33,20 @@ private:
 
 	enum class _STATE {FLUID = 0, BOUNDARY, AIR};
 
+	// Grid
 	std::vector<_STATE> _grid;
 	std::vector<DirectX::XMFLOAT2> _velocity;
 	int _gridCount[2] = { 0, 0 };
 	float _gridScale = 0.0f;
 	float _gridSize = 2.0f;
 
+	// Particle
 	std::vector<DirectX::XMFLOAT2> _particle;
 	float _particleScale = 0.3f;
 
+	// CreateObjectParticle
+	float _stride = 0.0f;
+	DirectX::XMFLOAT2 _offset;
 
 	std::vector<Vertex> _vertices =
 	{

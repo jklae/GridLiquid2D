@@ -32,10 +32,16 @@ void EulerianSimulation::initialize()
 		}
 	}
 	
-	_grid[_INDEX(3, 2)] = _STATE::FLUID;
-	_grid[_INDEX(3, 12)] = _STATE::FLUID;
-	_grid[_INDEX(6, 2)] = _STATE::FLUID;
-	_grid[_INDEX(9, 8)] = _STATE::FLUID;
+	_grid[_INDEX(9, 9)] = _STATE::FLUID;
+	_grid[_INDEX(9, 10)] = _STATE::FLUID;
+	_grid[_INDEX(10, 9)] = _STATE::FLUID;
+	_grid[_INDEX(10, 10)] = _STATE::FLUID;
+
+	_stride = (_gridSize * _gridScale) * 1.1f;
+	_offset = XMFLOAT2(
+		//		radius    *     count
+		-((_stride / 2.0f) * static_cast<float>(_gridCount[0] - 1)),
+		-((_stride / 2.0f) * static_cast<float>(_gridCount[1] - 1)));
 }
 
 void EulerianSimulation::setGridCountXY(int xCount, int yCount)
@@ -106,21 +112,14 @@ XMFLOAT2 EulerianSimulation::iGetParticlePos(int i)
 
 void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
-	float stride = (_gridSize * _gridScale) * 1.1f;
-	XMFLOAT2 offset = XMFLOAT2(
-		//		radius    *     count
-		-((stride / 2.0f) * static_cast<float>(_gridCount[0] - 1)),
-		-((stride / 2.0f) * static_cast<float>(_gridCount[1] - 1)));
-
-
 	for (int j = 0; j < _gridCount[1]; j++)
 	{
 		for (int i = 0; i < _gridCount[0]; i++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				offset.x + (float)i * stride,
-				offset.y + (float)j * stride);
+				_offset.x + (float)i * _stride,
+				_offset.y + (float)j * _stride);
 
 			// ###### Create Object ######
 			struct ConstantBuffer objectCB;
@@ -139,8 +138,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				offset.x + (float)i * stride,
-				offset.y + (float)j * stride);
+				_offset.x + (float)i * _stride,
+				_offset.y + (float)j * _stride);
 
 			// ###### Create particle ######
 			if (_grid[_INDEX(i, j)] == _STATE::FLUID)
@@ -148,7 +147,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 				_particle.push_back(pos);
 
 				struct ConstantBuffer particleCB;
-				particleCB.world = transformMatrix(pos.x, pos.y, -stride, _gridScale * _particleScale);
+				particleCB.world = transformMatrix(pos.x, pos.y, -_stride, _gridScale * _particleScale);
 				particleCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 				particleCB.color = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
 
