@@ -10,6 +10,9 @@ public:
 
 	void initialize();
 
+	void setGridCountXY(int xCount, int yCount);
+	void setGridScale(float gridScale);
+
 #pragma region Implementation
 	// ################################## Implementation ####################################
 	void iUpdate(double timestep) override;
@@ -21,23 +24,20 @@ public:
 	int* iGetObjectCountXY() override;
 	float iGetObjectScale() override;
 	float iGetObjectSize() override;
-
-	void iSetObjectCountXY(int xCount, int yCount) override;
-	void iSetObjectScale(float objectScale) override;
 	// #######################################################################################
 #pragma endregion
 
 private:
-	inline int _INDEX(int i, int j) { return (_objectCount[1] * j + i); };
+	inline int _INDEX(int i, int j) { return (_gridCount[1]*j + i); };
 
 	enum class _STATE {FLUID = 0, BOUNDARY, AIR};
 
 	std::vector<_STATE> _fluid;
 	std::vector<DirectX::XMFLOAT2> _velocity;
 
-	int _objectCount[2] = { 0, 0 };
-	float _objectScale = 0.0f;
-	float _objectSize = 2.0f;
+	int _gridCount[2] = { 0, 0 };
+	float _gridScale = 0.0f;
+	float _gridSize = 2.0f;
 
 	std::vector<Vertex> _vertices =
 	{

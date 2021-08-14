@@ -15,17 +15,17 @@ EulerianSimulation::~EulerianSimulation()
 void EulerianSimulation::initialize()
 {
 	// 0 is not allowed.
-	assert((_objectCount[0] != 0) && (_objectCount[1] != 0));
+	assert((_gridCount[0] != 0) && (_gridCount[1] != 0));
 	assert(_objectScale != 0.0f);
 
 	// Set _fluid
-	for (int j = 0; j < _objectCount[1]; j++)
+	for (int j = 0; j < _gridCount[1]; j++)
 	{
-		for (int i = 0; i < _objectCount[0]; i++)
+		for (int i = 0; i < _gridCount[0]; i++)
 		{
 			if (i == 0 || j == 0 
-				|| i == _objectCount[0] - 1 
-				|| j == _objectCount[1] - 1)
+				|| i == _gridCount[0] - 1
+				|| j == _gridCount[1] - 1)
 				_fluid.push_back(_STATE::BOUNDARY);
 			else
 				_fluid.push_back(_STATE::AIR);
@@ -33,6 +33,18 @@ void EulerianSimulation::initialize()
 	}
 	
 	_fluid[_INDEX(3, 2)] = _STATE::FLUID;
+}
+
+void EulerianSimulation::setGridCountXY(int xCount, int yCount)
+{
+	// 2 are boundaries.
+	_gridCount[0] = xCount + 2;
+	_gridCount[1] = yCount + 2;
+}
+
+void EulerianSimulation::setGridScale(float gridScale)
+{
+	_gridScale = gridScale;
 }
 
 void EulerianSimulation::_update(double timestep)
@@ -80,29 +92,17 @@ XMFLOAT4 EulerianSimulation::iGetColor(int index)
 
 int* EulerianSimulation::iGetObjectCountXY()
 {
-	return _objectCount;
+	return _gridCount;
 }
 
 float EulerianSimulation::iGetObjectScale()
 {
-	return _objectScale;
+	return _gridScale;
 }
 
 float EulerianSimulation::iGetObjectSize()
 {
-	return _objectSize;
-}
-
-void EulerianSimulation::iSetObjectCountXY(int xCount, int yCount)
-{
-	// 2 are boundaries.
-	_objectCount[0] = xCount + 2;
-	_objectCount[1] = yCount + 2;
-}
-
-void EulerianSimulation::iSetObjectScale(float objectScale)
-{
-	_objectScale = objectScale;
+	return _gridSize;
 }
 // #######################################################################################
 #pragma endregion
