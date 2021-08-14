@@ -23,11 +23,14 @@ void EulerianSimulation::initialize()
 	{
 		for (int i = 0; i < _objectCount[0]; i++)
 		{
-			_fluid.push_back(false);
+			if (i == 0 || j == 0 || i == _objectCount[0]-1 || j == _objectCount[1] - 1)
+				_fluid.push_back(_STATE::BOUNDARY);
+			else
+				_fluid.push_back(_STATE::AIR);
 		}
 	}
 	
-	_fluid[INDEX(3, 2)] = true;
+	_fluid[_INDEX(3, 2)] = _STATE::FLUID;
 }
 
 void EulerianSimulation::_update(double timestep)
@@ -53,10 +56,24 @@ vector<unsigned int> EulerianSimulation::iGetIndice()
 
 XMFLOAT4 EulerianSimulation::iGetColor(int index)
 {
-	if (_fluid[index])
-		return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-	else
+	switch (_fluid[index])
+	{
+	case _STATE::FLUID:
+		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
+		break;
+
+	case _STATE::BOUNDARY:
+		return XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+		break;
+
+	case _STATE::AIR:
+		return XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+		break;
+
+	default:
 		return XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		break;
+	}
 }
 
 int* EulerianSimulation::iGetObjectCountXYZ()
@@ -76,8 +93,9 @@ float EulerianSimulation::iGetObjectSize()
 
 void EulerianSimulation::iSetObjectCountXY(int xCount, int yCount)
 {
-	_objectCount[0] = xCount;
-	_objectCount[1] = yCount;
+	// 2 are boundaries.
+	_objectCount[0] = xCount + 2;
+	_objectCount[1] = yCount + 2;
 }
 
 void EulerianSimulation::iSetObjectScale(float objectScale)

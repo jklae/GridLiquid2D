@@ -28,9 +28,11 @@ public:
 #pragma endregion
 
 private:
-	inline int INDEX(int i, int j) { return (_objectCount[1] * j + i); };
+	inline int _INDEX(int i, int j) { return (_objectCount[1] * j + i); };
 
-	std::vector<bool> _fluid;
+	enum class _STATE {FLUID = 0, BOUNDARY, AIR};
+
+	std::vector<_STATE> _fluid;
 	std::vector<DirectX::XMFLOAT2> _velocity;
 
 	int _objectCount[2] = { 0, 0 };
