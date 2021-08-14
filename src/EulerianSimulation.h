@@ -25,7 +25,7 @@ public:
 	float iGetObjectScale() override;
 	float iGetObjectSize() override;
 
-	void iCreateObjects(std::vector<ConstantBuffer>& constantBuffer) override;
+	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
 
 	int iGetParticleCount() override;
 	// #######################################################################################
@@ -43,7 +43,7 @@ private:
 	float _gridSize = 2.0f;
 
 	std::vector<DirectX::XMFLOAT2> _particle;
-	int _particleCount = 0;
+	float _particleScale = 0.3f;
 
 
 	std::vector<Vertex> _vertices =

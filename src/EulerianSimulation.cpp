@@ -33,6 +33,9 @@ void EulerianSimulation::initialize()
 	}
 	
 	_grid[_INDEX(3, 2)] = _STATE::FLUID;
+	_grid[_INDEX(3, 12)] = _STATE::FLUID;
+	_grid[_INDEX(6, 2)] = _STATE::FLUID;
+	_grid[_INDEX(9, 8)] = _STATE::FLUID;
 }
 
 void EulerianSimulation::setGridCountXY(int xCount, int yCount)
@@ -105,9 +108,9 @@ float EulerianSimulation::iGetObjectSize()
 	return _gridSize;
 }
 
-void EulerianSimulation::iCreateObjects(vector<ConstantBuffer>& constantBuffer)
+void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
-	const float stride = (_gridSize * _gridScale) * 1.1f;
+	float stride = (_gridSize * _gridScale) * 1.1f;
 	XMFLOAT2 offset = XMFLOAT2(
 		//		radius    *     count
 		-((stride / 2.0f) * static_cast<float>(_gridCount[0] - 1)),
@@ -118,25 +121,51 @@ void EulerianSimulation::iCreateObjects(vector<ConstantBuffer>& constantBuffer)
 	{
 		for (int i = 0; i < _gridCount[0]; i++)
 		{
+			// Position
 			XMFLOAT2 pos = XMFLOAT2(
 				offset.x + (float)i * stride,
 				offset.y + (float)j * stride);
 
-			struct ConstantBuffer cb;
-			cb.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale);
+			// ###### Create Object ######
+			struct ConstantBuffer objectCB;
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale);
+			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
+			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
-			// Initialize
-			cb.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
-			cb.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+			constantBuffer.push_back(objectCB);
+			// ###### ###### ###### ######
 
-			constantBuffer.push_back(cb);
+			
+		}
+	}
+
+	for (int j = 0; j < _gridCount[1]; j++)
+	{
+		for (int i = 0; i < _gridCount[0]; i++)
+		{
+			// Position
+			XMFLOAT2 pos = XMFLOAT2(
+				offset.x + (float)i * stride,
+				offset.y + (float)j * stride);
+
+			// ###### Create particle ######
+			if (_grid[_INDEX(i, j)] == _STATE::FLUID)
+			{
+				struct ConstantBuffer particleCB;
+				particleCB.world = transformMatrix(pos.x, pos.y, -stride, _gridScale * _particleScale);
+				particleCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
+				particleCB.color = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
+
+				constantBuffer.push_back(particleCB);
+			}
+			// ###### ###### ###### ######
 		}
 	}
 }
 
 int EulerianSimulation::iGetParticleCount()
 {
-	return _particleCount;
+	return 0;
 }
 // #######################################################################################
 #pragma endregion
