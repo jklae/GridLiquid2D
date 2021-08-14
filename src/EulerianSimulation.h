@@ -18,7 +18,7 @@ public:
 	std::vector<unsigned int> iGetIndice() override;
 	DirectX::XMFLOAT4 iGetColor(int index) override;
 
-	int* iGetObjectCountXYZ() override;
+	int* iGetObjectCountXY() override;
 	float iGetObjectScale() override;
 	float iGetObjectSize() override;
 

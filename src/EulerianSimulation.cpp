@@ -23,7 +23,9 @@ void EulerianSimulation::initialize()
 	{
 		for (int i = 0; i < _objectCount[0]; i++)
 		{
-			if (i == 0 || j == 0 || i == _objectCount[0]-1 || j == _objectCount[1] - 1)
+			if (i == 0 || j == 0 
+				|| i == _objectCount[0] - 1 
+				|| j == _objectCount[1] - 1)
 				_fluid.push_back(_STATE::BOUNDARY);
 			else
 				_fluid.push_back(_STATE::AIR);
@@ -76,7 +78,7 @@ XMFLOAT4 EulerianSimulation::iGetColor(int index)
 	}
 }
 
-int* EulerianSimulation::iGetObjectCountXYZ()
+int* EulerianSimulation::iGetObjectCountXY()
 {
 	return _objectCount;
 }
