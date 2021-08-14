@@ -22,15 +22,16 @@ public:
 	float iGetObjectScale() override;
 	float iGetObjectSize() override;
 
-	void iSetObjectCountXYZ(int xCount, int yCount, int zCount) override;
+	void iSetObjectCountXY(int xCount, int yCount) override;
 	void iSetObjectScale(float objectScale) override;
 	// #######################################################################################
 #pragma endregion
 
 private:
 	std::vector<bool> _fluid;
+	std::vector<DirectX::XMFLOAT2> _velocity;
 
-	int _objectCount[3] = { 0, 0, 0 };
+	int _objectCount[2] = { 0, 0 };
 	float _objectScale = 0.0f;
 	float _objectSize = 2.0f;
 

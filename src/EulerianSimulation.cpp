@@ -14,27 +14,25 @@ EulerianSimulation::~EulerianSimulation()
 void EulerianSimulation::initialize()
 {
 	// 0 is not allowed.
-	assert((_objectCount[0] != 0) && (_objectCount[1] != 0) && (_objectCount[2] != 0));
+	assert((_objectCount[0] != 0) && (_objectCount[1] != 0));
 	assert(_objectScale != 0.0f);
 
 	// Set _fluid
-	for (int k = 0; k < _objectCount[2]; k++)
+	for (int j = 0; j < _objectCount[1]; j++)
 	{
-		for (int j = 0; j < _objectCount[1]; j++)
+		for (int i = 0; i < _objectCount[0]; i++)
 		{
-			for (int i = 0; i < _objectCount[0]; i++)
-			{
-				if (i == 1 && j == 0 && k == 0)
-					_fluid.push_back(true);
-				else
-					_fluid.push_back(false);
-			}
+			if (i == 1 && j == 0)
+				_fluid.push_back(true);
+			else
+				_fluid.push_back(false);
 		}
 	}
+	
 
 }
 
-void EulerianSimulation::_step(double timestep)
+void EulerianSimulation::_update(double timestep)
 {
 }
 
@@ -42,7 +40,7 @@ void EulerianSimulation::_step(double timestep)
 // ################################## Implementation ####################################
 void EulerianSimulation::iUpdate(double timestep)
 {
-	_step(timestep);
+	_update(timestep);
 }
 
 vector<Vertex> EulerianSimulation::iGetVertice()
@@ -78,11 +76,10 @@ float EulerianSimulation::iGetObjectSize()
 	return _objectSize;
 }
 
-void EulerianSimulation::iSetObjectCountXYZ(int xCount, int yCount, int zCount)
+void EulerianSimulation::iSetObjectCountXY(int xCount, int yCount)
 {
 	_objectCount[0] = xCount;
 	_objectCount[1] = yCount;
-	_objectCount[2] = zCount;
 }
 
 void EulerianSimulation::iSetObjectScale(float objectScale)
