@@ -19,9 +19,10 @@ public:
 
 	std::vector<Vertex> iGetVertice() override;
 	std::vector<unsigned int> iGetIndice() override;
-	DirectX::XMFLOAT4 iGetColor(int index) override;
+	DirectX::XMFLOAT4 iGetColor(int i) override;
 
 	int* iGetObjectCountXY() override;
+	DirectX::XMFLOAT2 iGetParticlePos(int i) override;
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
 	// #######################################################################################

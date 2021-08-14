@@ -52,6 +52,7 @@ void EulerianSimulation::setGridScale(float gridScale)
 
 void EulerianSimulation::_update(double timestep)
 {
+	_particle[0].x += 0.001f;
 }
 
 #pragma region Implementation
@@ -71,9 +72,9 @@ vector<unsigned int> EulerianSimulation::iGetIndice()
 	return _indices;
 }
 
-XMFLOAT4 EulerianSimulation::iGetColor(int index)
+XMFLOAT4 EulerianSimulation::iGetColor(int i)
 {
-	switch (_grid[index])
+	switch (_grid[i])
 	{
 	case _STATE::FLUID:
 		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
@@ -96,6 +97,11 @@ XMFLOAT4 EulerianSimulation::iGetColor(int index)
 int* EulerianSimulation::iGetObjectCountXY()
 {
 	return _gridCount;
+}
+
+XMFLOAT2 EulerianSimulation::iGetParticlePos(int i)
+{
+	return _particle[i];
 }
 
 void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
@@ -124,8 +130,6 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 
 			constantBuffer.push_back(objectCB);
 			// ###### ###### ###### ######
-
-			
 		}
 	}
 
@@ -141,6 +145,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 			// ###### Create particle ######
 			if (_grid[_INDEX(i, j)] == _STATE::FLUID)
 			{
+				_particle.push_back(pos);
+
 				struct ConstantBuffer particleCB;
 				particleCB.world = transformMatrix(pos.x, pos.y, -stride, _gridScale * _particleScale);
 				particleCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
