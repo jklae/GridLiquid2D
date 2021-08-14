@@ -25,7 +25,7 @@ public:
 	float iGetObjectScale() override;
 	float iGetObjectSize() override;
 
-	DirectX::XMFLOAT4X4 iComputeObjectWorldM(int i, int j) override;
+	void iCreateObjects(std::vector<ConstantBuffer>& constantBuffer) override;
 
 	int iGetParticleCount() override;
 	// #######################################################################################

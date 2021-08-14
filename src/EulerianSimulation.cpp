@@ -105,7 +105,7 @@ float EulerianSimulation::iGetObjectSize()
 	return _gridSize;
 }
 
-XMFLOAT4X4  EulerianSimulation::iComputeObjectWorldM(int i, int j)
+void EulerianSimulation::iCreateObjects(vector<ConstantBuffer>& constantBuffer)
 {
 	const float stride = (_gridSize * _gridScale) * 1.1f;
 	XMFLOAT2 offset = XMFLOAT2(
@@ -113,11 +113,25 @@ XMFLOAT4X4  EulerianSimulation::iComputeObjectWorldM(int i, int j)
 		-((stride / 2.0f) * static_cast<float>(_gridCount[0] - 1)),
 		-((stride / 2.0f) * static_cast<float>(_gridCount[1] - 1)));
 
-	XMFLOAT2 pos = XMFLOAT2(
-		offset.x + (float)i * stride,
-		offset.y + (float)j * stride);
 
-	return transformMatrix(pos.x, pos.y, 0.0f, _gridScale);
+	for (int j = 0; j < _gridCount[1]; j++)
+	{
+		for (int i = 0; i < _gridCount[0]; i++)
+		{
+			XMFLOAT2 pos = XMFLOAT2(
+				offset.x + (float)i * stride,
+				offset.y + (float)j * stride);
+
+			struct ConstantBuffer cb;
+			cb.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale);
+
+			// Initialize
+			cb.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
+			cb.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+
+			constantBuffer.push_back(cb);
+		}
+	}
 }
 
 int EulerianSimulation::iGetParticleCount()
