@@ -16,7 +16,7 @@ void EulerianSimulation::initialize()
 {
 	// 0 is not allowed.
 	assert((_gridCount[0] != 0) && (_gridCount[1] != 0));
-	assert(_objectScale != 0.0f);
+	assert(_gridScale != 0.0f);
 
 	// Set _fluid
 	for (int j = 0; j < _gridCount[1]; j++)
@@ -26,13 +26,13 @@ void EulerianSimulation::initialize()
 			if (i == 0 || j == 0 
 				|| i == _gridCount[0] - 1
 				|| j == _gridCount[1] - 1)
-				_fluid.push_back(_STATE::BOUNDARY);
+				_grid.push_back(_STATE::BOUNDARY);
 			else
-				_fluid.push_back(_STATE::AIR);
+				_grid.push_back(_STATE::AIR);
 		}
 	}
 	
-	_fluid[_INDEX(3, 2)] = _STATE::FLUID;
+	_grid[_INDEX(3, 2)] = _STATE::FLUID;
 }
 
 void EulerianSimulation::setGridCountXY(int xCount, int yCount)
@@ -70,7 +70,7 @@ vector<unsigned int> EulerianSimulation::iGetIndice()
 
 XMFLOAT4 EulerianSimulation::iGetColor(int index)
 {
-	switch (_fluid[index])
+	switch (_grid[index])
 	{
 	case _STATE::FLUID:
 		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);

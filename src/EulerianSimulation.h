@@ -32,8 +32,12 @@ private:
 
 	enum class _STATE {FLUID = 0, BOUNDARY, AIR};
 
-	std::vector<_STATE> _fluid;
+	std::vector<_STATE> _grid;
 	std::vector<DirectX::XMFLOAT2> _velocity;
+
+	std::vector<DirectX::XMFLOAT2> _particle;
+
+	int _particleCount = 0;
 
 	int _gridCount[2] = { 0, 0 };
 	float _gridScale = 0.0f;
