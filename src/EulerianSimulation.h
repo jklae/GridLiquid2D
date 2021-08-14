@@ -22,12 +22,8 @@ public:
 	DirectX::XMFLOAT4 iGetColor(int index) override;
 
 	int* iGetObjectCountXY() override;
-	float iGetObjectScale() override;
-	float iGetObjectSize() override;
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
-
-	int iGetParticleCount() override;
 	// #######################################################################################
 #pragma endregion
 

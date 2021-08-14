@@ -98,16 +98,6 @@ int* EulerianSimulation::iGetObjectCountXY()
 	return _gridCount;
 }
 
-float EulerianSimulation::iGetObjectScale()
-{
-	return _gridScale;
-}
-
-float EulerianSimulation::iGetObjectSize()
-{
-	return _gridSize;
-}
-
 void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	float stride = (_gridSize * _gridScale) * 1.1f;
@@ -163,9 +153,5 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 	}
 }
 
-int EulerianSimulation::iGetParticleCount()
-{
-	return 0;
-}
 // #######################################################################################
 #pragma endregion
