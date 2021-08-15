@@ -38,7 +38,7 @@ private:
 	std::vector<DirectX::XMFLOAT2> _velocity;
 	int _gridCount[2] = { 0, 0 };
 	float _gridScale = 0.0f;
-	float _gridSize = 2.0f;
+	float _gridSize = 1.0f;
 
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particle;
@@ -50,14 +50,14 @@ private:
 
 	std::vector<Vertex> _vertices =
 	{
-		Vertex({ DirectX::XMFLOAT3(-1.0f, -1.0f, -1.0f) }),
-		Vertex({ DirectX::XMFLOAT3(-1.0f, +1.0f, -1.0f) }),
-		Vertex({ DirectX::XMFLOAT3(+1.0f, +1.0f, -1.0f) }),
-		Vertex({ DirectX::XMFLOAT3(+1.0f, -1.0f, -1.0f) }),
-		Vertex({ DirectX::XMFLOAT3(-1.0f, -1.0f, +1.0f) }),
-		Vertex({ DirectX::XMFLOAT3(-1.0f, +1.0f, +1.0f) }),
-		Vertex({ DirectX::XMFLOAT3(+1.0f, +1.0f, +1.0f) }),
-		Vertex({ DirectX::XMFLOAT3(+1.0f, -1.0f, +1.0f) })
+		Vertex({ DirectX::XMFLOAT3(-0.5f, -0.5f, -0.5f) }),
+		Vertex({ DirectX::XMFLOAT3(-0.5f, +0.5f, -0.5f) }),
+		Vertex({ DirectX::XMFLOAT3(+0.5f, +0.5f, -0.5f) }),
+		Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.5f) }),
+		Vertex({ DirectX::XMFLOAT3(-0.5f, -0.5f, +0.5f) }),
+		Vertex({ DirectX::XMFLOAT3(-0.5f, +0.5f, +0.5f) }),
+		Vertex({ DirectX::XMFLOAT3(+0.5f, +0.5f, +0.5f) }),
+		Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, +0.5f) })
 	};
 
 	std::vector<unsigned int> _indices =
@@ -88,5 +88,6 @@ private:
 	};
 
 	void _update(double timestep);
+	void _checkGrid();
 };
 

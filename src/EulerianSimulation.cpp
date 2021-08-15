@@ -32,12 +32,13 @@ void EulerianSimulation::initialize()
 		}
 	}
 	
-	_grid[_INDEX(9, 9)] = _STATE::FLUID;
-	_grid[_INDEX(9, 10)] = _STATE::FLUID;
-	_grid[_INDEX(10, 9)] = _STATE::FLUID;
-	_grid[_INDEX(10, 10)] = _STATE::FLUID;
+	_grid[_INDEX(5, 5)] = _STATE::FLUID;
+	//_grid[_INDEX(5, 6)] = _STATE::FLUID;
+	//_grid[_INDEX(6, 5)] = _STATE::FLUID;
+	//_grid[_INDEX(6, 6)] = _STATE::FLUID;
 
-	_stride = (_gridSize * _gridScale) * 1.1f;
+	// Compute stride and offset
+	_stride = (_gridSize * _gridScale); //* 1.1f;
 	_offset = XMFLOAT2(
 		//		radius    *     count
 		-((_stride / 2.0f) * static_cast<float>(_gridCount[0] - 1)),
@@ -58,7 +59,34 @@ void EulerianSimulation::setGridScale(float gridScale)
 
 void EulerianSimulation::_update(double timestep)
 {
-	_particle[0].x += 0.001f;
+	int i[2] = {((_particle[0].x - _offset.x) / _stride) - _stride,
+				((_particle[0].y - _offset.y) / _stride) - _stride };
+	_particle[0].x += 0.00001f;
+	int i2[2] = { ((_particle[0].x - _offset.x) / _stride) - _stride,
+				((_particle[0].y - _offset.y) / _stride) - _stride };
+
+	if ((i[0] != i2[0]) || (i[1] != i2[1]))
+	{
+		_grid[_INDEX(i[0], i[1])] = _STATE::AIR;
+		_grid[_INDEX(i2[0], i2[1])] = _STATE::FLUID;
+	}
+}
+
+void EulerianSimulation::_checkGrid()
+{
+	vector<int[2]> particleIndex;
+
+	int particleIndex2[2] = { (_particle[0].x - _offset.x) / _stride,
+				(_particle[0].y - _offset.y) / _stride };
+
+	for (int j = 0; j < _gridCount[1]; j++)
+	{
+		for (int i = 0; i < _gridCount[0]; i++)
+		{
+			
+			//_grid
+		}
+	}
 }
 
 #pragma region Implementation
@@ -112,6 +140,8 @@ XMFLOAT2 EulerianSimulation::iGetParticlePos(int i)
 
 void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
+
+	// ###### Create Object ######
 	for (int j = 0; j < _gridCount[1]; j++)
 	{
 		for (int i = 0; i < _gridCount[0]; i++)
@@ -121,17 +151,17 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 				_offset.x + (float)i * _stride,
 				_offset.y + (float)j * _stride);
 
-			// ###### Create Object ######
 			struct ConstantBuffer objectCB;
 			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 			constantBuffer.push_back(objectCB);
-			// ###### ###### ###### ######
 		}
 	}
+	// ###### ###### ###### ######
 
+	// ###### Create particle ######
 	for (int j = 0; j < _gridCount[1]; j++)
 	{
 		for (int i = 0; i < _gridCount[0]; i++)
@@ -141,7 +171,6 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 				_offset.x + (float)i * _stride,
 				_offset.y + (float)j * _stride);
 
-			// ###### Create particle ######
 			if (_grid[_INDEX(i, j)] == _STATE::FLUID)
 			{
 				_particle.push_back(pos);
@@ -153,9 +182,9 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 
 				constantBuffer.push_back(particleCB);
 			}
-			// ###### ###### ###### ######
 		}
 	}
+	// ###### ###### ###### ######
 }
 
 // #######################################################################################
