@@ -32,7 +32,7 @@ void EulerianSimulation::initialize()
 		}
 	}
 	
-	_grid[_INDEX(1, 1)] = _STATE::FLUID;
+	_grid[_INDEX(3, 3)] = _STATE::FLUID;
 
 	// Compute stride and offset
 	_stride = (_gridSize * _gridScale);
@@ -67,7 +67,8 @@ void EulerianSimulation::_update(double timestep)
 	}
 
 
-	_particle[0].x += 0.00005f;
+	_particle[0].x -= 0.00005f;
+	_particle[0].y -= 0.00002f;
 
 																			// 2 is boundary count
 																			// It should be excluded,
@@ -82,12 +83,14 @@ void EulerianSimulation::_update(double timestep)
 	XMFLOAT2 max = { particleOffset.x + _particle[0].x + particleStride,
 					 particleOffset.y +_particle[0].y + particleStride };
 
-	//std::cout << floor(min.x) << ", " << floor(max.x) << endl;
+	std::cout << floor(min.x) << ", " << floor(max.x) << endl;
 	
 	XMINT2 xy = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
-	_grid[_INDEX(xy.x, xy.y)] = _STATE::FLUID;
-
 	XMINT2 xy2 = { static_cast<int>(floor(max.x)) , static_cast<int>(floor(max.y)) };
+
+	_grid[_INDEX(xy.x, xy.y)] = _STATE::FLUID;
+	_grid[_INDEX(xy.x, xy2.y)] = _STATE::FLUID;
+	_grid[_INDEX(xy2.x, xy.y)] = _STATE::FLUID;
 	_grid[_INDEX(xy2.x, xy2.y)] = _STATE::FLUID;
 
 
