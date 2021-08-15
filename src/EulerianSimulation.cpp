@@ -32,7 +32,7 @@ void EulerianSimulation::initialize()
 		}
 	}
 	
-	_grid[_INDEX(3, 3)] = _STATE::FLUID;
+	_grid[_INDEX(1, 1)] = _STATE::FLUID;
 
 	// Compute stride and offset
 	_stride = (_gridSize * _gridScale);
@@ -67,23 +67,23 @@ void EulerianSimulation::_update(double timestep)
 	}
 
 
-	_particle[0].x -= 0.00005f;
-	_particle[0].y -= 0.00002f;
+	_particle[0].x += 0.00005f;
+	_particle[0].y += 0.00002f;
 
-																			// 2 is boundary count
-																			// It should be excluded,
-																			// cause only fluid is considered.
-	XMFLOAT2 particleOffset = { (_stride / 2.0f) * static_cast<float>(_gridCount.x),
-								(_stride / 2.0f) * static_cast<float>(_gridCount.y) };
-	float particleStride = (_gridSize / 2.0f) * _gridScale * _particleScale;
+	// To calculate the grid index, the calculation result must not depend on the _gridScale.
+	// Therefore, the intermediate computed variable should not be multiplied by the _gridScale.
+	// For example, if the scale is 1.0f, the result is (index * 1.0f).
+	// But if the scale is 0.5f, the result is (index * 0.5f).
+	// The index value should of course be immutable.
+	float particleStride = (_gridSize / 2.0f) * _particleScale;
+	XMFLOAT2 particleOffset = { (_gridSize / 2.0f) * static_cast<float>(_gridCount.x),
+								(_gridSize / 2.0f) * static_cast<float>(_gridCount.y) };
 
-	XMFLOAT2 min = { particleOffset.x + _particle[0].x - particleStride,
-					 particleOffset.y + _particle[0].y - particleStride };//{(_particle[0].x - _offset.x) / _stride,
+	XMFLOAT2 min = { particleOffset.x + (_particle[0].x / _gridScale) - particleStride,
+					 particleOffset.y + (_particle[0].y / _gridScale) - particleStride };
 
-	XMFLOAT2 max = { particleOffset.x + _particle[0].x + particleStride,
-					 particleOffset.y +_particle[0].y + particleStride };
-
-	std::cout << floor(min.x) << ", " << floor(max.x) << endl;
+	XMFLOAT2 max = { particleOffset.x + (_particle[0].x / _gridScale) + particleStride,
+					 particleOffset.y + (_particle[0].y / _gridScale) + particleStride };
 	
 	XMINT2 xy = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
 	XMINT2 xy2 = { static_cast<int>(floor(max.x)) , static_cast<int>(floor(max.y)) };
@@ -94,11 +94,6 @@ void EulerianSimulation::_update(double timestep)
 	_grid[_INDEX(xy2.x, xy2.y)] = _STATE::FLUID;
 
 
-	//if ((i[0] != i2[0]) || (i[1] != i2[1]))
-	//{
-	//	_grid[_INDEX(i[0], i[1])] = _STATE::AIR;
-	//	_grid[_INDEX(i2[0], i2[1])] = _STATE::FLUID;
-	//}
 }
 
 void EulerianSimulation::_checkGrid()
