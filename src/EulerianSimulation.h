@@ -31,7 +31,7 @@ public:
 private:
 	inline int _INDEX(int j, int i) { return (_gridCount.x*i + j); };
 
-	enum class _STATE {FLUID = 0, BOUNDARY, AIR};
+	enum class _STATE {FLUID, BOUNDARY, AIR};
 
 	// Grid
 	std::vector<_STATE> _grid;

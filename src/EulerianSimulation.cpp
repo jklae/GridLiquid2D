@@ -35,11 +35,11 @@ void EulerianSimulation::initialize()
 	_grid[_INDEX(1, 1)] = _STATE::FLUID;
 
 	// Compute stride and offset
-	_stride = (_gridSize * _gridScale); //* 1.1f;
+	_stride = (_gridSize * _gridScale);
 	_offset = XMFLOAT2(
 		//		radius    *     count
-		-((_stride / 2.0f) * static_cast<float>(_gridCount.x - 1)),
-		-((_stride / 2.0f) * static_cast<float>(_gridCount.y - 1)));
+		(_stride / 2.0f) * static_cast<float>(_gridCount.x - 1),
+		(_stride / 2.0f) * static_cast<float>(_gridCount.y - 1));
 }
 
 void EulerianSimulation::setGridCountXY(int xCount, int yCount)
@@ -56,17 +56,39 @@ void EulerianSimulation::setGridScale(float gridScale)
 
 void EulerianSimulation::_update(double timestep)
 {
-	//_particle[0].x += 0.00005f;
 
-	float min[2] = { _particle[0].x - (_gridSize / 2.0f) * _gridScale * _particleScale,
-					_particle[0].y - (_gridSize / 2.0f) * _gridScale * _particleScale };//{(_particle[0].x - _offset.x) / _stride,
-				//(_particle[0].y - _offset.y) / _stride };
-	float max[2] = { _particle[0].x + (_gridSize / 2.0f) * _gridScale * _particleScale,
-					_particle[0].y + (_gridSize / 2.0f) * _gridScale * _particleScale };//{ (_particle[0].x - _offset.x) / _stride,
-				//(_particle[0].y - _offset.y) / _stride };
+	for (int j = 1; j < _gridCount.y - 1; j++)
+	{
+		for (int i = 1; i < _gridCount.x - 1; i++)
+		{
 
-	std::cout << min[0] << ", " << max[0] << endl;
+			_grid[_INDEX(i, j)] = _STATE::AIR;
+		}
+	}
 
+
+	_particle[0].x += 0.00005f;
+
+																			// 2 is boundary count
+																			// It should be excluded,
+																			// cause only fluid is considered.
+	XMFLOAT2 particleOffset = { (_stride / 2.0f) * static_cast<float>(_gridCount.x),
+								(_stride / 2.0f) * static_cast<float>(_gridCount.y) };
+	float particleStride = (_gridSize / 2.0f) * _gridScale * _particleScale;
+
+	XMFLOAT2 min = { particleOffset.x + _particle[0].x - particleStride,
+					 particleOffset.y + _particle[0].y - particleStride };//{(_particle[0].x - _offset.x) / _stride,
+
+	XMFLOAT2 max = { particleOffset.x + _particle[0].x + particleStride,
+					 particleOffset.y +_particle[0].y + particleStride };
+
+	//std::cout << floor(min.x) << ", " << floor(max.x) << endl;
+	
+	XMINT2 xy = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
+	_grid[_INDEX(xy.x, xy.y)] = _STATE::FLUID;
+
+	XMINT2 xy2 = { static_cast<int>(floor(max.x)) , static_cast<int>(floor(max.y)) };
+	_grid[_INDEX(xy2.x, xy2.y)] = _STATE::FLUID;
 
 
 	//if ((i[0] != i2[0]) || (i[1] != i2[1]))
@@ -152,8 +174,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				_offset.x + (float)i * _stride,
-				_offset.y + (float)j * _stride);
+				-_offset.x + (float)i * _stride,
+				-_offset.y + (float)j * _stride);
 
 			struct ConstantBuffer objectCB;
 			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale*0.95f);
@@ -172,8 +194,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				_offset.x + (float)i * _stride,
-				_offset.y + (float)j * _stride);
+				-_offset.x + (float)i * _stride,
+				-_offset.y + (float)j * _stride);
 
 			if (_grid[_INDEX(i, j)] == _STATE::FLUID)
 			{
