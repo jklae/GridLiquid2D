@@ -42,7 +42,7 @@ private:
 
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particle;
-	float _particleScale = 0.5f;
+	float _particleScale = 0.2;
 
 	// CreateObjectParticle
 	float _stride = 0.0f;

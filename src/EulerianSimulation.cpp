@@ -32,8 +32,10 @@ void EulerianSimulation::initialize()
 		}
 	}
 	
-	_grid[_INDEX(1, 1)] = _STATE::FLUID;
-	_grid[_INDEX(8, 6)] = _STATE::FLUID;
+	_grid[_INDEX(10, 10)] = _STATE::FLUID;
+	_grid[_INDEX(10, 11)] = _STATE::FLUID;
+	_grid[_INDEX(11, 10)] = _STATE::FLUID;
+	_grid[_INDEX(11, 11)] = _STATE::FLUID;
 
 	// Compute stride and offset
 	_stride = (_gridSize * _gridScale);
@@ -57,8 +59,6 @@ void EulerianSimulation::setGridScale(float gridScale)
 
 void EulerianSimulation::_update(double timestep)
 {
-
-
 	_particle[0].x += 0.00005f;
 	_particle[0].y += 0.00002f;
 
@@ -66,7 +66,6 @@ void EulerianSimulation::_update(double timestep)
 	_particle[1].y -= 0.00004f;
 
 	_paintGrid();
-
 }
 
 void EulerianSimulation::_paintGrid()
@@ -173,6 +172,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 				-_offset.y + (float)j * _stride);
 
 			struct ConstantBuffer objectCB;
+																// Multiply by a specific value to make a stripe
 			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale*0.95f);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
