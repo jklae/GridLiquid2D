@@ -15,41 +15,38 @@ EulerianSimulation::~EulerianSimulation()
 void EulerianSimulation::initialize()
 {
 	// 0 is not allowed.
-	assert((_gridCount[0] != 0) && (_gridCount[1] != 0));
+	assert((_gridCount.x != 0) && (_gridCount.y != 0));
 	assert(_gridScale != 0.0f);
 
 	// Set _fluid
-	for (int j = 0; j < _gridCount[1]; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
-		for (int i = 0; i < _gridCount[0]; i++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 			if (i == 0 || j == 0 
-				|| i == _gridCount[0] - 1
-				|| j == _gridCount[1] - 1)
+				|| i == _gridCount.x - 1
+				|| j == _gridCount.y - 1)
 				_grid.push_back(_STATE::BOUNDARY);
 			else
 				_grid.push_back(_STATE::AIR);
 		}
 	}
 	
-	_grid[_INDEX(5, 5)] = _STATE::FLUID;
-	//_grid[_INDEX(5, 6)] = _STATE::FLUID;
-	//_grid[_INDEX(6, 5)] = _STATE::FLUID;
-	//_grid[_INDEX(6, 6)] = _STATE::FLUID;
+	_grid[_INDEX(1, 1)] = _STATE::FLUID;
 
 	// Compute stride and offset
 	_stride = (_gridSize * _gridScale); //* 1.1f;
 	_offset = XMFLOAT2(
 		//		radius    *     count
-		-((_stride / 2.0f) * static_cast<float>(_gridCount[0] - 1)),
-		-((_stride / 2.0f) * static_cast<float>(_gridCount[1] - 1)));
+		-((_stride / 2.0f) * static_cast<float>(_gridCount.x - 1)),
+		-((_stride / 2.0f) * static_cast<float>(_gridCount.y - 1)));
 }
 
 void EulerianSimulation::setGridCountXY(int xCount, int yCount)
 {
 	// 2 are boundaries.
-	_gridCount[0] = xCount + 2;
-	_gridCount[1] = yCount + 2;
+	_gridCount.x = xCount + 2;
+	_gridCount.y = yCount + 2;
 }
 
 void EulerianSimulation::setGridScale(float gridScale)
@@ -59,17 +56,24 @@ void EulerianSimulation::setGridScale(float gridScale)
 
 void EulerianSimulation::_update(double timestep)
 {
-	int i[2] = {((_particle[0].x - _offset.x) / _stride) - _stride,
-				((_particle[0].y - _offset.y) / _stride) - _stride };
-	_particle[0].x += 0.00001f;
-	int i2[2] = { ((_particle[0].x - _offset.x) / _stride) - _stride,
-				((_particle[0].y - _offset.y) / _stride) - _stride };
+	//_particle[0].x += 0.00005f;
 
-	if ((i[0] != i2[0]) || (i[1] != i2[1]))
-	{
-		_grid[_INDEX(i[0], i[1])] = _STATE::AIR;
-		_grid[_INDEX(i2[0], i2[1])] = _STATE::FLUID;
-	}
+	float min[2] = { _particle[0].x - (_gridSize / 2.0f) * _gridScale * _particleScale,
+					_particle[0].y - (_gridSize / 2.0f) * _gridScale * _particleScale };//{(_particle[0].x - _offset.x) / _stride,
+				//(_particle[0].y - _offset.y) / _stride };
+	float max[2] = { _particle[0].x + (_gridSize / 2.0f) * _gridScale * _particleScale,
+					_particle[0].y + (_gridSize / 2.0f) * _gridScale * _particleScale };//{ (_particle[0].x - _offset.x) / _stride,
+				//(_particle[0].y - _offset.y) / _stride };
+
+	std::cout << min[0] << ", " << max[0] << endl;
+
+
+
+	//if ((i[0] != i2[0]) || (i[1] != i2[1]))
+	//{
+	//	_grid[_INDEX(i[0], i[1])] = _STATE::AIR;
+	//	_grid[_INDEX(i2[0], i2[1])] = _STATE::FLUID;
+	//}
 }
 
 void EulerianSimulation::_checkGrid()
@@ -79,9 +83,9 @@ void EulerianSimulation::_checkGrid()
 	int particleIndex2[2] = { (_particle[0].x - _offset.x) / _stride,
 				(_particle[0].y - _offset.y) / _stride };
 
-	for (int j = 0; j < _gridCount[1]; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
-		for (int i = 0; i < _gridCount[0]; i++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 			
 			//_grid
@@ -128,7 +132,7 @@ XMFLOAT4 EulerianSimulation::iGetColor(int i)
 	}
 }
 
-int* EulerianSimulation::iGetObjectCountXY()
+XMINT2 EulerianSimulation::iGetObjectCountXY()
 {
 	return _gridCount;
 }
@@ -142,9 +146,9 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 {
 
 	// ###### Create Object ######
-	for (int j = 0; j < _gridCount[1]; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
-		for (int i = 0; i < _gridCount[0]; i++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
@@ -152,7 +156,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 				_offset.y + (float)j * _stride);
 
 			struct ConstantBuffer objectCB;
-			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale);
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale*0.95f);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -162,9 +166,9 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 	// ###### ###### ###### ######
 
 	// ###### Create particle ######
-	for (int j = 0; j < _gridCount[1]; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
-		for (int i = 0; i < _gridCount[0]; i++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
