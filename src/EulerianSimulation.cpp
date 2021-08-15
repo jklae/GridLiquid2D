@@ -23,19 +23,25 @@ void EulerianSimulation::initialize()
 	{
 		for (int i = 0; i < _gridCount.x; i++)
 		{
-			if (i == 0 || j == 0 
+			if (i == 0 || j == 0
 				|| i == _gridCount.x - 1
 				|| j == _gridCount.y - 1)
+			{
 				_grid.push_back(_STATE::BOUNDARY);
+			}
 			else
+			{
 				_grid.push_back(_STATE::AIR);
+			}
+				
 		}
 	}
 	
-	_grid[_INDEX(10, 10)] = _STATE::FLUID;
+	/*_grid[_INDEX(10, 10)] = _STATE::FLUID;
 	_grid[_INDEX(10, 11)] = _STATE::FLUID;
 	_grid[_INDEX(11, 10)] = _STATE::FLUID;
-	_grid[_INDEX(11, 11)] = _STATE::FLUID;
+	_grid[_INDEX(11, 11)] = _STATE::FLUID;*/
+	_grid[_INDEX(1, 1)] = _STATE::FLUID;
 
 	// Compute stride and offset
 	_stride = (_gridSize * _gridScale);
@@ -62,8 +68,8 @@ void EulerianSimulation::_update(double timestep)
 	_particle[0].x += 0.00005f;
 	_particle[0].y += 0.00002f;
 
-	_particle[1].x -= 0.00003f;
-	_particle[1].y -= 0.00004f;
+	//_particle[1].x -= 0.00003f;
+	//_particle[1].y -= 0.00004f;
 
 	_paintGrid();
 }
@@ -86,10 +92,10 @@ void EulerianSimulation::_paintGrid()
 	// But if the scale is 0.5f, the result is (index * 0.5f).
 	// The index value should of course be immutable.
 	float particleStride = (_gridSize / 2.0f) * _particleScale;
-	XMFLOAT2 particleOffset = { (_gridSize / 2.0f) * static_cast<float>(_gridCount.x),
-								(_gridSize / 2.0f) * static_cast<float>(_gridCount.y) };
+	XMFLOAT2 particleOffset = { (_gridSize / 2.0f) * static_cast<float>(_gridCount.x - 1),
+								(_gridSize / 2.0f) * static_cast<float>(_gridCount.y - 1) };
 
-	for (int i = 0; i < _particle.size(); i++)
+	/*for (int i = 0; i < _particle.size(); i++)
 	{
 		XMFLOAT2 min = { particleOffset.x + (_particle[i].x / _gridScale) - particleStride,
 					 particleOffset.y + (_particle[i].y / _gridScale) - particleStride };
@@ -99,6 +105,24 @@ void EulerianSimulation::_paintGrid()
 
 		XMINT2 minIndex = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
 		XMINT2 maxIndex = { static_cast<int>(floor(max.x)) , static_cast<int>(floor(max.y)) };
+
+		_grid[_INDEX(minIndex.x, minIndex.y)] = _STATE::FLUID;
+		_grid[_INDEX(minIndex.x, maxIndex.y)] = _STATE::FLUID;
+		_grid[_INDEX(maxIndex.x, minIndex.y)] = _STATE::FLUID;
+		_grid[_INDEX(maxIndex.x, maxIndex.y)] = _STATE::FLUID;
+	}*/
+
+
+	for (int i = 0; i < _particle.size(); i++)
+	{
+		XMFLOAT2 min = { particleOffset.x + (_particle[i].x / _gridScale) ,
+					 particleOffset.y + (_particle[i].y / _gridScale) };
+
+		XMFLOAT2 max = { particleOffset.x + (_particle[i].x / _gridScale) ,
+						 particleOffset.y + (_particle[i].y / _gridScale) };
+
+		XMINT2 minIndex = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
+		XMINT2 maxIndex = { static_cast<int>(ceil(max.x)) , static_cast<int>(ceil(max.y)) };
 
 		_grid[_INDEX(minIndex.x, minIndex.y)] = _STATE::FLUID;
 		_grid[_INDEX(minIndex.x, maxIndex.y)] = _STATE::FLUID;
