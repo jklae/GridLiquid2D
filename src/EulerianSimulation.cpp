@@ -33,6 +33,7 @@ void EulerianSimulation::initialize()
 	}
 	
 	_grid[_INDEX(1, 1)] = _STATE::FLUID;
+	_grid[_INDEX(8, 6)] = _STATE::FLUID;
 
 	// Compute stride and offset
 	_stride = (_gridSize * _gridScale);
@@ -57,6 +58,20 @@ void EulerianSimulation::setGridScale(float gridScale)
 void EulerianSimulation::_update(double timestep)
 {
 
+
+	_particle[0].x += 0.00005f;
+	_particle[0].y += 0.00002f;
+
+	_particle[1].x -= 0.00003f;
+	_particle[1].y -= 0.00004f;
+
+	_paintGrid();
+
+}
+
+void EulerianSimulation::_paintGrid()
+{
+	// Reset _grid
 	for (int j = 1; j < _gridCount.y - 1; j++)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
@@ -66,12 +81,8 @@ void EulerianSimulation::_update(double timestep)
 		}
 	}
 
-
-	_particle[0].x += 0.00005f;
-	_particle[0].y += 0.00002f;
-
 	// To calculate the grid index, the calculation result must not depend on the _gridScale.
-	// Therefore, the intermediate computed variable should not be multiplied by the _gridScale.
+	// Therefore, the intermediate computed variable "should not be multiplied by the _gridScale".
 	// For example, if the scale is 1.0f, the result is (index * 1.0f).
 	// But if the scale is 0.5f, the result is (index * 0.5f).
 	// The index value should of course be immutable.
@@ -79,38 +90,24 @@ void EulerianSimulation::_update(double timestep)
 	XMFLOAT2 particleOffset = { (_gridSize / 2.0f) * static_cast<float>(_gridCount.x),
 								(_gridSize / 2.0f) * static_cast<float>(_gridCount.y) };
 
-	XMFLOAT2 min = { particleOffset.x + (_particle[0].x / _gridScale) - particleStride,
-					 particleOffset.y + (_particle[0].y / _gridScale) - particleStride };
-
-	XMFLOAT2 max = { particleOffset.x + (_particle[0].x / _gridScale) + particleStride,
-					 particleOffset.y + (_particle[0].y / _gridScale) + particleStride };
-	
-	XMINT2 xy = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
-	XMINT2 xy2 = { static_cast<int>(floor(max.x)) , static_cast<int>(floor(max.y)) };
-
-	_grid[_INDEX(xy.x, xy.y)] = _STATE::FLUID;
-	_grid[_INDEX(xy.x, xy2.y)] = _STATE::FLUID;
-	_grid[_INDEX(xy2.x, xy.y)] = _STATE::FLUID;
-	_grid[_INDEX(xy2.x, xy2.y)] = _STATE::FLUID;
-
-
-}
-
-void EulerianSimulation::_checkGrid()
-{
-	vector<int[2]> particleIndex;
-
-	int particleIndex2[2] = { (_particle[0].x - _offset.x) / _stride,
-				(_particle[0].y - _offset.y) / _stride };
-
-	for (int j = 0; j < _gridCount.y; j++)
+	for (int i = 0; i < _particle.size(); i++)
 	{
-		for (int i = 0; i < _gridCount.x; i++)
-		{
-			
-			//_grid
-		}
+		XMFLOAT2 min = { particleOffset.x + (_particle[i].x / _gridScale) - particleStride,
+					 particleOffset.y + (_particle[i].y / _gridScale) - particleStride };
+
+		XMFLOAT2 max = { particleOffset.x + (_particle[i].x / _gridScale) + particleStride,
+						 particleOffset.y + (_particle[i].y / _gridScale) + particleStride };
+
+		XMINT2 minIndex = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
+		XMINT2 maxIndex = { static_cast<int>(floor(max.x)) , static_cast<int>(floor(max.y)) };
+
+		_grid[_INDEX(minIndex.x, minIndex.y)] = _STATE::FLUID;
+		_grid[_INDEX(minIndex.x, maxIndex.y)] = _STATE::FLUID;
+		_grid[_INDEX(maxIndex.x, minIndex.y)] = _STATE::FLUID;
+		_grid[_INDEX(maxIndex.x, maxIndex.y)] = _STATE::FLUID;
 	}
+	
+
 }
 
 #pragma region Implementation

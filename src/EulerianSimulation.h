@@ -64,6 +64,6 @@ private:
 	};
 
 	void _update(double timestep);
-	void _checkGrid();
+	void _paintGrid();
 };
 
