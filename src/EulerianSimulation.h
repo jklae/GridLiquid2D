@@ -65,6 +65,13 @@ private:
 	};
 
 	void _update(double timestep);
+
+	void _force(double timestep);
+	void _advect(double timestep);
+	void _diffuse(double timestep);
+	void _project(double timestep);
+
+	void _setBoundary();
 	void _paintGrid();
 	void _updateParticlePosition();
 };
