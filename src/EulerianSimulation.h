@@ -34,7 +34,8 @@ private:
 	enum class _STATE {FLUID, BOUNDARY, AIR};
 
 	// Grid
-	std::vector<_STATE> _grid;
+	std::vector<_STATE> _gridState;
+	std::vector<DirectX::XMFLOAT2> _gridPosition;
 	std::vector<DirectX::XMFLOAT2> _velocity;
 	DirectX::XMINT2 _gridCount = { 0, 0 };
 	float _gridScale = 0.0f;
@@ -65,5 +66,6 @@ private:
 
 	void _update(double timestep);
 	void _paintGrid();
+	void _updateParticlePosition();
 };
 
