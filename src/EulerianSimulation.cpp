@@ -33,7 +33,7 @@ void EulerianSimulation::initialize()
 			else
 			{
 				_gridState.push_back(_STATE::AIR);
-				_velocity.push_back(XMFLOAT2(0.001f, 0.0f * _gridScale));
+				_velocity.push_back(XMFLOAT2(0.0004f, 0.004f * _gridScale));
 			}
 
 		}
@@ -88,7 +88,7 @@ void EulerianSimulation::_force(double timestep)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
-			_velocity[_INDEX(i, j)].y -= 0.000098f * tstep * _gridScale;
+			_velocity[_INDEX(i, j)].y -= 9.8f * 0.000005f * tstep * _gridScale;
 		}
 	}
 	_setBoundary();
@@ -96,7 +96,14 @@ void EulerianSimulation::_force(double timestep)
 
 void EulerianSimulation::_advect(double timestep)
 {
+	float tstep = static_cast<float>(timestep);
+	for (int j = 1; j < _gridCount.y - 1; j++)
+	{
+		for (int i = 1; i < _gridCount.x - 1; i++)
+		{
 
+		}
+	}
 }
 
 void EulerianSimulation::_diffuse(double timestep)
@@ -221,30 +228,24 @@ void EulerianSimulation::_updateParticlePosition()
 											// 3.							// 3.
 		XMINT2 maxIndex = { static_cast<int>(ceil(max.x)) , static_cast<int>(ceil(max.y)) };
 
-		/*_grid[_INDEX(minIndex.x, minIndex.y)] = _STATE::FLUID;
-		_grid[_INDEX(minIndex.x, maxIndex.y)] = _STATE::FLUID;
-		_grid[_INDEX(maxIndex.x, minIndex.y)] = _STATE::FLUID;
-		_grid[_INDEX(maxIndex.x, maxIndex.y)] = _STATE::FLUID;*/
-
-		//cout << _particle[i].x - _gridPosition[_INDEX(minIndex.x, minIndex.y)].x << ", " << minIndex.x  << endl;
-		//cout << _particle[i].y - _gridPosition[_INDEX(minIndex.x, minIndex.y)].y << ", " << minIndex.y << endl;
-
-		float x0Ratio = (_particle[i].x - _gridPosition[_INDEX(minIndex.x, minIndex.y)].x) / _stride;
-		float x1Ratio = 1 - x0Ratio;
-		float y0Ratio = (_particle[i].y - _gridPosition[_INDEX(minIndex.x, minIndex.y)].y) / _stride;
-		float y1YRatio = 1 - y0Ratio;
-
-		//cout << y0Ratio << ", " << y1YRatio << endl;
+		// Compute ratio
+		float xRatio = (_particle[i].x - _gridPosition[_INDEX(minIndex.x, minIndex.y)].x) / _stride;
+		float yRatio = (_particle[i].y - _gridPosition[_INDEX(minIndex.x, minIndex.y)].y) / _stride;
 
 		XMFLOAT2 minVelocity = _velocity[_INDEX(minIndex.x, minIndex.y)];
 		XMFLOAT2 maxVelocity = _velocity[_INDEX(maxIndex.x, maxIndex.y)];
 
-		float xVelocity = minVelocity.x * x1Ratio + maxVelocity.x * x0Ratio;
-		float yVelocity = minVelocity.y * y1YRatio + maxVelocity.y * y0Ratio;
+		float xVelocity = _interpolation(minVelocity.x, maxVelocity.x, xRatio);
+		float yVelocity = _interpolation(minVelocity.y, maxVelocity.y, yRatio);
 
 		_particle[i].x += xVelocity;
 		_particle[i].y += yVelocity;
 	}
+}
+
+float EulerianSimulation::_interpolation(float value1, float value2, float ratio)
+{
+	return value1 * (1.0f - ratio) + value2 * ratio;
 }
 
 #pragma region Implementation

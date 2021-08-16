@@ -74,5 +74,9 @@ private:
 	void _setBoundary();
 	void _paintGrid();
 	void _updateParticlePosition();
+
+	// ---
+
+	float _interpolation(float value1, float value2, float ratio);
 };
 
