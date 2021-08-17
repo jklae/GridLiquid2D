@@ -33,6 +33,7 @@ private:
 
 	enum class _STATE {FLUID, BOUNDARY, AIR};
 	enum class _VALUE { MIN, MAX };
+	enum class _AXIS { X, Y };
 
 	// Grid
 	std::vector<_STATE> _gridState;
@@ -80,9 +81,9 @@ private:
 
 	// ---
 
-	int _computeFaceMinMaxIndex(_VALUE vState, float pos, float offset, float stride);
-	int _computeCenterMinMaxIndex(_VALUE vState, float pos, float offset);
-	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, DirectX::XMFLOAT2 offset);
+	int _computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
+	int _computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
+	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos);
 	float _interpolation(float value1, float value2, float ratio);
 };
 
