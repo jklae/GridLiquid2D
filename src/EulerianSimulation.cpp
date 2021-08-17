@@ -33,12 +33,12 @@ void EulerianSimulation::initialize()
 			else
 			{
 				_gridState.push_back(_STATE::AIR);
-				_velocity.push_back(XMFLOAT2(0.0004f, 0.004f * _gridScale));
+				_velocity.push_back(XMFLOAT2(0.0f, 0.0f * _gridScale));
 			}
 
 		}
 	}
-	
+
 	_gridState[_INDEX(10, 10)] = _STATE::FLUID;
 	_gridState[_INDEX(10, 11)] = _STATE::FLUID;
 	_gridState[_INDEX(11, 10)] = _STATE::FLUID;
@@ -71,7 +71,7 @@ void EulerianSimulation::_update(double timestep)
 
 	//_particle[1].x -= 0.00003f;
 	//_particle[1].y -= 0.00004f;
-	
+
 	_force(timestep);
 	_advect(timestep);
 	//_diffuse(timestep);
@@ -88,7 +88,8 @@ void EulerianSimulation::_force(double timestep)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
-			_velocity[_INDEX(i, j)].y -= 9.8f * 0.000005f * tstep * _gridScale;
+			_velocity[_INDEX(i, j)].x -= 9.8f * 0.000005f * tstep * _gridScale;
+			_velocity[_INDEX(i, j)].y -= 1.8f * 0.000005f * tstep * _gridScale;
 		}
 	}
 	_setBoundary();
@@ -104,6 +105,7 @@ void EulerianSimulation::_advect(double timestep)
 
 		}
 	}
+	//_setBoundary();
 }
 
 void EulerianSimulation::_diffuse(double timestep)
@@ -153,6 +155,10 @@ void EulerianSimulation::_setBoundary()
 	// (xCount, yCount)
 	_velocity[_INDEX(xN + 1, yN + 1)].x = 0.5f * (_velocity[_INDEX(xN, yN + 1)].x + _velocity[_INDEX(xN + 1, yN)].x);
 	_velocity[_INDEX(xN + 1, yN + 1)].y = 0.5f * (_velocity[_INDEX(xN, yN + 1)].y + _velocity[_INDEX(xN + 1, yN)].y);
+
+
+	//cout << _velocity[_INDEX(1, 0)].x << ", " << _velocity[_INDEX(0, 1)].x << endl;
+	cout << _velocity[_INDEX(1, 0)].x + _velocity[_INDEX(0, 1)].x << endl;
 }
 
 void EulerianSimulation::_paintGrid()
@@ -212,7 +218,7 @@ void EulerianSimulation::_updateParticlePosition()
 
 	for (int i = 0; i < _particle.size(); i++)
 	{
-								// 2. 3.
+		// 2. 3.
 		XMFLOAT2 newVelocity = _velocityInterpolation(_particle[i], particleOffset);
 
 		_particle[i].x += newVelocity.x;
@@ -244,7 +250,7 @@ int EulerianSimulation::_computeFaceMinMaxIndex(_VALUE vState, float pos, float 
 
 int EulerianSimulation::_computeCenterMinMaxIndex(_VALUE vState, float pos, float offset)
 {
-											// 2.
+	// 2.
 	float value = offset + (pos / _gridScale);
 
 	switch (vState)
@@ -253,7 +259,7 @@ int EulerianSimulation::_computeCenterMinMaxIndex(_VALUE vState, float pos, floa
 		return static_cast<int>(floor(value));
 		break;
 	case _VALUE::MAX:
-								// 3.
+		// 3.
 		return static_cast<int>(ceil(value));
 		break;
 	default:
@@ -264,7 +270,7 @@ int EulerianSimulation::_computeCenterMinMaxIndex(_VALUE vState, float pos, floa
 
 XMFLOAT2 EulerianSimulation::_velocityInterpolation(XMFLOAT2 pos, XMFLOAT2 offset)
 {
-					// 2. 3.
+	// 2. 3.
 	int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos.x, offset.x);
 	int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos.y, offset.y);
 	int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos.x, offset.x);
@@ -352,8 +358,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 			_gridPosition.push_back(pos);
 
 			struct ConstantBuffer objectCB;
-																// Multiply by a specific value to make a stripe
-			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale*0.95f);
+			// Multiply by a specific value to make a stripe
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale * 0.95f);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
