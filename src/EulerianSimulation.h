@@ -40,6 +40,7 @@ private:
 	std::vector<DirectX::XMFLOAT2> _gridPosition;
 	std::vector<DirectX::XMFLOAT2> _gridVelocity;
 	std::vector<DirectX::XMFLOAT2> _gridPressure;
+	std::vector<DirectX::XMFLOAT2> _gridDivergence;
 	DirectX::XMINT2 _gridCount = { 0, 0 };
 	float _gridScale = 0.0f;
 	float _gridSize = 1.0f;
