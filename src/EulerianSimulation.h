@@ -80,6 +80,7 @@ private:
 
 	int _computeFaceMinMaxIndex(_VALUE vState, float pos, float offset, float stride);
 	int _computeCenterMinMaxIndex(_VALUE vState, float pos, float offset);
+	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, DirectX::XMFLOAT2 offset);
 	float _interpolation(float value1, float value2, float ratio);
 };
 

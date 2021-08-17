@@ -212,23 +212,11 @@ void EulerianSimulation::_updateParticlePosition()
 
 	for (int i = 0; i < _particle.size(); i++)
 	{
-		int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _particle[i].x, particleOffset.x);
-		int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _particle[i].y, particleOffset.y);
-		int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _particle[i].x, particleOffset.x);
-		int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _particle[i].y, particleOffset.y);
+								// 2. 3.
+		XMFLOAT2 newVelocity = _velocityInterpolation(_particle[i], particleOffset);
 
-		// Compute ratio
-		float xRatio = (_particle[i].x - _gridPosition[_INDEX(minXIndex, minYIndex)].x) / _stride;
-		float yRatio = (_particle[i].y - _gridPosition[_INDEX(minXIndex, minYIndex)].y) / _stride;
-
-		XMFLOAT2 minVelocity = _velocity[_INDEX(minXIndex, minYIndex)];
-		XMFLOAT2 maxVelocity = _velocity[_INDEX(maxXIndex, maxYIndex)];
-
-		float xVelocity = _interpolation(minVelocity.x, maxVelocity.x, xRatio);
-		float yVelocity = _interpolation(minVelocity.y, maxVelocity.y, yRatio);
-
-		_particle[i].x += xVelocity;
-		_particle[i].y += yVelocity;
+		_particle[i].x += newVelocity.x;
+		_particle[i].y += newVelocity.y;
 	}
 }
 
@@ -272,6 +260,26 @@ int EulerianSimulation::_computeCenterMinMaxIndex(_VALUE vState, float pos, floa
 		return -1;
 		break;
 	}
+}
+
+XMFLOAT2 EulerianSimulation::_velocityInterpolation(XMFLOAT2 pos, XMFLOAT2 offset)
+{
+					// 2. 3.
+	int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos.x, offset.x);
+	int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos.y, offset.y);
+	int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos.x, offset.x);
+	int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos.y, offset.y);
+
+	float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x) / _stride;
+	float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y) / _stride;
+
+	XMFLOAT2 minVelocity = _velocity[_INDEX(minXIndex, minYIndex)];
+	XMFLOAT2 maxVelocity = _velocity[_INDEX(maxXIndex, maxYIndex)];
+
+	return XMFLOAT2(
+		_interpolation(minVelocity.x, maxVelocity.x, xRatio),
+		_interpolation(minVelocity.y, maxVelocity.y, yRatio)
+	);
 }
 
 float EulerianSimulation::_interpolation(float value1, float value2, float ratio)
