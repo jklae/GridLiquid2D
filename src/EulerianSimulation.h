@@ -32,6 +32,7 @@ private:
 	inline int _INDEX(int j, int i) { return (_gridCount.x*i + j); };
 
 	enum class _STATE {FLUID, BOUNDARY, AIR};
+	enum class _VALUE { MIN, MAX };
 
 	// Grid
 	std::vector<_STATE> _gridState;
@@ -77,6 +78,8 @@ private:
 
 	// ---
 
+	int _computeFaceMinMaxIndex(_VALUE vState, float pos, float offset, float stride);
+	int _computeCenterMinMaxIndex(_VALUE vState, float pos, float offset);
 	float _interpolation(float value1, float value2, float ratio);
 };
 

@@ -177,20 +177,16 @@ void EulerianSimulation::_paintGrid()
 
 	for (int i = 0; i < _particle.size(); i++)
 	{
-		XMFLOAT2 min = { particleOffset.x + (_particle[i].x / _gridScale) - particleStride,
-					 particleOffset.y + (_particle[i].y / _gridScale) - particleStride };
-
-		XMFLOAT2 max = { particleOffset.x + (_particle[i].x / _gridScale) + particleStride,
-						 particleOffset.y + (_particle[i].y / _gridScale) + particleStride };
-
-		XMINT2 minIndex = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
-		XMINT2 maxIndex = { static_cast<int>(floor(max.x)) , static_cast<int>(floor(max.y)) };
+		int minXIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _particle[i].x, particleOffset.x, particleStride);
+		int minYIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _particle[i].y, particleOffset.y, particleStride);
+		int maxXIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _particle[i].x, particleOffset.x, particleStride);
+		int maxYIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _particle[i].y, particleOffset.y, particleStride);
 
 		// Painting
-		_STATE& minMin = _gridState[_INDEX(minIndex.x, minIndex.y)];
-		_STATE& minMax = _gridState[_INDEX(minIndex.x, maxIndex.y)];
-		_STATE& maxMin = _gridState[_INDEX(maxIndex.x, minIndex.y)];
-		_STATE& maxMax = _gridState[_INDEX(maxIndex.x, maxIndex.y)];
+		_STATE& minMin = _gridState[_INDEX(minXIndex, minYIndex)];
+		_STATE& minMax = _gridState[_INDEX(minXIndex, maxYIndex)];
+		_STATE& maxMin = _gridState[_INDEX(maxXIndex, minYIndex)];
+		_STATE& maxMax = _gridState[_INDEX(maxXIndex, maxYIndex)];
 
 		// Boundary Checking
 		if (minMin != _STATE::BOUNDARY) minMin = _STATE::FLUID;
@@ -210,36 +206,71 @@ void EulerianSimulation::_updateParticlePosition()
 	// ------------------------------------------------------------------
 	// _PaintGrid() uses the face as the transition point.
 	// _updateParticlePosition() uses the center as the transition point.
-	float particleStride = (_gridSize / 2.0f) * _particleScale;
 																					// 1.
 	XMFLOAT2 particleOffset = { (_gridSize / 2.0f) * static_cast<float>(_gridCount.x - 1),
 								(_gridSize / 2.0f) * static_cast<float>(_gridCount.y - 1) };
 
 	for (int i = 0; i < _particle.size(); i++)
 	{
-																		// 2.
-		XMFLOAT2 min = { particleOffset.x + (_particle[i].x / _gridScale),
-					 particleOffset.y + (_particle[i].y / _gridScale) };
-																		// 2.
-		XMFLOAT2 max = { particleOffset.x + (_particle[i].x / _gridScale),
-						 particleOffset.y + (_particle[i].y / _gridScale) };
-
-		XMINT2 minIndex = { static_cast<int>(floor(min.x)) , static_cast<int>(floor(min.y)) };
-											// 3.							// 3.
-		XMINT2 maxIndex = { static_cast<int>(ceil(max.x)) , static_cast<int>(ceil(max.y)) };
+		int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _particle[i].x, particleOffset.x);
+		int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _particle[i].y, particleOffset.y);
+		int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _particle[i].x, particleOffset.x);
+		int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _particle[i].y, particleOffset.y);
 
 		// Compute ratio
-		float xRatio = (_particle[i].x - _gridPosition[_INDEX(minIndex.x, minIndex.y)].x) / _stride;
-		float yRatio = (_particle[i].y - _gridPosition[_INDEX(minIndex.x, minIndex.y)].y) / _stride;
+		float xRatio = (_particle[i].x - _gridPosition[_INDEX(minXIndex, minYIndex)].x) / _stride;
+		float yRatio = (_particle[i].y - _gridPosition[_INDEX(minXIndex, minYIndex)].y) / _stride;
 
-		XMFLOAT2 minVelocity = _velocity[_INDEX(minIndex.x, minIndex.y)];
-		XMFLOAT2 maxVelocity = _velocity[_INDEX(maxIndex.x, maxIndex.y)];
+		XMFLOAT2 minVelocity = _velocity[_INDEX(minXIndex, minYIndex)];
+		XMFLOAT2 maxVelocity = _velocity[_INDEX(maxXIndex, maxYIndex)];
 
 		float xVelocity = _interpolation(minVelocity.x, maxVelocity.x, xRatio);
 		float yVelocity = _interpolation(minVelocity.y, maxVelocity.y, yRatio);
 
 		_particle[i].x += xVelocity;
 		_particle[i].y += yVelocity;
+	}
+}
+
+int EulerianSimulation::_computeFaceMinMaxIndex(_VALUE vState, float pos, float offset, float stride)
+{
+	float value;
+
+	// Compute position by normalizing from (-N, N) to (0, N + 1)
+	switch (vState)
+	{
+	case _VALUE::MIN:
+		value = offset + (pos / _gridScale) - stride;
+		break;
+	case _VALUE::MAX:
+		value = offset + (pos / _gridScale) + stride;
+		break;
+	default:
+		value = 0.0f;
+		break;
+	}
+
+	// Compute Index
+	return static_cast<int>(floor(value));
+}
+
+int EulerianSimulation::_computeCenterMinMaxIndex(_VALUE vState, float pos, float offset)
+{
+											// 2.
+	float value = offset + (pos / _gridScale);
+
+	switch (vState)
+	{
+	case _VALUE::MIN:
+		return static_cast<int>(floor(value));
+		break;
+	case _VALUE::MAX:
+								// 3.
+		return static_cast<int>(ceil(value));
+		break;
+	default:
+		return -1;
+		break;
 	}
 }
 
