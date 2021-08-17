@@ -88,8 +88,8 @@ void EulerianSimulation::_force(double timestep)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
-			_velocity[_INDEX(i, j)].x -= 9.8f * 0.000005f * tstep * _gridScale;
-			_velocity[_INDEX(i, j)].y -= 1.8f * 0.000005f * tstep * _gridScale;
+			_velocity[_INDEX(i, j)].x += 9.8f * 0.000005f * tstep * _gridScale;
+			_velocity[_INDEX(i, j)].y += 1.8f * 0.000005f * tstep * _gridScale;
 		}
 	}
 	_setBoundary();
@@ -144,21 +144,21 @@ void EulerianSimulation::_setBoundary()
 	}
 
 	// (0, 0)
-	_velocity[_INDEX(0, 0)].x = 0.5f * (_velocity[_INDEX(1, 0)].x + _velocity[_INDEX(0, 1)].x);
-	_velocity[_INDEX(0, 0)].y = 0.5f * (_velocity[_INDEX(1, 0)].y + _velocity[_INDEX(0, 1)].y);
+	_velocity[_INDEX(0, 0)].x = _velocity[_INDEX(0, 1)].x;
+	_velocity[_INDEX(0, 0)].y = _velocity[_INDEX(1, 0)].y;
 	// (0, yCount)
-	_velocity[_INDEX(0, yN + 1)].x = 0.5f * (_velocity[_INDEX(1, yN + 1)].x + _velocity[_INDEX(0, yN)].x);
-	_velocity[_INDEX(0, yN + 1)].y = 0.5f * (_velocity[_INDEX(1, yN + 1)].y + _velocity[_INDEX(0, yN)].y);
+	_velocity[_INDEX(0, yN + 1)].x = _velocity[_INDEX(0, yN)].x;
+	_velocity[_INDEX(0, yN + 1)].y = _velocity[_INDEX(1, yN + 1)].y ;
 	// (xCount, 0)
-	_velocity[_INDEX(xN + 1, 0)].x = 0.5f * (_velocity[_INDEX(xN, 0)].x + _velocity[_INDEX(xN + 1, 1)].x);
-	_velocity[_INDEX(xN + 1, 0)].y = 0.5f * (_velocity[_INDEX(xN, 0)].y + _velocity[_INDEX(xN + 1, 1)].y);
+	_velocity[_INDEX(xN + 1, 0)].x = _velocity[_INDEX(xN + 1, 1)].x;
+	_velocity[_INDEX(xN + 1, 0)].y = _velocity[_INDEX(xN, 0)].y;
 	// (xCount, yCount)
-	_velocity[_INDEX(xN + 1, yN + 1)].x = 0.5f * (_velocity[_INDEX(xN, yN + 1)].x + _velocity[_INDEX(xN + 1, yN)].x);
-	_velocity[_INDEX(xN + 1, yN + 1)].y = 0.5f * (_velocity[_INDEX(xN, yN + 1)].y + _velocity[_INDEX(xN + 1, yN)].y);
+	_velocity[_INDEX(xN + 1, yN + 1)].x = _velocity[_INDEX(xN + 1, yN)].x;
+	_velocity[_INDEX(xN + 1, yN + 1)].y = _velocity[_INDEX(xN, yN + 1)].y;
 
 
 	//cout << _velocity[_INDEX(1, 0)].x << ", " << _velocity[_INDEX(0, 1)].x << endl;
-	cout << _velocity[_INDEX(1, 0)].x + _velocity[_INDEX(0, 1)].x << endl;
+	//cout << _velocity[_INDEX(1, 0)].x + _velocity[_INDEX(0, 1)].x << endl;
 }
 
 void EulerianSimulation::_paintGrid()
