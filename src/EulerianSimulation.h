@@ -48,6 +48,9 @@ private:
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2;
+	float _particleStride;
+	DirectX::XMFLOAT2 _particleFaceOffset;
+	DirectX::XMFLOAT2 _particleCenterOffset;
 
 	std::vector<Vertex> _vertices =
 	{

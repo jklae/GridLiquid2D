@@ -46,10 +46,25 @@ void EulerianSimulation::initialize()
 
 	// Compute stride and offset
 	_gridStride = (_gridSize * _gridScale);
-	_gridOffset = XMFLOAT2(
-		//		radius    *     count
-		(_gridStride / 2.0f) * static_cast<float>(_gridCount.x - 1),
-		(_gridStride / 2.0f) * static_cast<float>(_gridCount.y - 1));
+	_gridOffset = 
+		XMFLOAT2(
+			//		radius    *     count
+			(_gridStride / 2.0f) * static_cast<float>(_gridCount.x - 1),
+			(_gridStride / 2.0f) * static_cast<float>(_gridCount.y - 1)
+		);
+
+	_particleStride = (_gridSize / 2.0f) * _particleScale;
+	_particleFaceOffset =
+		XMFLOAT2(
+			(_gridSize / 2.0f) * static_cast<float>(_gridCount.x),
+			(_gridSize / 2.0f) * static_cast<float>(_gridCount.y)
+		);
+	_particleCenterOffset =
+		XMFLOAT2(
+																// 1.
+			(_gridSize / 2.0f) * static_cast<float>(_gridCount.x - 1),
+			(_gridSize / 2.0f) * static_cast<float>(_gridCount.y - 1)
+		);
 }
 
 void EulerianSimulation::setGridCountXY(int xCount, int yCount)
@@ -72,8 +87,8 @@ void EulerianSimulation::_update(double timestep)
 	//_particle[1].x -= 0.00003f;
 	//_particle[1].y -= 0.00004f;
 
-	//_force(timestep);
-	_advect(timestep);
+	_force(timestep);
+	//_advect(timestep);
 	//_diffuse(timestep);
 	_project(timestep);
 
@@ -184,9 +199,8 @@ void EulerianSimulation::_paintGrid()
 	// For example, if the scale is 1.0f, the result is (index * 1.0f).
 	// But if the scale is 0.5f, the result is (index * 0.5f).
 	// The index value should of course be immutable.
-	float particleStride = (_gridSize / 2.0f) * _particleScale;
-	XMFLOAT2 particleOffset = { (_gridSize / 2.0f) * static_cast<float>(_gridCount.x),
-								(_gridSize / 2.0f) * static_cast<float>(_gridCount.y) };
+	float particleStride = _particleStride;
+	XMFLOAT2 particleOffset = _particleFaceOffset;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -219,9 +233,8 @@ void EulerianSimulation::_updateParticlePosition()
 	// ------------------------------------------------------------------
 	// _PaintGrid() uses the face as the transition point.
 	// _updateParticlePosition() uses the center as the transition point.
-																					// 1.
-	XMFLOAT2 particleOffset = { (_gridSize / 2.0f) * static_cast<float>(_gridCount.x - 1),
-								(_gridSize / 2.0f) * static_cast<float>(_gridCount.y - 1) };
+							  // 1.
+	XMFLOAT2 particleOffset = _particleCenterOffset;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
