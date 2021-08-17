@@ -44,7 +44,7 @@ void EulerianSimulation::initialize()
 	_gridState[_INDEX(11, 10)] = _STATE::FLUID;
 	_gridState[_INDEX(11, 11)] = _STATE::FLUID;
 
-	// Compute stride and offset
+	// Compute grid stride and offset
 	_gridStride = (_gridSize * _gridScale);
 	_gridOffset = 
 		XMFLOAT2(
@@ -53,6 +53,7 @@ void EulerianSimulation::initialize()
 			(_gridStride / 2.0f) * static_cast<float>(_gridCount.y - 1)
 		);
 
+	// Compute particle stride and offset
 	_particleStride = (_gridSize / 2.0f) * _particleScale;
 	_particleFaceOffset =
 		XMFLOAT2(
@@ -116,7 +117,7 @@ void EulerianSimulation::_advect(double timestep)
 	static bool a = true;
 	if (a)
 	{
-		_particlePosition[0].x -= tstep ;
+		_particlePosition[0].x -= tstep;
 		a = false;
 	}
 
@@ -177,10 +178,6 @@ void EulerianSimulation::_setBoundary()
 	// (xCount, yCount)
 	_gridVelocity[_INDEX(xN + 1, yN + 1)].x = _gridVelocity[_INDEX(xN + 1, yN)].x;
 	_gridVelocity[_INDEX(xN + 1, yN + 1)].y = _gridVelocity[_INDEX(xN, yN + 1)].y;
-
-
-	//cout << _velocity[_INDEX(1, 0)].x << ", " << _velocity[_INDEX(0, 1)].x << endl;
-	//cout << _velocity[_INDEX(1, 0)].x + _velocity[_INDEX(0, 1)].x << endl;
 }
 
 void EulerianSimulation::_paintGrid()
@@ -219,7 +216,6 @@ void EulerianSimulation::_paintGrid()
 
 void EulerianSimulation::_updateParticlePosition()
 {
-
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
