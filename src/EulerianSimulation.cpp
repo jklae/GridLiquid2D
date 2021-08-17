@@ -33,7 +33,7 @@ void EulerianSimulation::initialize()
 			else
 			{
 				_gridState.push_back(_STATE::AIR);
-				_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f * _gridScale));
+				_gridVelocity.push_back(XMFLOAT2(0.0f, -0.01f * _gridScale));
 			}
 
 		}
@@ -88,13 +88,13 @@ void EulerianSimulation::_update(double timestep)
 	//_particle[1].x -= 0.00003f;
 	//_particle[1].y -= 0.00004f;
 
-	_force(timestep);
-	//_advect(timestep);
+	//_force(timestep);
+	_advect(timestep);
 	//_diffuse(timestep);
 	_project(timestep);
 
-	_updateParticlePosition();
-	_paintGrid();
+	//_updateParticlePosition();
+	//_paintGrid();
 }
 
 void EulerianSimulation::_force(double timestep)
@@ -104,8 +104,8 @@ void EulerianSimulation::_force(double timestep)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
-			_gridVelocity[_INDEX(i, j)].x += 9.8f * 0.000005f * tstep * _gridScale;
-			_gridVelocity[_INDEX(i, j)].y += 1.8f * 0.000005f * tstep * _gridScale;
+			_gridVelocity[_INDEX(i, j)].x -= 2.8f * 0.000005f * tstep * _gridScale;
+			_gridVelocity[_INDEX(i, j)].y -= 9.8f * 0.000005f * tstep * _gridScale;
 		}
 	}
 	_setBoundary();
@@ -114,20 +114,35 @@ void EulerianSimulation::_force(double timestep)
 void EulerianSimulation::_advect(double timestep)
 {
 	float tstep = static_cast<float>(timestep);
+
 	static bool a = true;
 	if (a)
 	{
-		_particlePosition[0].x -= tstep;
+		float yMax = _gridPosition[_INDEX(0, _gridCount.y - 1)].y - (_gridSize * _gridScale) / 2.0f;
+		float yMin = _gridPosition[_INDEX(0, 0)].y + (_gridSize * _gridScale) / 2.0f;
+		float xMax = _gridPosition[_INDEX(_gridCount.x - 1, 0)].x - (_gridSize * _gridScale) / 2.0f;
+		float xMin = _gridPosition[_INDEX(0, 0)].x + (_gridSize * _gridScale) / 2.0f;
+
+		float backpos = _particlePosition[2].y - tstep * 3000000.0f * _gridVelocity[_INDEX(9, 9)].y;
+		if (backpos > yMax) backpos = yMax;
+
+		_particlePosition[2].y = backpos;
 		a = false;
 	}
 
-	for (int j = 1; j < _gridCount.y - 1; j++)
+	/*for (int j = 1; j < _gridCount.y - 1; j++)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
+			XMFLOAT2 backPos = 
+				XMFLOAT2(
+					_gridPosition[_INDEX(i, j)].x - tstep * 1000.0f * _gridVelocity[_INDEX(i, j)].x,
+					_gridPosition[_INDEX(i, j)].y - tstep * 1000.0f * _gridVelocity[_INDEX(i, j)].y
+				);
 
+			_gridVelocity[_INDEX(i, j)] = _velocityInterpolation(backPos);
 		}
-	}
+	}*/
 	_setBoundary();
 }
 
