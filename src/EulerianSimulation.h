@@ -41,15 +41,13 @@ private:
 	DirectX::XMINT2 _gridCount = { 0, 0 };
 	float _gridScale = 0.0f;
 	float _gridSize = 1.0f;
+	float _gridStride;
+	DirectX::XMFLOAT2 _gridOffset;
 
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2;
-
-	// CreateObjectParticle
-	float _stride = 0.0f;
-	DirectX::XMFLOAT2 _offset;
 
 	std::vector<Vertex> _vertices =
 	{
