@@ -44,6 +44,7 @@ private:
 
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
+	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2;
 
 	// CreateObjectParticle

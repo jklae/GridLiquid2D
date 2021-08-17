@@ -226,10 +226,10 @@ void EulerianSimulation::_updateParticlePosition()
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
-		XMFLOAT2 newVelocity = _velocityInterpolation(_particlePosition[i], particleOffset);
+		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], particleOffset);
 
-		_particlePosition[i].x += newVelocity.x;
-		_particlePosition[i].y += newVelocity.y;
+		_particlePosition[i].x += _particleVelocity[i].x;
+		_particlePosition[i].y += _particleVelocity[i].y;
 	}
 }
 
@@ -387,6 +387,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 
 			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
+				_particleVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
 				_particlePosition.push_back(pos);
 
 				struct ConstantBuffer particleCB;
