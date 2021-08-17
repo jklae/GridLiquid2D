@@ -37,13 +37,13 @@ private:
 	// Grid
 	std::vector<_STATE> _gridState;
 	std::vector<DirectX::XMFLOAT2> _gridPosition;
-	std::vector<DirectX::XMFLOAT2> _velocity;
+	std::vector<DirectX::XMFLOAT2> _gridVelocity;
 	DirectX::XMINT2 _gridCount = { 0, 0 };
 	float _gridScale = 0.0f;
 	float _gridSize = 1.0f;
 
 	// Particle
-	std::vector<DirectX::XMFLOAT2> _particle;
+	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	float _particleScale = 0.2;
 
 	// CreateObjectParticle
