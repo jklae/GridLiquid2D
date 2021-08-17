@@ -92,7 +92,7 @@ void EulerianSimulation::_update(double timestep)
 	_advect(timestep);
 	//_diffuse(timestep);
 	_project(timestep);
-
+	
 	_updateParticlePosition();
 	_paintGrid();
 }
@@ -149,7 +149,12 @@ void EulerianSimulation::_diffuse(double timestep)
 
 void EulerianSimulation::_project(double timestep)
 {
-
+	for (int j = 1; j < _gridCount.y - 1; j++)
+	{
+		for (int i = 1; i < _gridCount.x - 1; i++)
+		{
+		}
+	}
 }
 
 void EulerianSimulation::_setBoundary()
