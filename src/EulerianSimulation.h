@@ -10,8 +10,7 @@ public:
 
 	void initialize();
 
-	void setGridCountXY(int xCount, int yCount);
-	void setGridScale(float gridScale);
+	void setGridDomain(int xCount, int yCount);
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
@@ -21,7 +20,7 @@ public:
 	std::vector<unsigned int> iGetIndice() override;
 	DirectX::XMFLOAT4 iGetColor(int i) override;
 
-	DirectX::XMINT2 iGetObjectCountXY() override;
+	int iGetObjectCount() override;
 	DirectX::XMFLOAT2 iGetParticlePos(int i) override;
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
@@ -29,7 +28,7 @@ public:
 #pragma endregion
 
 private:
-	inline int _INDEX(int j, int i) { return (_gridCount.x*i + j); };
+	inline int _INDEX(int i, int j) { return (i + _gridCount*j); };
 
 
 	// Grid
@@ -38,19 +37,12 @@ private:
 	std::vector<DirectX::XMFLOAT2> _gridVelocity;
 	std::vector<float> _gridPressure;
 	std::vector<float> _gridDivergence;
-	DirectX::XMINT2 _gridCount = { 0, 0 };
-	float _gridScale = 0.0f;
-	float _gridSize = 1.0f;
-	float _gridStride;
-	DirectX::XMFLOAT2 _gridOffset;
+	int _gridCount = 0;
 
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2;
-	float _particleStride;
-	DirectX::XMFLOAT2 _particleFaceOffset;
-	DirectX::XMFLOAT2 _particleCenterOffset;
 
 	std::vector<Vertex> _vertices =
 	{
