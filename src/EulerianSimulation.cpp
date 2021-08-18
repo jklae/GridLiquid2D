@@ -37,7 +37,7 @@ void EulerianSimulation::initialize()
 				_gridState.push_back(STATE::AIR);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(0.1f, -0.5f));
+			_gridVelocity.push_back(XMFLOAT2(0.4f, 0.9f));
 			_gridPressure.push_back(0.0f);
 			_gridDivergence.push_back(0.0f);
 		}
@@ -60,9 +60,9 @@ void EulerianSimulation::_printVelocity()
 {
 	static int step = 0;
 	printf("============= step %d =============\n", step);
-	for (int i = 1; i < _gridCount - 1; i++)
+	for (int i = 0; i < _gridCount; i++)
 	{
-		for (int j = 1; j < _gridCount - 1; j++)
+		for (int j = 0; j < _gridCount; j++)
 		{
 			printf("(%9f, %9f) ", _gridVelocity[_INDEX(i, j)].x, _gridVelocity[_INDEX(i, j)].y);
 		}
@@ -74,11 +74,12 @@ void EulerianSimulation::_printVelocity()
 void EulerianSimulation::_update(double timestep)
 {
 	//_force(timestep);
-	//_printVelocity();
 	_setBoundary(_gridVelocity);
+
 	_advect(timestep);
+	//_printVelocity();
 	//_diffuse(timestep);
-	//_project(timestep);
+	_project(timestep);
 	
 	//_updateParticlePosition();
 	//_paintGrid();
@@ -147,17 +148,24 @@ void EulerianSimulation::_diffuse(double timestep)
 
 void EulerianSimulation::_project(double timestep)
 {
+	vector<XMFLOAT2> oldVelocity = _gridVelocity;
+	static int step = 0;
+	printf("============= step %d =============\n", step);
+	printf("div = ");
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
 			_gridDivergence[_INDEX(i, j)] =
-				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x)  +
-				0.5f * (_gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y) ;
+				0.5f * (oldVelocity[_INDEX(i + 1, j)].x - oldVelocity[_INDEX(i - 1, j)].x
+					+ oldVelocity[_INDEX(i, j + 1)].y - oldVelocity[_INDEX(i, j - 1)].y) / N ;
 			_gridPressure[_INDEX(i, j)] = 0.0f;
+			//printf("%f  ", _gridDivergence[_INDEX(i, j)]);
 		}
 	}
+
+	//printf("\n");
 
 	/*_gridPressure[_INDEX(10, 10)] = 2.0f;
 	_gridPressure[_INDEX(10, 11)] = 2.0f;
@@ -166,6 +174,8 @@ void EulerianSimulation::_project(double timestep)
 
 	_setBoundary(_gridDivergence);
 	_setBoundary(_gridPressure);
+
+
 
 	for (int iter = 0; iter < 20; iter++)
 	{
@@ -194,6 +204,8 @@ void EulerianSimulation::_project(double timestep)
 		}
 	}
 	_setBoundary(_gridVelocity);
+
+	step++;
 }
 
 void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
@@ -216,8 +228,8 @@ void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
 		vec[_INDEX(0, j)].x = -vec[_INDEX(1, j)].x;
 		vec[_INDEX(0, j)].y = +vec[_INDEX(1, j)].y;
 
-		vec[_INDEX(N + 1, j)].x = -vec[_INDEX(j, N)].x;
-		vec[_INDEX(N + 1, j)].y = +vec[_INDEX(j, N)].y;
+		vec[_INDEX(N + 1, j)].x = -vec[_INDEX(N, j)].x;
+		vec[_INDEX(N + 1, j)].y = +vec[_INDEX(N, j)].y;
 	}
 
 	// (0, 0)
@@ -249,7 +261,7 @@ void EulerianSimulation::_setBoundary(std::vector<float>& scalar)
 	for (int j = 1; j <= N; j++)
 	{
 		scalar[_INDEX(0, j)] = scalar[_INDEX(1, j)];
-		scalar[_INDEX(N + 1, j)] = scalar[_INDEX(j, N)];
+		scalar[_INDEX(N + 1, j)] = scalar[_INDEX(N, j)];
 	}
 
 	// (0, 0)
