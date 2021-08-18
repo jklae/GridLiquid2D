@@ -41,7 +41,6 @@ private:
 	DirectX::XMINT2 _gridCount = { 0, 0 };
 	float _gridScale = 0.0f;
 	float _gridSize = 1.0f;
-	float _gridStride;
 	DirectX::XMFLOAT2 _gridOffset;
 
 	// Particle

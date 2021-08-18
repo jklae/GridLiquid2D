@@ -41,19 +41,18 @@ void EulerianSimulation::initialize()
 		}
 	}
 
-	_gridState[_INDEX(10, 10)] = STATE::FLUID;
-	_gridState[_INDEX(10, 11)] = STATE::FLUID;
+	_gridState[_INDEX(2, 2)] = STATE::FLUID;
+	/*_gridState[_INDEX(10, 11)] = STATE::FLUID;
 	_gridState[_INDEX(11, 10)] = STATE::FLUID;
-	_gridState[_INDEX(11, 11)] = STATE::FLUID;
+	_gridState[_INDEX(11, 11)] = STATE::FLUID;*/
 
 
 	// Compute grid stride and offset
-	_gridStride = (_gridSize * _gridScale);
 	_gridOffset = 
 		XMFLOAT2(
 			//		radius    *     count
-			(_gridStride / 2.0f) * static_cast<float>(_gridCount.x - 1),
-			(_gridStride / 2.0f) * static_cast<float>(_gridCount.y - 1)
+			(1.0f / 2.0f) * static_cast<float>(_gridCount.x - 1),
+			(1.0f / 2.0f) * static_cast<float>(_gridCount.y - 1)
 		);
 
 	// Compute particle stride and offset
@@ -384,8 +383,8 @@ XMFLOAT2 EulerianSimulation::_velocityInterpolation(XMFLOAT2 pos)
 	int maxXIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::X, pos);
 	int maxYIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::Y, pos);
 
-	float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x) / _gridStride;
-	float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y) / _gridStride;
+	float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
+	float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);
 
 	XMFLOAT2 minVelocity = _gridVelocity[_INDEX(minXIndex, minYIndex)];
 	XMFLOAT2 maxVelocity = _gridVelocity[_INDEX(maxXIndex, maxYIndex)];
@@ -460,8 +459,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				-_gridOffset.x + (float)i * _gridStride,
-				-_gridOffset.y + (float)j * _gridStride);
+				-_gridOffset.x + (float)i ,
+				-_gridOffset.y + (float)j );
 
 			_gridPosition.push_back(pos);
 
@@ -483,8 +482,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				-_gridOffset.x + (float)i * _gridStride,
-				-_gridOffset.y + (float)j * _gridStride);
+				-_gridOffset.x + (float)i ,
+				-_gridOffset.y + (float)j );
 
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
@@ -492,7 +491,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 				_particlePosition.push_back(pos);
 
 				struct ConstantBuffer particleCB;
-				particleCB.world = transformMatrix(pos.x, pos.y, -_gridStride, _gridScale * _particleScale);
+				particleCB.world = transformMatrix(pos.x, pos.y, -1.0f, _gridScale * _particleScale);
 				particleCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 				particleCB.color = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
 
