@@ -83,6 +83,7 @@ void EulerianSimulation::setGridScale(float gridScale)
 	_gridScale = gridScale;
 }
 
+
 void EulerianSimulation::_update(double timestep)
 {
 	//_particle[0].x += 0.00005f;
@@ -157,9 +158,8 @@ void EulerianSimulation::_project(double timestep)
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
 			_gridDivergence[_INDEX(i, j)] =
-				(_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x) / _gridSize
-				+
-				(_gridVelocity[_INDEX(i + 1, j)].y - _gridVelocity[_INDEX(i - 1, j)].y) / _gridSize;
+				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x) / _gridSize +
+				0.5f * (_gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y) / _gridSize;
 			_gridPressure[_INDEX(i, j)] = 0.0f;
 		}
 	}
@@ -181,20 +181,21 @@ void EulerianSimulation::_project(double timestep)
 				_gridPressure[_INDEX(i, j)] =
 					(
 						_gridDivergence[_INDEX(i, j)] -
-						_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
-						_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)]
+						(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
+						 _gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
 					) / -4.0f;
 					
 			}
 		}
+		_setBoundary(_gridPressure);
 	}
 
 	for (int j = 1; j < _gridCount.y - 1; j++)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
-			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize * 0.01f;
-			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize * 0.01f;
+			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize * 0.5f;
+			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) / _gridSize * 0.5f;
 		}
 	}
 	_setBoundary(_gridVelocity);
@@ -311,6 +312,7 @@ void EulerianSimulation::_updateParticlePosition()
 
 		_particlePosition[i].x += _particleVelocity[i].x;
 		_particlePosition[i].y += _particleVelocity[i].y;
+
 	}
 }
 
