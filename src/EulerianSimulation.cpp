@@ -41,33 +41,12 @@ void EulerianSimulation::initialize()
 		}
 	}
 
-	_gridState[_INDEX(1, 2)] = STATE::FLUID;
+	_gridState[_INDEX(6, 7)] = STATE::FLUID;
 	/*_gridState[_INDEX(10, 11)] = STATE::FLUID;
 	_gridState[_INDEX(11, 10)] = STATE::FLUID;
 	_gridState[_INDEX(11, 11)] = STATE::FLUID;*/
 
 
-	// Compute grid stride and offset
-	_gridOffset = 
-		XMFLOAT2(
-			//		radius    *     count
-			(1.0f / 2.0f) * static_cast<float>(_gridCount - 1),
-			(1.0f / 2.0f) * static_cast<float>(_gridCount - 1)
-		);
-
-	// Compute particle stride and offset
-	_particleStride = (1.0f / 2.0f) * _particleScale;
-	_particleFaceOffset =
-		XMFLOAT2(
-			(1.0f / 2.0f) * static_cast<float>(_gridCount),
-			(1.0f / 2.0f) * static_cast<float>(_gridCount)
-		);
-	_particleCenterOffset =
-		XMFLOAT2(
-																// 1.
-			(1.0f / 2.0f) * static_cast<float>(_gridCount - 1),
-			(1.0f / 2.0f) * static_cast<float>(_gridCount - 1)
-		);
 }
 
 void EulerianSimulation::setGridDomain(int xCount, int yCount)
@@ -102,8 +81,8 @@ void EulerianSimulation::_force(double timestep)
 	{
 		for (int i = 1; i <= N; i++)
 		{
-			//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 0.000005f * tstep * _gridScale;
-			_gridVelocity[_INDEX(i, j)].y -= 9.8f * 0.000005f * tstep;
+			_gridVelocity[_INDEX(i, j)].x -= 2.8f * 0.00000005f * tstep;
+			_gridVelocity[_INDEX(i, j)].y -= 9.8f * 0.00000005f * tstep;
 		}
 	}
 	_setBoundary(_gridVelocity);
@@ -307,7 +286,6 @@ void EulerianSimulation::_updateParticlePosition()
 
 		_particlePosition[i].x += _particleVelocity[i].x;
 		_particlePosition[i].y += _particleVelocity[i].y;
-
 	}
 }
 
@@ -319,7 +297,6 @@ void EulerianSimulation::_updateParticlePosition()
 // The index value should of course be immutable.
 int EulerianSimulation::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
 {
-	float offset = (axis == AXIS::X) ? _particleFaceOffset.x : _particleFaceOffset.y;
 	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
 	float value;
 
@@ -327,10 +304,10 @@ int EulerianSimulation::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT
 	switch (vState)
 	{
 	case VALUE::MIN:
-		value = offset + pos - _particleStride;
+		value = pos + 0.5f - 0.5f * _particleScale;
 		break;
 	case VALUE::MAX:
-		value = offset + pos + _particleStride;
+		value = pos + 0.5f + 0.5f * _particleScale;
 		break;
 	default:
 		value = 0.0f;
@@ -351,10 +328,9 @@ int EulerianSimulation::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT
 // _updateParticlePosition() uses the center as the transition point.
 int EulerianSimulation::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
 {
-	float offset = (axis == AXIS::X) ? _particleFaceOffset.x : _particleFaceOffset.y;
 	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
 	// 2.
-	float value = offset + pos;
+	float value = pos;
 
 	switch (vState)
 	{
@@ -455,8 +431,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				-_gridOffset.x + (float)i ,
-				-_gridOffset.y + (float)j );
+				(float)i ,
+				(float)j );
 
 			_gridPosition.push_back(pos);
 
@@ -478,8 +454,8 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				-_gridOffset.x + (float)i ,
-				-_gridOffset.y + (float)j );
+				(float)i ,
+				(float)j );
 
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
