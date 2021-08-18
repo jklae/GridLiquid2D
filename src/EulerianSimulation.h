@@ -78,7 +78,7 @@ private:
 
 	int _computeFaceMinMaxIndex(VALUE vState, AXIS axis, DirectX::XMFLOAT2 particlePos);
 	int _computeCenterMinMaxIndex(VALUE vState, AXIS axis, DirectX::XMFLOAT2 particlePos);
-	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos);
+	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, std::vector<DirectX::XMFLOAT2> oldvel);
 	float _interpolation(float value1, float value2, float ratio);
 };
 

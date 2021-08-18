@@ -75,7 +75,8 @@ void EulerianSimulation::_update(double timestep)
 {
 	//_force(timestep);
 	//_printVelocity();
-	//_advect(timestep);
+	_setBoundary(_gridVelocity);
+	_advect(timestep);
 	//_diffuse(timestep);
 	//_project(timestep);
 	
@@ -103,30 +104,38 @@ void EulerianSimulation::_advect(double timestep)
 {
 	float tstep = static_cast<float>(timestep);
 	int N = _gridCount - 2;
+	float t0step = tstep * N;
 
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
 	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
 	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
+	vector<XMFLOAT2> oldVelocity = _gridVelocity;
+
+	//printf("============== step ===========\n");
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
 			XMFLOAT2 backPos =
 				XMFLOAT2(
-					_gridPosition[_INDEX(i, j)].x - tstep * 30.0f * _gridVelocity[_INDEX(i, j)].x,
-					_gridPosition[_INDEX(i, j)].y - tstep * 30.0f * _gridVelocity[_INDEX(i, j)].y
+					_gridPosition[_INDEX(i, j)].x - t0step * oldVelocity[_INDEX(i, j)].x,
+					_gridPosition[_INDEX(i, j)].y - t0step * oldVelocity[_INDEX(i, j)].y
 				);
-
 			if (backPos.x > xMax) backPos.x = xMax;
 			else if (backPos.x < xMin) backPos.x = xMin;
 
 			if (backPos.y > yMax) backPos.y = yMax;
 			else if (backPos.y < yMin) backPos.y = yMin;
 
-			_gridVelocity[_INDEX(i, j)] = _velocityInterpolation(backPos);
+			//printf("(%9f, %9f) ", backPos.x, backPos.y);
+
+			_gridVelocity[_INDEX(i, j)] = _velocityInterpolation(backPos, oldVelocity);
+			//printf("interpolation = (%9f, %9f)\n", _gridVelocity[_INDEX(i, j)].x, _gridVelocity[_INDEX(i, j)].y);
+			//printf("\n");
 		}
+		//cout << endl;
 	}
 	_setBoundary(_gridVelocity);
 }
@@ -212,17 +221,17 @@ void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
 	}
 
 	// (0, 0)
-	vec[_INDEX(0, 0)].x = vec[_INDEX(0, 1)].x;
-	vec[_INDEX(0, 0)].y = vec[_INDEX(1, 0)].y;
+	vec[_INDEX(0, 0)].x = 0.0f;//vec[_INDEX(0, 1)].x;
+	vec[_INDEX(0, 0)].y = 0.0f;//vec[_INDEX(1, 0)].y;
 	// (0, yCount)
-	vec[_INDEX(0, N + 1)].x = vec[_INDEX(0, N)].x;
-	vec[_INDEX(0, N + 1)].y = vec[_INDEX(1, N + 1)].y ;
+	vec[_INDEX(0, N + 1)].x = 0.0f;//vec[_INDEX(0, N)].x;
+	vec[_INDEX(0, N + 1)].y = 0.0f;//vec[_INDEX(1, N + 1)].y ;
 	// (xCount, 0)
-	vec[_INDEX(N + 1, 0)].x = vec[_INDEX(N + 1, 1)].x;
-	vec[_INDEX(N + 1, 0)].y = vec[_INDEX(N, 0)].y;
+	vec[_INDEX(N + 1, 0)].x = 0.0f;//vec[_INDEX(N + 1, 1)].x;
+	vec[_INDEX(N + 1, 0)].y = 0.0f;//vec[_INDEX(N, 0)].y;
 	// (xCount, yCount)
-	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
-	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
+	vec[_INDEX(N + 1, N + 1)].x = 0.0f;//vec[_INDEX(N + 1, N)].x;
+	vec[_INDEX(N + 1, N + 1)].y = 0.0f;//vec[_INDEX(N, N + 1)].y;
 }
 
 void EulerianSimulation::_setBoundary(std::vector<float>& scalar)
@@ -293,7 +302,7 @@ void EulerianSimulation::_updateParticlePosition()
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
-		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i]);
+		//_particleVelocity[i] = _velocityInterpolation(_particlePosition[i]);
 
 		_particlePosition[i].x += _particleVelocity[i].x;
 		_particlePosition[i].y += _particleVelocity[i].y;
@@ -358,7 +367,7 @@ int EulerianSimulation::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLO
 	}
 }
 
-XMFLOAT2 EulerianSimulation::_velocityInterpolation(XMFLOAT2 pos)
+XMFLOAT2 EulerianSimulation::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
 {
 	// 2. 3.
 	int minXIndex = _computeCenterMinMaxIndex(VALUE::MIN, AXIS::X, pos);
@@ -369,12 +378,23 @@ XMFLOAT2 EulerianSimulation::_velocityInterpolation(XMFLOAT2 pos)
 	float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
 	float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);
 
-	XMFLOAT2 minVelocity = _gridVelocity[_INDEX(minXIndex, minYIndex)];
-	XMFLOAT2 maxVelocity = _gridVelocity[_INDEX(maxXIndex, maxYIndex)];
+	//printf("  ratio = %f %f  ", xRatio, yRatio);
+	//printf("  index = %d %d %d %d   ", minXIndex, maxXIndex, minYIndex, maxYIndex);
 
+	XMFLOAT2 minMinVelocity = oldvel[_INDEX(minXIndex, minYIndex)];
+	XMFLOAT2 minMaxVelocity = oldvel[_INDEX(minXIndex, maxYIndex)];
+	XMFLOAT2 maxMinVelocity = oldvel[_INDEX(maxXIndex, minYIndex)];
+	XMFLOAT2 maxMaxVelocity = oldvel[_INDEX(maxXIndex, maxYIndex)];
+
+
+	//printf("  indexX = %9f %9f %9f %9f   ", minMinVelocity.x, minMaxVelocity.x, maxMinVelocity.x, maxMaxVelocity.x);
+	//printf("  indexY = %9f %9f %9f %9f   ", minMinVelocity.y, minMaxVelocity.y, maxMinVelocity.y, maxMaxVelocity.y);
+
+	//s0* (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
+	//	s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
 	return XMFLOAT2(
-		_interpolation(minVelocity.x, maxVelocity.x, xRatio),
-		_interpolation(minVelocity.y, maxVelocity.y, yRatio)
+		_interpolation(_interpolation(minMinVelocity.x, minMaxVelocity.x, yRatio), _interpolation(maxMinVelocity.x, maxMaxVelocity.x, yRatio), xRatio),
+		_interpolation(_interpolation(minMinVelocity.y, minMaxVelocity.y, yRatio), _interpolation(maxMinVelocity.y, maxMaxVelocity.y, yRatio), xRatio)
 	);
 }
 
