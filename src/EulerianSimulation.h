@@ -77,7 +77,8 @@ private:
 	void _diffuse(double timestep);
 	void _project(double timestep);
 
-	void _setBoundary();
+	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
+	void _setBoundary(std::vector<float>& scalar);
 	void _paintGrid();
 	void _updateParticlePosition();
 
