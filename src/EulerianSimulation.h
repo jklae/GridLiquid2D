@@ -19,6 +19,8 @@ public:
 	std::vector<Vertex> iGetVertice() override;
 	std::vector<unsigned int> iGetIndice() override;
 	DirectX::XMFLOAT4 iGetColor(int i) override;
+	std::vector<Vertex> iGetLineVertice() override;
+	std::vector<unsigned int> iGetLineIndice() override;
 
 	int iGetObjectCount() override;
 	DirectX::XMFLOAT2 iGetParticlePos(int i) override;
