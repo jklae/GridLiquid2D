@@ -36,6 +36,8 @@ void EulerianSimulation::initialize()
 				_gridVelocity.push_back(XMFLOAT2(0.0f, -0.0f * _gridScale));
 			}
 
+			_gridPressure.push_back(0.0f);
+			_gridDivergence.push_back(0.0f);
 		}
 	}
 
@@ -153,6 +155,37 @@ void EulerianSimulation::_project(double timestep)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
+			_gridDivergence[_INDEX(i, j)] =
+				(_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x) / _gridSize
+				+
+				(_gridVelocity[_INDEX(i + 1, j)].y - _gridVelocity[_INDEX(i - 1, j)].y) / _gridSize;
+			_gridPressure[_INDEX(i, j)] = 0.0f;
+		}
+	}
+
+	for (int iter = 0; iter < 20; iter++)
+	{
+		for (int j = 1; j < _gridCount.y - 1; j++)
+		{
+			for (int i = 1; i < _gridCount.x - 1; i++)
+			{
+				_gridPressure[_INDEX(i, j)] =
+					(
+						_gridDivergence[_INDEX(i, j)] -
+						_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
+						_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)]
+					) / -4.0f;
+					
+			}
+		}
+	}
+
+	for (int j = 1; j < _gridCount.y - 1; j++)
+	{
+		for (int i = 1; i < _gridCount.x - 1; i++)
+		{
+			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize;
+			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize;
 		}
 	}
 }

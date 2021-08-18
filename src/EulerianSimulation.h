@@ -39,8 +39,8 @@ private:
 	std::vector<_STATE> _gridState;
 	std::vector<DirectX::XMFLOAT2> _gridPosition;
 	std::vector<DirectX::XMFLOAT2> _gridVelocity;
-	std::vector<DirectX::XMFLOAT2> _gridPressure;
-	std::vector<DirectX::XMFLOAT2> _gridDivergence;
+	std::vector<float> _gridPressure;
+	std::vector<float> _gridDivergence;
 	DirectX::XMINT2 _gridCount = { 0, 0 };
 	float _gridScale = 0.0f;
 	float _gridSize = 1.0f;
