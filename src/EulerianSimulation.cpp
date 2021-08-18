@@ -1,6 +1,5 @@
 #include "EulerianSimulation.h"
 
-
 using namespace DirectX;
 using namespace std;
 
@@ -43,7 +42,7 @@ void EulerianSimulation::initialize()
 			_gridDivergence.push_back(0.0f);
 		}
 	}
-
+	
 	/*_gridState[5, 5] = STATE::FLUID;
 	_gridState[5, 6] = STATE::FLUID;
 	_gridState[6, 5] = STATE::FLUID;
@@ -76,7 +75,7 @@ void EulerianSimulation::_update(double timestep)
 {
 	//_force(timestep);
 	_printVelocity();
-	_advect(timestep);
+	//_advect(timestep);
 	//_diffuse(timestep);
 	//_project(timestep);
 	
@@ -393,12 +392,34 @@ void EulerianSimulation::iUpdate(double timestep)
 
 vector<Vertex> EulerianSimulation::iGetVertice()
 {
-	return _vertices;
+	std::vector<Vertex> vertices;
+	int N = _gridCount - 2;
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			XMFLOAT2 x = {static_cast<float>(i), static_cast<float>(j) };
+			XMFLOAT2 v = {x.x + _gridVelocity[_INDEX(i, j)].x , x.y + _gridVelocity[_INDEX(i, j)].y };
+			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -0.0f) }));
+			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -0.0f) }));
+			printf("hihihi %f -- %f  llllll    ", _gridVelocity[_INDEX(i, j)].x, _gridVelocity[_INDEX(i, j)].y);
+		}
+		printf("\n");
+	}
+	
+	return vertices;
 }
 
 vector<unsigned int> EulerianSimulation::iGetIndice()
 {
-	return _indices;
+	std::vector<unsigned int> indices;
+
+	int N = _gridCount - 2;
+	for (int i = 0; i <= N * N * 2; i++)
+	{
+		indices.push_back(i);
+	}
+	return indices;
 }
 
 XMFLOAT4 EulerianSimulation::iGetColor(int i)
