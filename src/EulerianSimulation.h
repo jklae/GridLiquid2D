@@ -30,6 +30,7 @@ public:
 private:
 	inline int _INDEX(int i, int j) { return (i + _gridCount*j); };
 
+	void _printVelocity();
 
 	// Grid
 	std::vector<STATE> _gridState;

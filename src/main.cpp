@@ -22,7 +22,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     DX12App* dxapp = new DX12App();
     dxapp->setProjectionType(PROJ::ORTHOGRAPHIC);
-    dxapp->setSimulation(eulersim, 0.05);
+    dxapp->setSimulation(eulersim, 0.1);
 
     winApp.initDirectX(dxapp);
 

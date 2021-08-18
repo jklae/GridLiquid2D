@@ -28,21 +28,26 @@ void EulerianSimulation::initialize()
 				|| j == N + 1)
 			{
 				_gridState.push_back(STATE::BOUNDARY);
-			}
+			}/*
 			else if (i == (N+1) / 2 && j == (N + 1) / 2)
 			{
 				_gridState.push_back(STATE::FLUID);
-			}
+			}*/
 			else
 			{
 				_gridState.push_back(STATE::AIR);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(-0.1f, 0.5f));
+			_gridVelocity.push_back(XMFLOAT2(0.1f, -0.5f));
 			_gridPressure.push_back(0.0f);
 			_gridDivergence.push_back(0.0f);
 		}
 	}
+
+	/*_gridState[5, 5] = STATE::FLUID;
+	_gridState[5, 6] = STATE::FLUID;
+	_gridState[6, 5] = STATE::FLUID;
+	_gridState[6, 6] = STATE::FLUID;*/
 
 }
 
@@ -52,22 +57,26 @@ void EulerianSimulation::setGridDomain(int xCount, int yCount)
 	_gridCount = xCount + 2;
 }
 
-
-void EulerianSimulation::_update(double timestep)
+void EulerianSimulation::_printVelocity()
 {
-	//_force(timestep);
 	static int step = 0;
-	printf("=============step %d =============\n", step);
-	for (int i = 0; i < _gridCount; i++)
+	printf("============= step %d =============\n", step);
+	for (int i = 1; i < _gridCount - 1; i++)
 	{
-		for (int j = 0; j < _gridCount; j++)
+		for (int j = 1; j < _gridCount - 1; j++)
 		{
-			printf("(%f, %f) ", _gridVelocity[_INDEX(i, j)].x, _gridVelocity[_INDEX(i, j)].y);
+			printf("(%9f, %9f) ", _gridVelocity[_INDEX(i, j)].x, _gridVelocity[_INDEX(i, j)].y);
 		}
 		cout << endl;
 	}
 	step++;
-	//_advect(timestep);
+}
+
+void EulerianSimulation::_update(double timestep)
+{
+	//_force(timestep);
+	_printVelocity();
+	_advect(timestep);
 	//_diffuse(timestep);
 	//_project(timestep);
 	
@@ -85,7 +94,7 @@ void EulerianSimulation::_force(double timestep)
 		{
 													//0.0000005f
 			//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
-			_gridVelocity[_INDEX(i, j)].y -= 9.8f * 1.0f * tstep;
+			_gridVelocity[_INDEX(i, j)].y -= 9.8f * 0.0000005f * tstep;
 		}
 	}
 	_setBoundary(_gridVelocity);
@@ -94,13 +103,13 @@ void EulerianSimulation::_force(double timestep)
 void EulerianSimulation::_advect(double timestep)
 {
 	float tstep = static_cast<float>(timestep);
+	int N = _gridCount - 2;
 
-	float yMax = _gridPosition[_INDEX(0, _gridCount - 1)].y - 0.5f;
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
-	float xMax = _gridPosition[_INDEX(_gridCount - 1, 0)].x - 0.5f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
 	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
-	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
