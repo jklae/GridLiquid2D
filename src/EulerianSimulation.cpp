@@ -19,9 +19,9 @@ void EulerianSimulation::initialize()
 
 	// Set _fluid
 	int N = _gridCount - 2;
-	for (int j = 0; j < _gridCount; j++)
+	for (int i = 0; i < _gridCount; i++)
 	{
-		for (int i = 0; i < _gridCount; i++)
+		for (int j = 0; j < _gridCount; j++)
 		{
 			if (i == 0 || j == 0
 				|| i == N + 1
@@ -58,12 +58,6 @@ void EulerianSimulation::setGridDomain(int xCount, int yCount)
 
 void EulerianSimulation::_update(double timestep)
 {
-	//_particle[0].x += 0.00005f;
-	//_particle[0].y += 0.00002f;
-
-	//_particle[1].x -= 0.00003f;
-	//_particle[1].y -= 0.00004f;
-
 	_force(timestep);
 	//_advect(timestep);
 	//_diffuse(timestep);
@@ -98,9 +92,9 @@ void EulerianSimulation::_advect(double timestep)
 	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
 	int N = _gridCount - 2;
-	for (int j = 1; j <= N; j++)
+	for (int i = 1; i <= N; i++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
 		{
 			XMFLOAT2 backPos =
 				XMFLOAT2(
@@ -128,9 +122,9 @@ void EulerianSimulation::_diffuse(double timestep)
 void EulerianSimulation::_project(double timestep)
 {
 	int N = _gridCount - 2;
-	for (int j = 1; j <= N; j++)
+	for (int i = 1; i <= N; i++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
 		{
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x)  +
@@ -149,9 +143,9 @@ void EulerianSimulation::_project(double timestep)
 
 	for (int iter = 0; iter < 20; iter++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int i = 1; i <= N; i++)
 		{
-			for (int i = 1; i <= N; i++)
+			for (int j = 1; j <= N; j++)
 			{
 				_gridPressure[_INDEX(i, j)] =
 					(
@@ -165,9 +159,9 @@ void EulerianSimulation::_project(double timestep)
 		_setBoundary(_gridPressure);
 	}
 
-	for (int j = 1; j <= N; j++)
+	for (int i = 1; i <= N; i++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
 		{
 			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
@@ -246,9 +240,9 @@ void EulerianSimulation::_paintGrid()
 {
 	int N = _gridCount - 2;
 	// Reset _grid
-	for (int j = 1; j <= N; j++)
+	for (int i = 1; i <= N; i++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
 		{
 			_gridState[_INDEX(i, j)] = STATE::AIR;
 		}
@@ -425,14 +419,14 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 {
 
 	// ###### Create Object ######
-	for (int j = 0; j < _gridCount; j++)
+	for (int i = 0; i < _gridCount; i++)
 	{
-		for (int i = 0; i < _gridCount; i++)
+		for (int j = 0; j < _gridCount; j++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				(float)i ,
-				(float)j );
+				(float)j ,    // "j"
+				(float)i );   // "i"
 
 			_gridPosition.push_back(pos);
 
@@ -448,14 +442,14 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 	// ###### ###### ###### ######
 
 	// ###### Create particle ######
-	for (int j = 0; j < _gridCount; j++)
+	for (int i = 0; i < _gridCount; i++)
 	{
-		for (int i = 0; i < _gridCount; i++)
+		for (int j = 0; j < _gridCount; j++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				(float)i ,
-				(float)j );
+				(float)j ,    // "j"
+				(float)i );   // "i"
 
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{

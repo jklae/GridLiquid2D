@@ -28,7 +28,7 @@ public:
 #pragma endregion
 
 private:
-	inline int _INDEX(int j, int i) { return (_gridCount*i + j); };
+	inline int _INDEX(int i, int j) { return (i + _gridCount*j); };
 
 
 	// Grid
