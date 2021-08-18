@@ -27,12 +27,12 @@ void EulerianSimulation::initialize()
 				|| i == _gridCount.x - 1
 				|| j == _gridCount.y - 1)
 			{
-				_gridState.push_back(_STATE::BOUNDARY);
+				_gridState.push_back(STATE::BOUNDARY);
 				_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
 			}
 			else
 			{
-				_gridState.push_back(_STATE::AIR);
+				_gridState.push_back(STATE::AIR);
 				_gridVelocity.push_back(XMFLOAT2(0.0f, -0.0f * _gridScale));
 			}
 
@@ -41,10 +41,10 @@ void EulerianSimulation::initialize()
 		}
 	}
 
-	_gridState[_INDEX(10, 10)] = _STATE::FLUID;
-	_gridState[_INDEX(10, 11)] = _STATE::FLUID;
-	_gridState[_INDEX(11, 10)] = _STATE::FLUID;
-	_gridState[_INDEX(11, 11)] = _STATE::FLUID;
+	_gridState[_INDEX(10, 10)] = STATE::FLUID;
+	_gridState[_INDEX(10, 11)] = STATE::FLUID;
+	_gridState[_INDEX(11, 10)] = STATE::FLUID;
+	_gridState[_INDEX(11, 11)] = STATE::FLUID;
 
 
 	// Compute grid stride and offset
@@ -93,9 +93,9 @@ void EulerianSimulation::_update(double timestep)
 	//_particle[1].y -= 0.00004f;
 
 	_force(timestep);
-	_advect(timestep);
+	//_advect(timestep);
 	//_diffuse(timestep);
-	_project(timestep);
+	//_project(timestep);
 	
 	_updateParticlePosition();
 	_paintGrid();
@@ -276,29 +276,29 @@ void EulerianSimulation::_paintGrid()
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
-			_gridState[_INDEX(i, j)] = _STATE::AIR;
+			_gridState[_INDEX(i, j)] = STATE::AIR;
 		}
 	}
 
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		int minXIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _AXIS::X, _particlePosition[i]);
-		int minYIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _AXIS::Y, _particlePosition[i]);
-		int maxXIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _AXIS::X, _particlePosition[i]);
-		int maxYIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _AXIS::Y, _particlePosition[i]);
+		int minXIndex = _computeFaceMinMaxIndex(VALUE::MIN, AXIS::X, _particlePosition[i]);
+		int minYIndex = _computeFaceMinMaxIndex(VALUE::MIN, AXIS::Y, _particlePosition[i]);
+		int maxXIndex = _computeFaceMinMaxIndex(VALUE::MAX, AXIS::X, _particlePosition[i]);
+		int maxYIndex = _computeFaceMinMaxIndex(VALUE::MAX, AXIS::Y, _particlePosition[i]);
 
 		// Painting
-		_STATE& minMin = _gridState[_INDEX(minXIndex, minYIndex)];
-		_STATE& minMax = _gridState[_INDEX(minXIndex, maxYIndex)];
-		_STATE& maxMin = _gridState[_INDEX(maxXIndex, minYIndex)];
-		_STATE& maxMax = _gridState[_INDEX(maxXIndex, maxYIndex)];
+		STATE& minMin = _gridState[_INDEX(minXIndex, minYIndex)];
+		STATE& minMax = _gridState[_INDEX(minXIndex, maxYIndex)];
+		STATE& maxMin = _gridState[_INDEX(maxXIndex, minYIndex)];
+		STATE& maxMax = _gridState[_INDEX(maxXIndex, maxYIndex)];
 
 		// Boundary Checking
-		if (minMin != _STATE::BOUNDARY) minMin = _STATE::FLUID;
-		if (minMax != _STATE::BOUNDARY) minMax = _STATE::FLUID;
-		if (maxMin != _STATE::BOUNDARY) maxMin = _STATE::FLUID;
-		if (maxMax != _STATE::BOUNDARY) maxMax = _STATE::FLUID;
+		if (minMin != STATE::BOUNDARY) minMin = STATE::FLUID;
+		if (minMax != STATE::BOUNDARY) minMax = STATE::FLUID;
+		if (maxMin != STATE::BOUNDARY) maxMin = STATE::FLUID;
+		if (maxMax != STATE::BOUNDARY) maxMax = STATE::FLUID;
 	}
 }
 
@@ -322,19 +322,19 @@ void EulerianSimulation::_updateParticlePosition()
 // For example, if the scale is 1.0f, the result is (index * 1.0f).
 // But if the scale is 0.5f, the result is (index * 0.5f).
 // The index value should of course be immutable.
-int EulerianSimulation::_computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 particlePos)
+int EulerianSimulation::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
 {
-	float offset = (axis == _AXIS::X) ? _particleFaceOffset.x : _particleFaceOffset.y;
-	float pos = (axis == _AXIS::X) ? particlePos.x : particlePos.y;
+	float offset = (axis == AXIS::X) ? _particleFaceOffset.x : _particleFaceOffset.y;
+	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
 	float value;
 
 	// Compute position by normalizing from (-N, N) to (0, N + 1)
 	switch (vState)
 	{
-	case _VALUE::MIN:
+	case VALUE::MIN:
 		value = offset + (pos / _gridScale) - _particleStride;
 		break;
-	case _VALUE::MAX:
+	case VALUE::MAX:
 		value = offset + (pos / _gridScale) + _particleStride;
 		break;
 	default:
@@ -354,19 +354,19 @@ int EulerianSimulation::_computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, XMFLO
 // ------------------------------------------------------------------
 // _PaintGrid() uses the face as the transition point.
 // _updateParticlePosition() uses the center as the transition point.
-int EulerianSimulation::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 particlePos)
+int EulerianSimulation::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
 {
-	float offset = (axis == _AXIS::X) ? _particleFaceOffset.x : _particleFaceOffset.y;
-	float pos = (axis == _AXIS::X) ? particlePos.x : particlePos.y;
+	float offset = (axis == AXIS::X) ? _particleFaceOffset.x : _particleFaceOffset.y;
+	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
 	// 2.
 	float value = offset + (pos / _gridScale);
 
 	switch (vState)
 	{
-	case _VALUE::MIN:
+	case VALUE::MIN:
 		return static_cast<int>(floor(value));
 		break;
-	case _VALUE::MAX:
+	case VALUE::MAX:
 		// 3.
 		return static_cast<int>(ceil(value));
 		break;
@@ -379,10 +379,10 @@ int EulerianSimulation::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMF
 XMFLOAT2 EulerianSimulation::_velocityInterpolation(XMFLOAT2 pos)
 {
 	// 2. 3.
-	int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
-	int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::Y, pos);
-	int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::X, pos);
-	int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::Y, pos);
+	int minXIndex = _computeCenterMinMaxIndex(VALUE::MIN, AXIS::X, pos);
+	int minYIndex = _computeCenterMinMaxIndex(VALUE::MIN, AXIS::Y, pos);
+	int maxXIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::X, pos);
+	int maxYIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::Y, pos);
 
 	float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x) / _gridStride;
 	float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y) / _gridStride;
@@ -422,15 +422,15 @@ XMFLOAT4 EulerianSimulation::iGetColor(int i)
 {
 	switch (_gridState[i])
 	{
-	case _STATE::FLUID:
+	case STATE::FLUID:
 		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;
 
-	case _STATE::BOUNDARY:
+	case STATE::BOUNDARY:
 		return XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 		break;
 
-	case _STATE::AIR:
+	case STATE::AIR:
 		return XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
 		break;
 
@@ -486,7 +486,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 				-_gridOffset.x + (float)i * _gridStride,
 				-_gridOffset.y + (float)j * _gridStride);
 
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
 				_particleVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
 				_particlePosition.push_back(pos);

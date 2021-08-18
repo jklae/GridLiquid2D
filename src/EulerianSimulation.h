@@ -31,12 +31,9 @@ public:
 private:
 	inline int _INDEX(int j, int i) { return (_gridCount.x*i + j); };
 
-	enum class _STATE {FLUID, BOUNDARY, AIR};
-	enum class _VALUE { MIN, MAX };
-	enum class _AXIS { X, Y };
 
 	// Grid
-	std::vector<_STATE> _gridState;
+	std::vector<STATE> _gridState;
 	std::vector<DirectX::XMFLOAT2> _gridPosition;
 	std::vector<DirectX::XMFLOAT2> _gridVelocity;
 	std::vector<float> _gridPressure;
@@ -84,8 +81,8 @@ private:
 
 	// ---
 
-	int _computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
-	int _computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
+	int _computeFaceMinMaxIndex(VALUE vState, AXIS axis, DirectX::XMFLOAT2 particlePos);
+	int _computeCenterMinMaxIndex(VALUE vState, AXIS axis, DirectX::XMFLOAT2 particlePos);
 	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos);
 	float _interpolation(float value1, float value2, float ratio);
 };
