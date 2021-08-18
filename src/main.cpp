@@ -17,7 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     winApp.initialize(hInstance);
 
     EulerianSimulation* eulersim = new EulerianSimulation();
-    eulersim->setGridCountXY(20, 20);
+    eulersim->setGridCountXY(2, 2);
     eulersim->setGridScale(1.0f);
     eulersim->initialize();
 

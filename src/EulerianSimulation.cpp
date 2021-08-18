@@ -56,17 +56,17 @@ void EulerianSimulation::initialize()
 		);
 
 	// Compute particle stride and offset
-	_particleStride = (_gridSize / 2.0f) * _particleScale;
+	_particleStride = (1.0f / 2.0f) * _particleScale;
 	_particleFaceOffset =
 		XMFLOAT2(
-			(_gridSize / 2.0f) * static_cast<float>(_gridCount.x),
-			(_gridSize / 2.0f) * static_cast<float>(_gridCount.y)
+			(1.0f / 2.0f) * static_cast<float>(_gridCount.x),
+			(1.0f / 2.0f) * static_cast<float>(_gridCount.y)
 		);
 	_particleCenterOffset =
 		XMFLOAT2(
 																// 1.
-			(_gridSize / 2.0f) * static_cast<float>(_gridCount.x - 1),
-			(_gridSize / 2.0f) * static_cast<float>(_gridCount.y - 1)
+			(1.0f / 2.0f) * static_cast<float>(_gridCount.x - 1),
+			(1.0f / 2.0f) * static_cast<float>(_gridCount.y - 1)
 		);
 }
 
@@ -118,10 +118,10 @@ void EulerianSimulation::_advect(double timestep)
 {
 	float tstep = static_cast<float>(timestep);
 
-	float yMax = _gridPosition[_INDEX(0, _gridCount.y - 1)].y - (_gridSize * _gridScale) / 2.0f;
-	float yMin = _gridPosition[_INDEX(0, 0)].y + (_gridSize * _gridScale) / 2.0f;
-	float xMax = _gridPosition[_INDEX(_gridCount.x - 1, 0)].x - (_gridSize * _gridScale) / 2.0f;
-	float xMin = _gridPosition[_INDEX(0, 0)].x + (_gridSize * _gridScale) / 2.0f;
+	float yMax = _gridPosition[_INDEX(0, _gridCount.y - 1)].y - (_gridScale) / 2.0f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + (_gridScale) / 2.0f;
+	float xMax = _gridPosition[_INDEX(_gridCount.x - 1, 0)].x - (_gridScale) / 2.0f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + (_gridScale) / 2.0f;
 
 	for (int j = 1; j < _gridCount.y - 1; j++)
 	{
@@ -157,8 +157,8 @@ void EulerianSimulation::_project(double timestep)
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
 			_gridDivergence[_INDEX(i, j)] =
-				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x) / _gridSize +
-				0.5f * (_gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y) / _gridSize;
+				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x)  +
+				0.5f * (_gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y) ;
 			_gridPressure[_INDEX(i, j)] = 0.0f;
 		}
 	}
@@ -193,8 +193,8 @@ void EulerianSimulation::_project(double timestep)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
-			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize * 0.5f;
-			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) / _gridSize * 0.5f;
+			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
+			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
 	}
 	_setBoundary(_gridVelocity);
