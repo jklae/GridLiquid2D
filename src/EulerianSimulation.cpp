@@ -162,6 +162,8 @@ void EulerianSimulation::_project(double timestep)
 			_gridPressure[_INDEX(i, j)] = 0.0f;
 		}
 	}
+	_setBoundary(_gridDivergence);
+	_setBoundary(_gridPressure);
 
 	for (int iter = 0; iter < 20; iter++)
 	{
@@ -188,6 +190,7 @@ void EulerianSimulation::_project(double timestep)
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize;
 		}
 	}
+	_setBoundary(_gridVelocity);
 }
 
 void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
@@ -208,8 +211,8 @@ void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
 	// (0, y) (xMax+1, y)
 	for (int j = 1; j <= yN; j++)
 	{
-		vec[_INDEX(0, j)].x = -_gridVelocity[_INDEX(1, j)].x;
-		vec[_INDEX(0, j)].y = +_gridVelocity[_INDEX(1, j)].y;
+		vec[_INDEX(0, j)].x = -vec[_INDEX(1, j)].x;
+		vec[_INDEX(0, j)].y = +vec[_INDEX(1, j)].y;
 
 		vec[_INDEX(xN + 1, j)].x = -vec[_INDEX(j, xN)].x;
 		vec[_INDEX(xN + 1, j)].y = +vec[_INDEX(j, xN)].y;
@@ -228,45 +231,35 @@ void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
 	vec[_INDEX(xN + 1, yN + 1)].x = vec[_INDEX(xN + 1, yN)].x;
 	vec[_INDEX(xN + 1, yN + 1)].y = vec[_INDEX(xN, yN + 1)].y;
 }
-//
-//void EulerianSimulation::_setPressureBoundary()
-//{
-//	int xN = _gridCount.x - 2;
-//	int yN = _gridCount.y - 2;
-//
-//	// (x, 0) (x, yMax+1)
-//	for (int i = 1; i <= xN; i++)
-//	{
-//		_gridVelocity[_INDEX(i, 0)].x = +_gridVelocity[_INDEX(i, 1)].x;
-//		_gridVelocity[_INDEX(i, 0)].y = -_gridVelocity[_INDEX(i, 1)].y;
-//
-//		_gridVelocity[_INDEX(i, yN + 1)].x = +_gridVelocity[_INDEX(i, yN)].x;
-//		_gridVelocity[_INDEX(i, yN + 1)].y = -_gridVelocity[_INDEX(i, yN)].y;
-//	}
-//
-//	// (0, y) (xMax+1, y)
-//	for (int j = 1; j <= yN; j++)
-//	{
-//		_gridVelocity[_INDEX(0, j)].x = -_gridVelocity[_INDEX(1, j)].x;
-//		_gridVelocity[_INDEX(0, j)].y = +_gridVelocity[_INDEX(1, j)].y;
-//
-//		_gridVelocity[_INDEX(xN + 1, j)].x = -_gridVelocity[_INDEX(j, xN)].x;
-//		_gridVelocity[_INDEX(xN + 1, j)].y = +_gridVelocity[_INDEX(j, xN)].y;
-//	}
-//
-//	// (0, 0)
-//	_gridVelocity[_INDEX(0, 0)].x = _gridVelocity[_INDEX(0, 1)].x;
-//	_gridVelocity[_INDEX(0, 0)].y = _gridVelocity[_INDEX(1, 0)].y;
-//	// (0, yCount)
-//	_gridVelocity[_INDEX(0, yN + 1)].x = _gridVelocity[_INDEX(0, yN)].x;
-//	_gridVelocity[_INDEX(0, yN + 1)].y = _gridVelocity[_INDEX(1, yN + 1)].y;
-//	// (xCount, 0)
-//	_gridVelocity[_INDEX(xN + 1, 0)].x = _gridVelocity[_INDEX(xN + 1, 1)].x;
-//	_gridVelocity[_INDEX(xN + 1, 0)].y = _gridVelocity[_INDEX(xN, 0)].y;
-//	// (xCount, yCount)
-//	_gridVelocity[_INDEX(xN + 1, yN + 1)].x = _gridVelocity[_INDEX(xN + 1, yN)].x;
-//	_gridVelocity[_INDEX(xN + 1, yN + 1)].y = _gridVelocity[_INDEX(xN, yN + 1)].y;
-//}
+
+void EulerianSimulation::_setBoundary(std::vector<float>& scalar)
+{
+	int xN = _gridCount.x - 2;
+	int yN = _gridCount.y - 2;
+
+	// (x, 0) (x, yMax+1)
+	for (int i = 1; i <= xN; i++)
+	{
+		scalar[_INDEX(i, 0)] = scalar[_INDEX(i, 1)];
+		scalar[_INDEX(i, yN + 1)] = scalar[_INDEX(i, yN)];
+	}
+
+	// (0, y) (xMax+1, y)
+	for (int j = 1; j <= yN; j++)
+	{
+		scalar[_INDEX(0, j)] = scalar[_INDEX(1, j)];
+		scalar[_INDEX(xN + 1, j)] = scalar[_INDEX(j, xN)];
+	}
+
+	// (0, 0)
+	scalar[_INDEX(0, 0)] = (scalar[_INDEX(0, 1)] + scalar[_INDEX(1, 0)]) / 2.0f;
+	// (0, yCount)
+	scalar[_INDEX(0, yN + 1)] = (scalar[_INDEX(0, yN)] + scalar[_INDEX(1, yN + 1)]) / 2.0f;
+	// (xCount, 0)
+	scalar[_INDEX(xN + 1, 0)] = (scalar[_INDEX(xN + 1, 1)] + scalar[_INDEX(xN, 0)]) / 2.0f;
+	// (xCount, yCount)
+	scalar[_INDEX(xN + 1, yN + 1)] = (scalar[_INDEX(xN + 1, yN)] + scalar[_INDEX(xN, yN + 1)]) / 2.0f;
+}
 
 void EulerianSimulation::_paintGrid()
 {
