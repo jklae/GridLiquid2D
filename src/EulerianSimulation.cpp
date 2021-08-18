@@ -46,6 +46,7 @@ void EulerianSimulation::initialize()
 	_gridState[_INDEX(11, 10)] = _STATE::FLUID;
 	_gridState[_INDEX(11, 11)] = _STATE::FLUID;
 
+
 	// Compute grid stride and offset
 	_gridStride = (_gridSize * _gridScale);
 	_gridOffset = 
@@ -93,7 +94,7 @@ void EulerianSimulation::_update(double timestep)
 	_force(timestep);
 	_advect(timestep);
 	//_diffuse(timestep);
-	//_project(timestep);
+	_project(timestep);
 	
 	_updateParticlePosition();
 	_paintGrid();
@@ -162,6 +163,12 @@ void EulerianSimulation::_project(double timestep)
 			_gridPressure[_INDEX(i, j)] = 0.0f;
 		}
 	}
+
+	/*_gridPressure[_INDEX(10, 10)] = 2.0f;
+	_gridPressure[_INDEX(10, 11)] = 2.0f;
+	_gridPressure[_INDEX(11, 10)] = 2.0f;
+	_gridPressure[_INDEX(11, 11)] = 2.0f;*/
+
 	_setBoundary(_gridDivergence);
 	_setBoundary(_gridPressure);
 
@@ -186,8 +193,8 @@ void EulerianSimulation::_project(double timestep)
 	{
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
-			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize;
-			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize;
+			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize * 0.01f;
+			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) / _gridSize * 0.01f;
 		}
 	}
 	_setBoundary(_gridVelocity);
