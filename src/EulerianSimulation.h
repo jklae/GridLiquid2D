@@ -11,7 +11,6 @@ public:
 	void initialize();
 
 	void setGridCountXY(int xCount, int yCount);
-	void setGridScale(float gridScale);
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
@@ -39,7 +38,6 @@ private:
 	std::vector<float> _gridPressure;
 	std::vector<float> _gridDivergence;
 	DirectX::XMINT2 _gridCount = { 0, 0 };
-	float _gridScale = 0.0f;
 	DirectX::XMFLOAT2 _gridOffset;
 
 	// Particle

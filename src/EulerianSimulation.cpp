@@ -16,7 +16,6 @@ void EulerianSimulation::initialize()
 {
 	// 0 is not allowed.
 	assert((_gridCount.x != 0) && (_gridCount.y != 0));
-	assert(_gridScale != 0.0f);
 
 	// Set _fluid
 	for (int j = 0; j < _gridCount.y; j++)
@@ -33,7 +32,7 @@ void EulerianSimulation::initialize()
 			else
 			{
 				_gridState.push_back(STATE::AIR);
-				_gridVelocity.push_back(XMFLOAT2(0.0f, -0.0f * _gridScale));
+				_gridVelocity.push_back(XMFLOAT2(0.0f, -0.0f));
 			}
 
 			_gridPressure.push_back(0.0f);
@@ -77,11 +76,6 @@ void EulerianSimulation::setGridCountXY(int xCount, int yCount)
 	_gridCount.y = yCount + 2;
 }
 
-void EulerianSimulation::setGridScale(float gridScale)
-{
-	_gridScale = gridScale;
-}
-
 
 void EulerianSimulation::_update(double timestep)
 {
@@ -108,7 +102,7 @@ void EulerianSimulation::_force(double timestep)
 		for (int i = 1; i < _gridCount.x - 1; i++)
 		{
 			//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 0.000005f * tstep * _gridScale;
-			_gridVelocity[_INDEX(i, j)].y -= 9.8f * 0.000005f * tstep * _gridScale;
+			_gridVelocity[_INDEX(i, j)].y -= 9.8f * 0.000005f * tstep;
 		}
 	}
 	_setBoundary(_gridVelocity);
@@ -118,10 +112,10 @@ void EulerianSimulation::_advect(double timestep)
 {
 	float tstep = static_cast<float>(timestep);
 
-	float yMax = _gridPosition[_INDEX(0, _gridCount.y - 1)].y - (_gridScale) / 2.0f;
-	float yMin = _gridPosition[_INDEX(0, 0)].y + (_gridScale) / 2.0f;
-	float xMax = _gridPosition[_INDEX(_gridCount.x - 1, 0)].x - (_gridScale) / 2.0f;
-	float xMin = _gridPosition[_INDEX(0, 0)].x + (_gridScale) / 2.0f;
+	float yMax = _gridPosition[_INDEX(0, _gridCount.y - 1)].y - 0.5f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
+	float xMax = _gridPosition[_INDEX(_gridCount.x - 1, 0)].x - 0.5f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
 	for (int j = 1; j < _gridCount.y - 1; j++)
 	{
@@ -331,10 +325,10 @@ int EulerianSimulation::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT
 	switch (vState)
 	{
 	case VALUE::MIN:
-		value = offset + (pos / _gridScale) - _particleStride;
+		value = offset + pos - _particleStride;
 		break;
 	case VALUE::MAX:
-		value = offset + (pos / _gridScale) + _particleStride;
+		value = offset + pos + _particleStride;
 		break;
 	default:
 		value = 0.0f;
@@ -358,7 +352,7 @@ int EulerianSimulation::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLO
 	float offset = (axis == AXIS::X) ? _particleFaceOffset.x : _particleFaceOffset.y;
 	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
 	// 2.
-	float value = offset + (pos / _gridScale);
+	float value = offset + pos;
 
 	switch (vState)
 	{
@@ -466,7 +460,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 
 			struct ConstantBuffer objectCB;
 			// Multiply by a specific value to make a stripe
-			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, _gridScale * 0.95f);
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.95f);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -491,7 +485,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 				_particlePosition.push_back(pos);
 
 				struct ConstantBuffer particleCB;
-				particleCB.world = transformMatrix(pos.x, pos.y, -1.0f, _gridScale * _particleScale);
+				particleCB.world = transformMatrix(pos.x, pos.y, -1.0f, _particleScale);
 				particleCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 				particleCB.color = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
 
