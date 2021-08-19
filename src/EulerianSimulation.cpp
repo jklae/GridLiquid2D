@@ -41,7 +41,7 @@ void EulerianSimulation::initialize()
 				_gridState.push_back(STATE::AIR);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(0.0f, -3.0f));
+			_gridVelocity.push_back(XMFLOAT2(0.5f, -0.2f));
 			_gridPressure.push_back(0.0f);
 			_gridDivergence.push_back(0.0f);
 		}
@@ -91,9 +91,9 @@ void EulerianSimulation::_force(double timestep)
 {
 	int N = _gridCount - 2;
 	float tstep = static_cast<float>(timestep);
-	for (int i = 1; i <= N; i++)
+	for (int i = 0; i < _gridCount; i++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int j = 0; j < _gridCount; j++)
 		{
 													//0.0000005f
 			//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
@@ -465,7 +465,7 @@ vector<Vertex> EulerianSimulation::iGetLineVertice()
 		for (int j = 1; j <= N; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x , x.y + _gridVelocity[_INDEX(i, j)].y };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 500.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 500.0f };
 			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -0.0f) }));
 			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -0.0f) }));
 		}
