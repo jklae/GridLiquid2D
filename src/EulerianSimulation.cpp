@@ -28,25 +28,25 @@ void EulerianSimulation::initialize()
 			{
 				_gridState.push_back(STATE::BOUNDARY);
 			}
-			else if ( ((N + 1) / 2 - 4 < i) 
+			/*else if ( ((N + 1) / 2 - 4 < i) 
 				&& (i < (N + 1) / 2 + 4)
 				&& ((N + 1) / 2 - 4 < j) 
 				&& (j < (N + 1) / 2 + 4)
 				)
 			{
 				_gridState.push_back(STATE::FLUID);
-			}
+			}*/
 			else
 			{
 				_gridState.push_back(STATE::AIR);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(0.001f, 0.0f));
+			_gridVelocity.push_back(XMFLOAT2(0.00f, 0.0f));
 			_gridPressure.push_back(0.0f);
 			_gridDivergence.push_back(0.0f);
 		}
 	}
-	//_gridState[_INDEX(5, 5)] = STATE::FLUID;
+	_gridState[_INDEX(5, 5)] = STATE::FLUID;
 	//_gridState[_INDEX(5, 6)] = STATE::FLUID;
 	//_gridState[_INDEX(6, 5)] = STATE::FLUID;
 	//_gridState[_INDEX(6, 6)] = STATE::FLUID;
@@ -540,7 +540,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 
 			struct ConstantBuffer objectCB;
 			// Multiply by a specific value to make a stripe
-			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.8f);
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.98f);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -561,15 +561,23 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
-				_particleVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
-				_particlePosition.push_back(pos);
+				for (int k = 0; k < 4; k++)
+				{
+					for (int m = 0; m < 4; m++)
+					{
+						_particleVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
+						_particlePosition.push_back({ -0.3f + pos.x + k * _particleScale * 1.1f, -0.3f + pos.y + m * _particleScale * 1.1f });
 
-				struct ConstantBuffer particleCB;
-				particleCB.world = transformMatrix(pos.x, pos.y, -1.0f, _particleScale);
-				particleCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
-				particleCB.color = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
+						struct ConstantBuffer particleCB;
+						particleCB.world = transformMatrix(pos.x, pos.y, -1.0f, _particleScale);
+						particleCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
+						particleCB.color = XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f);
 
-				constantBuffer.push_back(particleCB);
+						constantBuffer.push_back(particleCB);
+					}
+					
+				}
+				
 			}
 		}
 	}
