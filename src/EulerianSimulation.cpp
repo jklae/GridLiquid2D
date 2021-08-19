@@ -41,7 +41,7 @@ void EulerianSimulation::initialize()
 				_gridState.push_back(STATE::AIR);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(0.5f, -0.2f));
+			_gridVelocity.push_back(XMFLOAT2(0.001f, 0.0f));
 			_gridPressure.push_back(0.0f);
 			_gridDivergence.push_back(0.0f);
 		}
@@ -340,8 +340,8 @@ void EulerianSimulation::_updateParticlePosition()
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 
-		_particlePosition[i].x += _particleVelocity[i].x;
-		_particlePosition[i].y += _particleVelocity[i].y;
+		_particlePosition[i].x += _particleVelocity[i].x * 10.0f;
+		_particlePosition[i].y += _particleVelocity[i].y * 10.0f;
 	}
 }
 
@@ -465,7 +465,7 @@ vector<Vertex> EulerianSimulation::iGetLineVertice()
 		for (int j = 1; j <= N; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 500.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 500.0f };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 300.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 300.0f };
 			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -0.0f) }));
 			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -0.0f) }));
 		}
@@ -484,6 +484,11 @@ vector<unsigned int> EulerianSimulation::iGetLineIndice()
 		indices.push_back(i);
 	}
 	return indices;
+}
+
+std::vector<DirectX::XMFLOAT2>& EulerianSimulation::iGetVel()
+{
+	return _gridVelocity;
 }
 
 XMFLOAT4 EulerianSimulation::iGetColor(int i)
@@ -535,7 +540,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 
 			struct ConstantBuffer objectCB;
 			// Multiply by a specific value to make a stripe
-			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.95f);
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.8f);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
