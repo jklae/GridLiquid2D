@@ -27,26 +27,29 @@ void EulerianSimulation::initialize()
 				|| j == N + 1)
 			{
 				_gridState.push_back(STATE::BOUNDARY);
+				_gridPressure.push_back(0.0f);
 			}
-			/*else if ( ((N + 1) / 2 - 4 < i) 
-				&& (i < (N + 1) / 2 + 4)
-				&& ((N + 1) / 2 - 4 < j) 
-				&& (j < (N + 1) / 2 + 4)
+			else if ( ((N + 1) / 2 - 10 < i) 
+				&& (i < (N + 1) / 2 + 10)
+				&& ((N + 1) / 2 - 10 < j) 
+				&& (j < (N + 1) / 2 + 10)
 				)
 			{
 				_gridState.push_back(STATE::FLUID);
-			}*/
+				//_gridPressure.push_back(0.0001f);
+			}
 			else
 			{
 				_gridState.push_back(STATE::AIR);
+				//_gridPressure.push_back(0.0f);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(0.00f, 0.0f));
-			_gridPressure.push_back(0.0f);
+			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
 			_gridDivergence.push_back(0.0f);
+			_gridPressure.push_back(0.0f);
 		}
 	}
-	_gridState[_INDEX(5, 5)] = STATE::FLUID;
+	//_gridState[_INDEX(5, 5)] = STATE::FLUID;
 	//_gridState[_INDEX(5, 6)] = STATE::FLUID;
 	//_gridState[_INDEX(6, 5)] = STATE::FLUID;
 	//_gridState[_INDEX(6, 6)] = STATE::FLUID;
@@ -76,14 +79,14 @@ void EulerianSimulation::_printVelocity()
 
 void EulerianSimulation::_update(double timestep)
 {
-	//_force(timestep);
+	_force(timestep);
 
 	_advect(timestep);
 	//_printVelocity();
 	//_diffuse(timestep);
 	_project(timestep);
 	
-	_updateParticlePosition();
+	_updateParticlePosition(timestep);
 	_paintGrid();
 }
 
@@ -91,16 +94,15 @@ void EulerianSimulation::_force(double timestep)
 {
 	int N = _gridCount - 2;
 	float tstep = static_cast<float>(timestep);
-	for (int i = 0; i < _gridCount; i++)
+	for (int i = 1; i <= N; i++)
 	{
-		for (int j = 0; j < _gridCount; j++)
+		for (int j = 1; j <= N; j++)
 		{
 													//0.0000005f
 			//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
-			_gridVelocity[_INDEX(i, j)].y -= 0.0098f * tstep;
+			_gridVelocity[_INDEX(i, j)].y -= 0.01f * tstep;
 		}
 	}
-	_setBoundary(_gridVelocity);
 }
 
 void EulerianSimulation::_advect(double timestep)
@@ -162,7 +164,9 @@ void EulerianSimulation::_project(double timestep)
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (oldVelocity[_INDEX(i + 1, j)].x - oldVelocity[_INDEX(i - 1, j)].x
 					+ oldVelocity[_INDEX(i, j + 1)].y - oldVelocity[_INDEX(i, j - 1)].y) / N ;
-			_gridPressure[_INDEX(i, j)] = 0.0f;
+			//_gridPressure[_INDEX(i, j)] = 0.0f;
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridPressure[_INDEX(i, j)] = 0.009f;
+			else  _gridPressure[_INDEX(i, j)] = 0.0f;
 			//printf("%f  ", _gridDivergence[_INDEX(i, j)]);
 		}
 	}
@@ -333,15 +337,17 @@ void EulerianSimulation::_paintGrid()
 }
 
 
-void EulerianSimulation::_updateParticlePosition()
+void EulerianSimulation::_updateParticlePosition(double timestep)
 {
+	float ftstep = static_cast<float>(timestep);
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 
-		_particlePosition[i].x += _particleVelocity[i].x * 10.0f;
-		_particlePosition[i].y += _particleVelocity[i].y * 10.0f;
+
+		_particlePosition[i].x += _particleVelocity[i].x * 1.0f;
+		_particlePosition[i].y += _particleVelocity[i].y * 1.0f;
 	}
 }
 
@@ -465,7 +471,7 @@ vector<Vertex> EulerianSimulation::iGetLineVertice()
 		for (int j = 1; j <= N; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 300.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 300.0f };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 30.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 30.0f };
 			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -0.0f) }));
 			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -0.0f) }));
 		}
@@ -540,7 +546,7 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 
 			struct ConstantBuffer objectCB;
 			// Multiply by a specific value to make a stripe
-			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.98f);
+			objectCB.world = transformMatrix(pos.x, pos.y, 0.0f, 0.8f);
 			objectCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
