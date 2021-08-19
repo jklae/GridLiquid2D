@@ -27,26 +27,29 @@ void EulerianSimulation::initialize()
 				|| j == N + 1)
 			{
 				_gridState.push_back(STATE::BOUNDARY);
-			}/*
-			else if (i == (N+1) / 2 && j == (N + 1) / 2)
+			}
+			else if ( ((N + 1) / 2 - 4 < i) 
+				&& (i < (N + 1) / 2 + 4)
+				&& ((N + 1) / 2 - 4 < j) 
+				&& (j < (N + 1) / 2 + 4)
+				)
 			{
 				_gridState.push_back(STATE::FLUID);
-			}*/
+			}
 			else
 			{
 				_gridState.push_back(STATE::AIR);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(0.4f, 0.9f));
+			_gridVelocity.push_back(XMFLOAT2(0.0f, -3.0f));
 			_gridPressure.push_back(0.0f);
 			_gridDivergence.push_back(0.0f);
 		}
 	}
-	
-	/*_gridState[5, 5] = STATE::FLUID;
-	_gridState[5, 6] = STATE::FLUID;
-	_gridState[6, 5] = STATE::FLUID;
-	_gridState[6, 6] = STATE::FLUID;*/
+	//_gridState[_INDEX(5, 5)] = STATE::FLUID;
+	//_gridState[_INDEX(5, 6)] = STATE::FLUID;
+	//_gridState[_INDEX(6, 5)] = STATE::FLUID;
+	//_gridState[_INDEX(6, 6)] = STATE::FLUID;
 
 }
 
@@ -74,28 +77,27 @@ void EulerianSimulation::_printVelocity()
 void EulerianSimulation::_update(double timestep)
 {
 	//_force(timestep);
-	_setBoundary(_gridVelocity);
 
 	_advect(timestep);
 	//_printVelocity();
 	//_diffuse(timestep);
 	_project(timestep);
 	
-	//_updateParticlePosition();
-	//_paintGrid();
+	_updateParticlePosition();
+	_paintGrid();
 }
 
 void EulerianSimulation::_force(double timestep)
 {
 	int N = _gridCount - 2;
 	float tstep = static_cast<float>(timestep);
-	for (int j = 1; j <= N; j++)
+	for (int i = 1; i <= N; i++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
 		{
 													//0.0000005f
 			//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
-			_gridVelocity[_INDEX(i, j)].y -= 9.8f * 0.0000005f * tstep;
+			_gridVelocity[_INDEX(i, j)].y -= 0.0098f * tstep;
 		}
 	}
 	_setBoundary(_gridVelocity);
@@ -255,17 +257,17 @@ void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
 	}
 
 	// (0, 0)
-	vec[_INDEX(0, 0)].x = 0.0f;//vec[_INDEX(0, 1)].x;
-	vec[_INDEX(0, 0)].y = 0.0f;//vec[_INDEX(1, 0)].y;
+	vec[_INDEX(0, 0)].x = vec[_INDEX(0, 1)].x;
+	vec[_INDEX(0, 0)].y = vec[_INDEX(1, 0)].y;
 	// (0, yCount)
-	vec[_INDEX(0, N + 1)].x = 0.0f;//vec[_INDEX(0, N)].x;
-	vec[_INDEX(0, N + 1)].y = 0.0f;//vec[_INDEX(1, N + 1)].y ;
+	vec[_INDEX(0, N + 1)].x = vec[_INDEX(0, N)].x;
+	vec[_INDEX(0, N + 1)].y = vec[_INDEX(1, N + 1)].y ;
 	// (xCount, 0)
-	vec[_INDEX(N + 1, 0)].x = 0.0f;//vec[_INDEX(N + 1, 1)].x;
-	vec[_INDEX(N + 1, 0)].y = 0.0f;//vec[_INDEX(N, 0)].y;
+	vec[_INDEX(N + 1, 0)].x = vec[_INDEX(N + 1, 1)].x;
+	vec[_INDEX(N + 1, 0)].y = vec[_INDEX(N, 0)].y;
 	// (xCount, yCount)
-	vec[_INDEX(N + 1, N + 1)].x = 0.0f;//vec[_INDEX(N + 1, N)].x;
-	vec[_INDEX(N + 1, N + 1)].y = 0.0f;//vec[_INDEX(N, N + 1)].y;
+	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
+	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
 }
 
 void EulerianSimulation::_setBoundary(std::vector<float>& scalar)
@@ -336,7 +338,7 @@ void EulerianSimulation::_updateParticlePosition()
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
-		//_particleVelocity[i] = _velocityInterpolation(_particlePosition[i]);
+		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 
 		_particlePosition[i].x += _particleVelocity[i].x;
 		_particlePosition[i].y += _particleVelocity[i].y;
