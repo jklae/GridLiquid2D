@@ -29,26 +29,27 @@ void EulerianSimulation::initialize()
 				_gridState.push_back(STATE::BOUNDARY);
 				_gridPressure.push_back(0.0f);
 			}
-			else if ( ((N + 1) / 2 - 10 < i) 
-				&& (i < (N + 1) / 2 + 10)
-				&& ((N + 1) / 2 - 10 < j) 
-				&& (j < (N + 1) / 2 + 10)
+			else if ( ((N + 1) / 2 - 9 < i) 
+				&& (i < (N + 1) / 2 + 9)
+				&& ((N + 1) / 2 - 9 < j) 
+				&& (j < (N + 1) / 2 + 9)
 				)
 			{
 				_gridState.push_back(STATE::FLUID);
-				//_gridPressure.push_back(0.0001f);
+				_gridPressure.push_back(0.0f);
 			}
 			else
 			{
 				_gridState.push_back(STATE::AIR);
-				//_gridPressure.push_back(0.0f);
+				_gridPressure.push_back(0.0f);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.001f));
+			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.01f));
 			_gridDivergence.push_back(0.0f);
-			_gridPressure.push_back(0.0f);
+			//_gridPressure.push_back(0.0f);
 		}
 	}
+
 	//_gridState[_INDEX(5, 5)] = STATE::FLUID;
 	//_gridState[_INDEX(5, 6)] = STATE::FLUID;
 	//_gridState[_INDEX(6, 5)] = STATE::FLUID;
@@ -81,6 +82,7 @@ void EulerianSimulation::_update(double timestep)
 {
 	_force(timestep);
 
+	_project(timestep);
 	_advect(timestep);
 	//_printVelocity();
 	//_diffuse(timestep);
@@ -100,7 +102,7 @@ void EulerianSimulation::_force(double timestep)
 		{
 													//0.0000005f
 			//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
-			_gridVelocity[_INDEX(i, j)].y -= 0.1f * tstep;
+			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f ;
 		}
 	}
 }
@@ -173,9 +175,9 @@ void EulerianSimulation::_project(double timestep)
 		{
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (oldVelocity[_INDEX(i + 1, j)].x - oldVelocity[_INDEX(i - 1, j)].x
-					+ oldVelocity[_INDEX(i, j + 1)].y - oldVelocity[_INDEX(i, j - 1)].y) / N ;
+					+ oldVelocity[_INDEX(i, j + 1)].y - oldVelocity[_INDEX(i, j - 1)].y) / N;
 			_gridPressure[_INDEX(i, j)] = 0.0f;
-			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridPressure[_INDEX(i, j)] = 0.009f;
+			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridPressure[_INDEX(i, j)] = 0.01f;
 			//else  _gridPressure[_INDEX(i, j)] = 0.0f;
 			//printf("%f  ", _gridDivergence[_INDEX(i, j)]);
 		}
@@ -199,7 +201,6 @@ void EulerianSimulation::_project(double timestep)
 		}
 		printf("\n");
 	}*/
-	std::vector<float> oldPressure = _gridPressure;
 
 	//printf("pressure = \n");
 	for (int iter = 0; iter < 20; iter++)
@@ -209,11 +210,11 @@ void EulerianSimulation::_project(double timestep)
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				oldPressure[_INDEX(i, j)] =
+				_gridPressure[_INDEX(i, j)] =
 					(
-						_gridDivergence[_INDEX(i, j)] -
+						_gridDivergence[_INDEX(i, j)]  -
 						(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
-						 _gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
+							_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
 					) / -4.0f;
 				//printf("%f ", _gridPressure[_INDEX(i, j)]);
 			}
@@ -222,7 +223,7 @@ void EulerianSimulation::_project(double timestep)
 		}
 		_setBoundary(_gridPressure);
 	}
-	_gridPressure = oldPressure;
+
 	/*for (int i = 0; i < N + 2; i++)
 	{
 		for (int j = 0; j < N + 2; j++)
@@ -515,14 +516,14 @@ XMFLOAT4 EulerianSimulation::iGetColor(int i)
 	case STATE::FLUID:
 		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
 
-		if (magnitude > 0.05f && magnitude < 0.1f)
-		return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-		else if (magnitude >= 0.1f)
-			return XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f);
+		/*if (magnitude > 0.05f && magnitude < 0.2f)
+			return XMFLOAT4(0.8f, 1.0f, 0.0f, 1.0f);
+		else if (magnitude >= 0.2f)
+			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		else
-			return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
+			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);*/
 
-
+		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;
 
 	case STATE::BOUNDARY:
