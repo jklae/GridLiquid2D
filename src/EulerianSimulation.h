@@ -19,8 +19,6 @@ public:
 	std::vector<Vertex> iGetVertice() override;
 	std::vector<unsigned int> iGetIndice() override;
 	DirectX::XMFLOAT4 iGetColor(int i) override;
-	std::vector<Vertex> iGetLineVertice() override;
-	std::vector<unsigned int> iGetLineIndice() override;
 
 
 	int iGetObjectCount() override;
@@ -48,20 +46,7 @@ private:
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2;
 
-	std::vector<Vertex> _vertices =
-	{
-		Vertex({ DirectX::XMFLOAT3(-0.5f, -0.5f, -0.0f) }),
-		Vertex({ DirectX::XMFLOAT3(-0.5f, +0.5f, -0.0f) }),
-		Vertex({ DirectX::XMFLOAT3(+0.5f, +0.5f, -0.0f) }),
-		Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) })
-	};
-
-	std::vector<unsigned int> _indices =
-	{
-		// front face
-		0, 1, 2,
-		0, 2, 3,
-	};
+	
 
 	void _update(double timestep);
 

@@ -467,17 +467,13 @@ void EulerianSimulation::iUpdate(double timestep)
 
 vector<Vertex> EulerianSimulation::iGetVertice()
 {
-	return _vertices;
-}
+	vector<Vertex> vertices;
 
-vector<unsigned int> EulerianSimulation::iGetIndice()
-{
-	return _indices;
-}
+	vertices.push_back(Vertex({ DirectX::XMFLOAT3(-0.5f, -0.5f, -0.0f) }));
+	vertices.push_back(Vertex({ DirectX::XMFLOAT3(-0.5f, +0.5f, -0.0f) }));
+	vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, +0.5f, -0.0f) }));
+	vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) }));
 
-vector<Vertex> EulerianSimulation::iGetLineVertice()
-{
-	std::vector<Vertex> vertices;
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{
@@ -493,15 +489,18 @@ vector<Vertex> EulerianSimulation::iGetLineVertice()
 	return vertices;
 }
 
-vector<unsigned int> EulerianSimulation::iGetLineIndice()
+vector<unsigned int> EulerianSimulation::iGetIndice()
 {
 	std::vector<unsigned int> indices;
+	indices.push_back(0); indices.push_back(1); indices.push_back(2);
+	indices.push_back(0); indices.push_back(2); indices.push_back(3);
 
 	int N = _gridCount - 2;
 	for (int i = 0; i <= N * N * 2; i++)
 	{
 		indices.push_back(i);
 	}
+
 	return indices;
 }
 
@@ -549,7 +548,6 @@ XMFLOAT2 EulerianSimulation::iGetParticlePos(int i)
 
 void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
-
 	// ###### Create Object ######
 	for (int i = 0; i < _gridCount; i++)
 	{
@@ -605,6 +603,16 @@ void EulerianSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantB
 			}
 		}
 	}
+	// ###### ###### ###### ######
+
+
+	// ###### Create Velocity ######
+	struct ConstantBuffer velocityCB;
+	velocityCB.world = transformMatrix(0.0f, 0.0f, 0.0f, 1.0f);
+	velocityCB.worldViewProj = transformMatrix(0.0f, 0.0f, 0.0f);
+	velocityCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+
+	constantBuffer.push_back(velocityCB);
 	// ###### ###### ###### ######
 }
 
