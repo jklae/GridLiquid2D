@@ -105,6 +105,8 @@ void EulerianSimulation::_force(double timestep)
 			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f ;
 		}
 	}
+
+	_gridVelocity[_INDEX(5, 5)] = { 1.0f, 1.0f };
 }
 
 void EulerianSimulation::_advect(double timestep)
@@ -483,8 +485,8 @@ vector<Vertex> EulerianSimulation::iGetLineVertice()
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
 			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 30.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 30.0f };
-			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -0.0f) }));
-			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -0.0f) }));
+			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -2.0f) }));
+			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -2.0f) }));
 		}
 	}
 
@@ -501,11 +503,6 @@ vector<unsigned int> EulerianSimulation::iGetLineIndice()
 		indices.push_back(i);
 	}
 	return indices;
-}
-
-std::vector<DirectX::XMFLOAT2>& EulerianSimulation::iGetVel()
-{
-	return _gridVelocity;
 }
 
 XMFLOAT4 EulerianSimulation::iGetColor(int i)
