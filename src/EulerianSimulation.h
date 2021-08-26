@@ -1,6 +1,6 @@
 #pragma once
 #include <iostream>
-#include "Win32App.h" // This includes ISimulation.h
+#include "FluidSimulation.h"
 
 class EulerianSimulation : public ISimulation
 {
