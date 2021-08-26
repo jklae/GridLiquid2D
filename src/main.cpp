@@ -6,6 +6,7 @@
 #endif
 
 #include "EulerianGasSimulation.h" // This includes Win32App.h
+#include "EulerianLiquidSimulation.h"
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -13,7 +14,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     Win32App winApp(800, 800);
     winApp.initialize(hInstance);
 
-    EulerianSimulation* eulersim = new EulerianGasSimulation();
+    EulerianSimulation* eulersim = new EulerianLiquidSimulation();
     eulersim->setGridDomain(30, 20);
     eulersim->initialize();
 

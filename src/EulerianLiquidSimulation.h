@@ -1,11 +1,11 @@
 #pragma once
 #include "EulerianSimulation.h"
 
-class EulerianGasSimulation : public EulerianSimulation
+class EulerianLiquidSimulation : public EulerianSimulation
 {
 public:
-	EulerianGasSimulation();
-	~EulerianGasSimulation() final;
+	EulerianLiquidSimulation();
+	~EulerianLiquidSimulation() final;
 
 private:
 	void _force(double timestep) override;

@@ -6,7 +6,7 @@ class EulerianSimulation : public FluidSimulation
 {
 public:
 	EulerianSimulation();
-	virtual ~EulerianSimulation();
+	~EulerianSimulation() override;
 
 
 	void initialize() override;

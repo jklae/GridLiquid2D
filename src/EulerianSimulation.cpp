@@ -9,6 +9,7 @@ EulerianSimulation::EulerianSimulation()
 
 EulerianSimulation::~EulerianSimulation()
 {
+
 }
 
 void EulerianSimulation::initialize()

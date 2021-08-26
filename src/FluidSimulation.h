@@ -5,7 +5,7 @@ class FluidSimulation : public ISimulation
 {
 public:
 	FluidSimulation();
-	virtual ~FluidSimulation();
+	~FluidSimulation() override;
 
 	void setGridDomain(int xCount, int yCount);
 

@@ -1,24 +1,33 @@
-#include "EulerianGasSimulation.h"
+#include "EulerianLiquidSimulation.h"
 
 using namespace DirectX;
 using namespace std;
 
-EulerianGasSimulation::EulerianGasSimulation()
+EulerianLiquidSimulation::EulerianLiquidSimulation()
 {
 }
 
-EulerianGasSimulation::~EulerianGasSimulation()
+EulerianLiquidSimulation::~EulerianLiquidSimulation()
 {
-
 }
 
 
-void EulerianGasSimulation::_force(double timestep)
+void EulerianLiquidSimulation::_force(double timestep)
 {
-	_gridVelocity[_INDEX(5, 5)] = { 1.0f, 1.0f };
+	int N = _gridCount - 2;
+	float tstep = static_cast<float>(timestep);
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			//0.0000005f
+//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f ;
+		}
+	}
 }
 
-void EulerianGasSimulation::_advect(double timestep)
+void EulerianLiquidSimulation::_advect(double timestep)
 {
 	float tstep = static_cast<float>(timestep);
 	int N = _gridCount - 2;
@@ -62,12 +71,12 @@ void EulerianGasSimulation::_advect(double timestep)
 	_setBoundary(_gridVelocity);
 }
 
-void EulerianGasSimulation::_diffuse(double timestep)
+void EulerianLiquidSimulation::_diffuse(double timestep)
 {
 
 }
 
-void EulerianGasSimulation::_project(double timestep)
+void EulerianLiquidSimulation::_project(double timestep)
 {
 	float tstep = static_cast<float>(timestep);
 
@@ -80,6 +89,9 @@ void EulerianGasSimulation::_project(double timestep)
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x
 					+ _gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y) / N;
 			_gridPressure[_INDEX(i, j)] = 0.0f;
+			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridPressure[_INDEX(i, j)] = 0.01f;
+			//else  _gridPressure[_INDEX(i, j)] = 0.0f;
+			//printf("%f  ", _gridDivergence[_INDEX(i, j)]);
 		}
 	}
 
