@@ -11,6 +11,12 @@ FluidSimulation::~FluidSimulation()
 {
 }
 
+void FluidSimulation::setGridDomain(int xCount, int yCount)
+{
+	// 2 are boundaries.
+	_gridCount = xCount + 2;
+}
+
 #pragma region Implementation
 // ################################## Implementation ####################################
 void FluidSimulation::iUpdate(double timestep)

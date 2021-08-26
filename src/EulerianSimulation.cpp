@@ -57,26 +57,6 @@ void EulerianSimulation::initialize()
 
 }
 
-void EulerianSimulation::setGridDomain(int xCount, int yCount)
-{
-	// 2 are boundaries.
-	_gridCount = xCount + 2;
-}
-
-void EulerianSimulation::_printVelocity()
-{
-	static int step = 0;
-	printf("============= step %d =============\n", step);
-	for (int i = 0; i < _gridCount; i++)
-	{
-		for (int j = 0; j < _gridCount; j++)
-		{
-			printf("(%9f, %9f) ", _gridVelocity[_INDEX(i, j)].x, _gridVelocity[_INDEX(i, j)].y);
-		}
-		cout << endl;
-	}
-	step++;
-}
 
 void EulerianSimulation::_update(double timestep)
 {
@@ -84,7 +64,6 @@ void EulerianSimulation::_update(double timestep)
 
 	_project(timestep);
 	_advect(timestep);
-	//_printVelocity();
 	//_diffuse(timestep);
 	_project(timestep);
 	
@@ -92,162 +71,6 @@ void EulerianSimulation::_update(double timestep)
 	_paintGrid();
 }
 
-void EulerianSimulation::_force(double timestep)
-{
-	int N = _gridCount - 2;
-	float tstep = static_cast<float>(timestep);
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-													//0.0000005f
-			//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
-			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f ;
-		}
-	}
-
-	_gridVelocity[_INDEX(5, 5)] = { 1.0f, 1.0f };
-}
-
-void EulerianSimulation::_advect(double timestep)
-{
-	float tstep = static_cast<float>(timestep);
-	int N = _gridCount - 2;
-	float t0step = tstep * N;
-
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
-	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
-	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
-
-	vector<XMFLOAT2> oldVelocity = _gridVelocity;
-
-	//printf("============== step ===========\n");
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			/*float magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
-
-			if (magnitude > 0.05f && magnitude < 0.1f)
-				t0step /= 2.0f;
-			else if (magnitude >= 0.1f)
-				t0step /= 4.0f;
-			else
-				t0step /= 1.0f;*/
-
-			XMFLOAT2 backPos =
-				XMFLOAT2(
-					_gridPosition[_INDEX(i, j)].x - t0step * oldVelocity[_INDEX(i, j)].x,
-					_gridPosition[_INDEX(i, j)].y - t0step * oldVelocity[_INDEX(i, j)].y
-				);
-			if (backPos.x > xMax) backPos.x = xMax;
-			else if (backPos.x < xMin) backPos.x = xMin;
-
-			if (backPos.y > yMax) backPos.y = yMax;
-			else if (backPos.y < yMin) backPos.y = yMin;
-
-			//printf("(%9f, %9f) ", backPos.x, backPos.y);
-
-			_gridVelocity[_INDEX(i, j)] = _velocityInterpolation(backPos, oldVelocity);
-			//printf("interpolation = (%9f, %9f)\n", _gridVelocity[_INDEX(i, j)].x, _gridVelocity[_INDEX(i, j)].y);
-			//printf("\n");
-		}
-		//cout << endl;
-	}
-	_setBoundary(_gridVelocity);
-}
-
-void EulerianSimulation::_diffuse(double timestep)
-{
-
-}
-
-void EulerianSimulation::_project(double timestep)
-{
-	float tstep = static_cast<float>(timestep);
-	vector<XMFLOAT2> oldVelocity = _gridVelocity;
-	static int step = 0;
-	//printf("============= step %d =============\n", step);
-	//printf("div = \n");
-	int N = _gridCount - 2;
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			_gridDivergence[_INDEX(i, j)] =
-				0.5f * (oldVelocity[_INDEX(i + 1, j)].x - oldVelocity[_INDEX(i - 1, j)].x
-					+ oldVelocity[_INDEX(i, j + 1)].y - oldVelocity[_INDEX(i, j - 1)].y) / N;
-			_gridPressure[_INDEX(i, j)] = 0.0f;
-			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridPressure[_INDEX(i, j)] = 0.01f;
-			//else  _gridPressure[_INDEX(i, j)] = 0.0f;
-			//printf("%f  ", _gridDivergence[_INDEX(i, j)]);
-		}
-	}
-
-	//printf("\n");
-
-	/*_gridPressure[_INDEX(10, 10)] = 2.0f;
-	_gridPressure[_INDEX(10, 11)] = 2.0f;
-	_gridPressure[_INDEX(11, 10)] = 2.0f;
-	_gridPressure[_INDEX(11, 11)] = 2.0f;*/
-
-	_setBoundary(_gridDivergence);
-	_setBoundary(_gridPressure);
-
-	/*for (int i = 0; i < N + 2; i++)
-	{
-		for (int j = 0; j < N + 2; j++)
-		{
-			printf("%9f  ", _gridDivergence[_INDEX(i, j)]);
-		}
-		printf("\n");
-	}*/
-
-	//printf("pressure = \n");
-	for (int iter = 0; iter < 20; iter++)
-	{
-		//printf("==iter%d==\n", iter);
-		for (int i = 1; i <= N; i++)
-		{
-			for (int j = 1; j <= N; j++)
-			{
-				_gridPressure[_INDEX(i, j)] =
-					(
-						_gridDivergence[_INDEX(i, j)]  -
-						(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
-							_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
-					) / -4.0f;
-				//printf("%f ", _gridPressure[_INDEX(i, j)]);
-			}
-
-			//printf("\n");
-		}
-		_setBoundary(_gridPressure);
-	}
-
-	/*for (int i = 0; i < N + 2; i++)
-	{
-		for (int j = 0; j < N + 2; j++)
-		{
-			printf("%9f  ", _gridPressure[_INDEX(i, j)]);
-		}
-		printf("\n");
-	}*/
-
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f * N;
-			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f * N;
-		}
-	}
-	_setBoundary(_gridVelocity); 
-	//_printVelocity();
-
-	step++;
-}
 
 void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
