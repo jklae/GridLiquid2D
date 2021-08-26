@@ -15,6 +15,7 @@ public:
 #pragma region Implementation
 	// ################################## Implementation ####################################
 	void iUpdate(double timestep) override;
+	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer) override;
 
 	std::vector<Vertex> iGetVertice() override;
 	std::vector<unsigned int> iGetIndice() override;

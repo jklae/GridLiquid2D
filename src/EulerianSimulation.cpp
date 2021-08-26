@@ -465,6 +465,22 @@ void EulerianSimulation::iUpdate(double timestep)
 	_update(timestep);
 }
 
+void EulerianSimulation::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
+{
+	_gridState.clear();
+	_gridPressure.clear();
+	_gridVelocity.clear();
+	_gridDivergence.clear();
+
+	constantBuffer.clear();
+	_gridPosition.clear();
+	_particlePosition.clear();
+	_particleVelocity.clear();
+
+	initialize();
+	iCreateObjectParticle(constantBuffer);
+}
+
 vector<Vertex> EulerianSimulation::iGetVertice()
 {
 	vector<Vertex> vertices;
