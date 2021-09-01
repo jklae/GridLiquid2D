@@ -59,20 +59,6 @@ void EulerianSimulation::initialize()
 }
 
 
-void EulerianSimulation::_update(double timestep)
-{
-	_force(timestep);
-
-	_project(timestep);
-	_advect(timestep);
-	//_diffuse(timestep);
-	_project(timestep);
-	
-	_updateParticlePosition(timestep);
-	_paintGrid();
-}
-
-
 void EulerianSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
 	int N = _gridCount - 2;

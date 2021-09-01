@@ -13,6 +13,20 @@ EulerianGasSimulation::~EulerianGasSimulation()
 }
 
 
+void EulerianGasSimulation::_update(double timestep)
+{
+	_force(timestep);
+
+	_project(timestep);
+	_advect(timestep);
+	//_diffuse(timestep);
+	_project(timestep);
+
+	_updateParticlePosition(timestep);
+	_paintGrid();
+}
+
+
 void EulerianGasSimulation::_force(double timestep)
 {
 	_gridVelocity[_INDEX(5, 5)] = { 1.0f, 1.0f };

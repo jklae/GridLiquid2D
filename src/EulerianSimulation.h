@@ -14,7 +14,7 @@ public:
 
 protected:
 
-	void _update(double timestep) override;
+	virtual void _update(double timestep) = 0;
 
 	virtual void _force(double timestep) = 0;
 	virtual void _advect(double timestep) = 0;

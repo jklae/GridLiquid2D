@@ -11,6 +11,18 @@ EulerianLiquidSimulation::~EulerianLiquidSimulation()
 {
 }
 
+void EulerianLiquidSimulation::_update(double timestep)
+{
+	_force(timestep);
+
+	_project(timestep);
+	_advect(timestep);
+	//_diffuse(timestep);
+	_project(timestep);
+
+	_updateParticlePosition(timestep);
+	_paintGrid();
+}
 
 void EulerianLiquidSimulation::_force(double timestep)
 {

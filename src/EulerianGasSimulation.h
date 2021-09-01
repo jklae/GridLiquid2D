@@ -8,6 +8,8 @@ public:
 	~EulerianGasSimulation() final;
 
 private:
+	void _update(double timestep) override;
+
 	void _force(double timestep) override;
 	void _advect(double timestep) override;
 	void _diffuse(double timestep) override;
