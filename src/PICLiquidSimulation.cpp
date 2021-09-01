@@ -17,9 +17,9 @@ void PICLiquidSimulation::_update()
 	_force();
 
 	//_project();
-	_advect();
+	//_advect();
 
-	_project();
+	//_project();
 	_updateParticlePosition();
 	_paintGrid();
 }
