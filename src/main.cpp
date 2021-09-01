@@ -14,15 +14,26 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     Win32App winApp(800, 800);
     winApp.initialize(hInstance);
 
-    EulerianSimulation* eulersim = new EulerianLiquidSimulation();
-    eulersim->setGridDomain(30, 20);
-    eulersim->initialize();
+    std::vector<ISimulation*> fluidsim;
+    fluidsim.push_back(new EulerianLiquidSimulation());
+    fluidsim.push_back(new EulerianGasSimulation());
+
+    for (auto& sim : fluidsim)
+    {
+        dynamic_cast<FluidSimulation*>(sim)->setGridDomain(30, 20);
+        dynamic_cast<FluidSimulation*>(sim)->initialize();
+    }
+
+    /*FluidSimulation* fluidsim = new EulerianLiquidSimulation();
+    fluidsim->setGridDomain(30, 20);
+    fluidsim->initialize();*/
+
 
     DX12App* dxapp = new DX12App();
     dxapp->setProjectionType(PROJ::ORTHOGRAPHIC);
-    dxapp->setSimulation(eulersim, 0.1);
+    //dxapp->setSimulation(fluidsim, 0.1);
 
-    winApp.initDirectX(dxapp);
+    winApp.initDirectX(dxapp, fluidsim);
 
     return winApp.run();
 }
