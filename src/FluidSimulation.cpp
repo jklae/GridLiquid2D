@@ -23,7 +23,14 @@ void FluidSimulation::setGridDomain(int xCount, int yCount)
 // ################################## Implementation ####################################
 void FluidSimulation::iUpdate()
 {
-	_update();
+	float standardTimeStep = 0.1f;
+	int maxSize = static_cast<int>(standardTimeStep / _timeStep);
+	for (int i = 0; i < maxSize; i++)
+	{
+		_update();
+	}
+
+	//Sleep(10);
 }
 
 void FluidSimulation::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)

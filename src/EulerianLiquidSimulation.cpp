@@ -14,16 +14,12 @@ EulerianLiquidSimulation::~EulerianLiquidSimulation()
 
 void EulerianLiquidSimulation::_update()
 {
-	for (int i = 0; i < 10; i++)
-	{
-		_force();
+	_force();
 
-		_project();
-		_advect();
+	//_project();
+	_advect();
 
-		_project();
-	}
-
+	_project();
 	_updateParticlePosition();
 	_paintGrid();
 }
@@ -35,8 +31,6 @@ void EulerianLiquidSimulation::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			//0.0000005f
-//_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f * _timeStep;
 		}
 	}

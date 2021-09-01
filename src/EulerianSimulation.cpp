@@ -29,7 +29,6 @@ void EulerianSimulation::initialize()
 				|| j == N + 1)
 			{
 				_gridState.push_back(STATE::BOUNDARY);
-				_gridPressure.push_back(0.0f);
 			}
 			else if ( ((N + 1) / 2 - 9 < i) 
 				&& (i < (N + 1) / 2 + 9)
@@ -38,24 +37,17 @@ void EulerianSimulation::initialize()
 				)
 			{
 				_gridState.push_back(STATE::FLUID);
-				_gridPressure.push_back(0.0f);
 			}
 			else
 			{
 				_gridState.push_back(STATE::AIR);
-				_gridPressure.push_back(0.0f);
 			}
 
 			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.01f));
 			_gridDivergence.push_back(0.0f);
-			//_gridPressure.push_back(0.0f);
+			_gridPressure.push_back(0.0f);
 		}
 	}
-
-	//_gridState[_INDEX(5, 5)] = STATE::FLUID;
-	//_gridState[_INDEX(5, 6)] = STATE::FLUID;
-	//_gridState[_INDEX(6, 5)] = STATE::FLUID;
-	//_gridState[_INDEX(6, 6)] = STATE::FLUID;
 
 }
 
