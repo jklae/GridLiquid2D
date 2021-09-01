@@ -17,7 +17,7 @@ void EulerianLiquidSimulation::_update(double timestep)
 
 	_project(timestep);
 	_advect(timestep);
-	//_diffuse(timestep);
+
 	_project(timestep);
 
 	_updateParticlePosition(timestep);
@@ -34,7 +34,7 @@ void EulerianLiquidSimulation::_force(double timestep)
 		{
 			//0.0000005f
 //_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f ;
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f * tstep;
 		}
 	}
 }
@@ -67,8 +67,8 @@ void EulerianLiquidSimulation::_advect(double timestep)
 
 			XMFLOAT2 backPos =
 				XMFLOAT2(
-					_gridPosition[_INDEX(i, j)].x - t0step * oldVelocity[_INDEX(i, j)].x,
-					_gridPosition[_INDEX(i, j)].y - t0step * oldVelocity[_INDEX(i, j)].y
+					_gridPosition[_INDEX(i, j)].x - tstep * oldVelocity[_INDEX(i, j)].x,
+					_gridPosition[_INDEX(i, j)].y - tstep * oldVelocity[_INDEX(i, j)].y
 				);
 			if (backPos.x > xMax) backPos.x = xMax;
 			else if (backPos.x < xMin) backPos.x = xMin;
@@ -99,7 +99,7 @@ void EulerianLiquidSimulation::_project(double timestep)
 		{
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x
-					+ _gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y) / N;
+					+ _gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y);
 			_gridPressure[_INDEX(i, j)] = 0.0f;
 			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridPressure[_INDEX(i, j)] = 0.01f;
 			//else  _gridPressure[_INDEX(i, j)] = 0.0f;
@@ -132,8 +132,8 @@ void EulerianLiquidSimulation::_project(double timestep)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f * N;
-			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f * N;
+			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
+			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
 	}
 	_setBoundary(_gridVelocity);
