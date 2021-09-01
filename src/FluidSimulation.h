@@ -7,7 +7,10 @@ public:
 	FluidSimulation(float timeStep);
 	~FluidSimulation() override;
 
+	int getDelayTime();
+
 	void setGridDomain(int xCount, int yCount);
+	void setDelayTime(int delayTime);
 
 	virtual void initialize() = 0;
 
@@ -45,6 +48,7 @@ protected:
 	float _particleScale = 0.2;
 
 	float _timeStep = 0.0f;
+	int _delayTime = 0;
 	virtual void _update() = 0;
 };
 

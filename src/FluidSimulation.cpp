@@ -13,10 +13,20 @@ FluidSimulation::~FluidSimulation()
 	
 }
 
+int FluidSimulation::getDelayTime()
+{
+	return _delayTime;
+}
+
 void FluidSimulation::setGridDomain(int xCount, int yCount)
 {
 	// 2 are boundaries.
 	_gridCount = xCount + 2;
+}
+
+void FluidSimulation::setDelayTime(int delayTime)
+{
+	_delayTime = delayTime;
 }
 
 #pragma region Implementation
@@ -30,7 +40,7 @@ void FluidSimulation::iUpdate()
 		_update();
 	}
 
-	//Sleep(10);
+	Sleep(_delayTime);
 }
 
 void FluidSimulation::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)

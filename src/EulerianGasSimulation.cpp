@@ -6,6 +6,7 @@ using namespace std;
 EulerianGasSimulation::EulerianGasSimulation(float timeStep)
 	:EulerianSimulation::EulerianSimulation(timeStep)
 {
+	_delayTime = 10;
 }
 
 EulerianGasSimulation::~EulerianGasSimulation()
