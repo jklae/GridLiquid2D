@@ -3,7 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerianSimulation::EulerianSimulation()
+EulerianSimulation::EulerianSimulation(float timeStep)
+	:FluidSimulation::FluidSimulation(timeStep)
 {
 }
 
@@ -160,17 +161,16 @@ void EulerianSimulation::_paintGrid()
 }
 
 
-void EulerianSimulation::_updateParticlePosition(double timestep)
+void EulerianSimulation::_updateParticlePosition()
 {
-	float ftstep = static_cast<float>(timestep);
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 
 
-		_particlePosition[i].x += _particleVelocity[i].x * 1.0f;
-		_particlePosition[i].y += _particleVelocity[i].y * 1.0f;
+		_particlePosition[i].x += _particleVelocity[i].x * _timeStep * 10.0f;
+		_particlePosition[i].y += _particleVelocity[i].y * _timeStep * 10.0f;
 	}
 }
 

@@ -3,7 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerianGasSimulation::EulerianGasSimulation()
+EulerianGasSimulation::EulerianGasSimulation(float timeStep)
+	:EulerianSimulation::EulerianSimulation(timeStep)
 {
 }
 
@@ -13,30 +14,29 @@ EulerianGasSimulation::~EulerianGasSimulation()
 }
 
 
-void EulerianGasSimulation::_update(float timestep)
+void EulerianGasSimulation::_update()
 {
-	_force(timestep);
+	_force();
 
-	_project(timestep);
-	_advect(timestep);
+	_project();
+	_advect();
 	//_diffuse(timestep);
-	_project(timestep);
+	_project();
 
-	_updateParticlePosition(timestep);
+	_updateParticlePosition();
 	_paintGrid();
 }
 
 
-void EulerianGasSimulation::_force(float timestep)
+void EulerianGasSimulation::_force()
 {
 	_gridVelocity[_INDEX(5, 5)] = { 1.0f, 1.0f };
 }
 
-void EulerianGasSimulation::_advect(float timestep)
+void EulerianGasSimulation::_advect()
 {
-	float tstep = static_cast<float>(timestep);
 	int N = _gridCount - 2;
-	float t0step = tstep * N;
+	float t0step = _timeStep * N;
 
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
@@ -76,15 +76,13 @@ void EulerianGasSimulation::_advect(float timestep)
 	_setBoundary(_gridVelocity);
 }
 
-void EulerianGasSimulation::_diffuse(float timestep)
+void EulerianGasSimulation::_diffuse()
 {
 
 }
 
-void EulerianGasSimulation::_project(float timestep)
+void EulerianGasSimulation::_project()
 {
-	float tstep = static_cast<float>(timestep);
-
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{

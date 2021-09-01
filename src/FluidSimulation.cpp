@@ -3,8 +3,9 @@
 using namespace DirectX;
 using namespace std;
 
-FluidSimulation::FluidSimulation()
+FluidSimulation::FluidSimulation(float timeStep)
 {
+	_timeStep = timeStep;
 }
 
 FluidSimulation::~FluidSimulation()
@@ -20,9 +21,9 @@ void FluidSimulation::setGridDomain(int xCount, int yCount)
 
 #pragma region Implementation
 // ################################## Implementation ####################################
-void FluidSimulation::iUpdate(float timestep)
+void FluidSimulation::iUpdate()
 {
-	_update(timestep);
+	_update();
 }
 
 void FluidSimulation::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)

@@ -4,7 +4,7 @@
 class FluidSimulation : public ISimulation
 {
 public:
-	FluidSimulation();
+	FluidSimulation(float timeStep);
 	~FluidSimulation() override;
 
 	void setGridDomain(int xCount, int yCount);
@@ -13,7 +13,7 @@ public:
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
-	void iUpdate(float timestep) override;
+	void iUpdate() override;
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer) override;
 
 	std::vector<Vertex> iGetVertice() override;
@@ -44,6 +44,7 @@ protected:
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2;
 
-	virtual void _update(float timestep) = 0;
+	float _timeStep = 0.0f;
+	virtual void _update() = 0;
 };
 

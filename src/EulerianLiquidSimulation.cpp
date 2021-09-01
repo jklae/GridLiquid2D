@@ -3,7 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerianLiquidSimulation::EulerianLiquidSimulation()
+EulerianLiquidSimulation::EulerianLiquidSimulation(float timeStep)
+	:EulerianSimulation::EulerianSimulation(timeStep)
 {
 }
 
@@ -11,39 +12,39 @@ EulerianLiquidSimulation::~EulerianLiquidSimulation()
 {
 }
 
-void EulerianLiquidSimulation::_update(float timestep)
+void EulerianLiquidSimulation::_update()
 {
-	_force(timestep);
+	for (int i = 0; i < 10; i++)
+	{
+		_force();
 
-	_project(timestep);
-	_advect(timestep);
+		_project();
+		_advect();
 
-	_project(timestep);
+		_project();
+	}
 
-	_updateParticlePosition(timestep);
+	_updateParticlePosition();
 	_paintGrid();
 }
 
-void EulerianLiquidSimulation::_force(float timestep)
+void EulerianLiquidSimulation::_force()
 {
 	int N = _gridCount - 2;
-	float tstep = static_cast<float>(timestep);
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
 			//0.0000005f
 //_gridVelocity[_INDEX(i, j)].x -= 2.8f * 1.0f * tstep;
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f * tstep;
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 0.1f * _timeStep;
 		}
 	}
 }
 
-void EulerianLiquidSimulation::_advect(float timestep)
+void EulerianLiquidSimulation::_advect()
 {
-	float tstep = static_cast<float>(timestep);
 	int N = _gridCount - 2;
-	float t0step = tstep * N;
 
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
@@ -67,8 +68,8 @@ void EulerianLiquidSimulation::_advect(float timestep)
 
 			XMFLOAT2 backPos =
 				XMFLOAT2(
-					_gridPosition[_INDEX(i, j)].x - tstep * oldVelocity[_INDEX(i, j)].x,
-					_gridPosition[_INDEX(i, j)].y - tstep * oldVelocity[_INDEX(i, j)].y
+					_gridPosition[_INDEX(i, j)].x - _timeStep * oldVelocity[_INDEX(i, j)].x,
+					_gridPosition[_INDEX(i, j)].y - _timeStep * oldVelocity[_INDEX(i, j)].y
 				);
 			if (backPos.x > xMax) backPos.x = xMax;
 			else if (backPos.x < xMin) backPos.x = xMin;
@@ -83,15 +84,13 @@ void EulerianLiquidSimulation::_advect(float timestep)
 	_setBoundary(_gridVelocity);
 }
 
-void EulerianLiquidSimulation::_diffuse(float timestep)
+void EulerianLiquidSimulation::_diffuse()
 {
 
 }
 
-void EulerianLiquidSimulation::_project(float timestep)
+void EulerianLiquidSimulation::_project()
 {
-	float tstep = static_cast<float>(timestep);
-
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{

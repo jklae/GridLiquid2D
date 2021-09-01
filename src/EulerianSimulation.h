@@ -5,7 +5,7 @@
 class EulerianSimulation : public FluidSimulation
 {
 public:
-	EulerianSimulation();
+	EulerianSimulation(float timeStep);
 	~EulerianSimulation() override;
 
 
@@ -13,15 +13,15 @@ public:
 
 
 protected:
-	virtual void _force(float timestep) = 0;
-	virtual void _advect(float timestep) = 0;
-	virtual void _diffuse(float timestep) = 0;
-	virtual void _project(float timestep) = 0;
+	virtual void _force() = 0;
+	virtual void _advect() = 0;
+	virtual void _diffuse() = 0;
+	virtual void _project() = 0;
 
 	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
 	void _setBoundary(std::vector<float>& scalar);
 	void _paintGrid();
-	void _updateParticlePosition(double timestep);
+	void _updateParticlePosition();
 
 	// ---
 
