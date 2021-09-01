@@ -11,7 +11,7 @@ EulerianLiquidSimulation::~EulerianLiquidSimulation()
 {
 }
 
-void EulerianLiquidSimulation::_update(double timestep)
+void EulerianLiquidSimulation::_update(float timestep)
 {
 	_force(timestep);
 
@@ -24,7 +24,7 @@ void EulerianLiquidSimulation::_update(double timestep)
 	_paintGrid();
 }
 
-void EulerianLiquidSimulation::_force(double timestep)
+void EulerianLiquidSimulation::_force(float timestep)
 {
 	int N = _gridCount - 2;
 	float tstep = static_cast<float>(timestep);
@@ -39,7 +39,7 @@ void EulerianLiquidSimulation::_force(double timestep)
 	}
 }
 
-void EulerianLiquidSimulation::_advect(double timestep)
+void EulerianLiquidSimulation::_advect(float timestep)
 {
 	float tstep = static_cast<float>(timestep);
 	int N = _gridCount - 2;
@@ -83,12 +83,12 @@ void EulerianLiquidSimulation::_advect(double timestep)
 	_setBoundary(_gridVelocity);
 }
 
-void EulerianLiquidSimulation::_diffuse(double timestep)
+void EulerianLiquidSimulation::_diffuse(float timestep)
 {
 
 }
 
-void EulerianLiquidSimulation::_project(double timestep)
+void EulerianLiquidSimulation::_project(float timestep)
 {
 	float tstep = static_cast<float>(timestep);
 

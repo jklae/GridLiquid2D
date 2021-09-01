@@ -31,9 +31,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     DX12App* dxapp = new DX12App();
     dxapp->setProjectionType(PROJ::ORTHOGRAPHIC);
-    //dxapp->setSimulation(fluidsim, 0.1);
 
-    winApp.initDirectX(dxapp, fluidsim);
+    winApp.initDirectX(dxapp, fluidsim, 0.1f);
 
     return winApp.run();
 }

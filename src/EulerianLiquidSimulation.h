@@ -8,11 +8,11 @@ public:
 	~EulerianLiquidSimulation() final;
 
 private:
-	void _update(double timestep) override;
+	void _update(float timestep) override;
 
-	void _force(double timestep) override;
-	void _advect(double timestep) override;
-	void _diffuse(double timestep) override;
-	void _project(double timestep) override;
+	void _force(float timestep) override;
+	void _advect(float timestep) override;
+	void _diffuse(float timestep) override;
+	void _project(float timestep) override;
 };
 

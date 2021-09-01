@@ -20,7 +20,7 @@ void FluidSimulation::setGridDomain(int xCount, int yCount)
 
 #pragma region Implementation
 // ################################## Implementation ####################################
-void FluidSimulation::iUpdate(double timestep)
+void FluidSimulation::iUpdate(float timestep)
 {
 	_update(timestep);
 }

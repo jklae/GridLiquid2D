@@ -13,13 +13,10 @@ public:
 
 
 protected:
-
-	virtual void _update(double timestep) = 0;
-
-	virtual void _force(double timestep) = 0;
-	virtual void _advect(double timestep) = 0;
-	virtual void _diffuse(double timestep) = 0;
-	virtual void _project(double timestep) = 0;
+	virtual void _force(float timestep) = 0;
+	virtual void _advect(float timestep) = 0;
+	virtual void _diffuse(float timestep) = 0;
+	virtual void _project(float timestep) = 0;
 
 	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
 	void _setBoundary(std::vector<float>& scalar);

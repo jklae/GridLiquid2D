@@ -13,7 +13,7 @@ public:
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
-	void iUpdate(double timestep) override;
+	void iUpdate(float timestep) override;
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer) override;
 
 	std::vector<Vertex> iGetVertice() override;
@@ -44,6 +44,6 @@ protected:
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2;
 
-	virtual void _update(double timestep) = 0;
+	virtual void _update(float timestep) = 0;
 };
 

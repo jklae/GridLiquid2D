@@ -13,7 +13,7 @@ EulerianGasSimulation::~EulerianGasSimulation()
 }
 
 
-void EulerianGasSimulation::_update(double timestep)
+void EulerianGasSimulation::_update(float timestep)
 {
 	_force(timestep);
 
@@ -27,12 +27,12 @@ void EulerianGasSimulation::_update(double timestep)
 }
 
 
-void EulerianGasSimulation::_force(double timestep)
+void EulerianGasSimulation::_force(float timestep)
 {
 	_gridVelocity[_INDEX(5, 5)] = { 1.0f, 1.0f };
 }
 
-void EulerianGasSimulation::_advect(double timestep)
+void EulerianGasSimulation::_advect(float timestep)
 {
 	float tstep = static_cast<float>(timestep);
 	int N = _gridCount - 2;
@@ -76,12 +76,12 @@ void EulerianGasSimulation::_advect(double timestep)
 	_setBoundary(_gridVelocity);
 }
 
-void EulerianGasSimulation::_diffuse(double timestep)
+void EulerianGasSimulation::_diffuse(float timestep)
 {
 
 }
 
-void EulerianGasSimulation::_project(double timestep)
+void EulerianGasSimulation::_project(float timestep)
 {
 	float tstep = static_cast<float>(timestep);
 
