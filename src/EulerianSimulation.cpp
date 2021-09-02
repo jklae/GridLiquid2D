@@ -1,4 +1,4 @@
-#include "EulerianSimulation.h"
+﻿#include "EulerianSimulation.h"
 
 using namespace DirectX;
 using namespace std;
@@ -235,20 +235,14 @@ XMFLOAT2 EulerianSimulation::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT
 	float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
 	float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);
 
-	//printf("  ratio = %f %f  ", xRatio, yRatio);
-	//printf("  index = %d %d %d %d   ", minXIndex, maxXIndex, minYIndex, maxYIndex);
-
 	XMFLOAT2 minMinVelocity = oldvel[_INDEX(minXIndex, minYIndex)];
 	XMFLOAT2 minMaxVelocity = oldvel[_INDEX(minXIndex, maxYIndex)];
 	XMFLOAT2 maxMinVelocity = oldvel[_INDEX(maxXIndex, minYIndex)];
 	XMFLOAT2 maxMaxVelocity = oldvel[_INDEX(maxXIndex, maxYIndex)];
 
-
-	//printf("  indexX = %9f %9f %9f %9f   ", minMinVelocity.x, minMaxVelocity.x, maxMinVelocity.x, maxMaxVelocity.x);
-	//printf("  indexY = %9f %9f %9f %9f   ", minMinVelocity.y, minMaxVelocity.y, maxMinVelocity.y, maxMaxVelocity.y);
-
-	//s0* (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
+	// s0* (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
 	//	s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
+	// minMinVelocity.x and minMinVelocity.x ​​can be different because they are "velocity", not position.
 	return XMFLOAT2(
 		_interpolation(_interpolation(minMinVelocity.x, minMaxVelocity.x, yRatio), _interpolation(maxMinVelocity.x, maxMaxVelocity.x, yRatio), xRatio),
 		_interpolation(_interpolation(minMinVelocity.y, minMaxVelocity.y, yRatio), _interpolation(maxMinVelocity.y, maxMaxVelocity.y, yRatio), xRatio)
