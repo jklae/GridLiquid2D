@@ -1,11 +1,11 @@
 #pragma once
 #include "Win32App.h" // This includes ISimulation.h
 
-class FluidSimulation : public ISimulation
+class GridFluidSim : public ISimulation
 {
 public:
-	FluidSimulation(float timeStep);
-	~FluidSimulation() override;
+	GridFluidSim(float timeStep);
+	~GridFluidSim() override;
 
 	int getDelayTime();
 

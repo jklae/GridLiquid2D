@@ -1,36 +1,36 @@
-﻿#include "FluidSimulation.h"
+﻿#include "GridFluidSim.h"
 
 using namespace DirectX;
 using namespace std;
 
-FluidSimulation::FluidSimulation(float timeStep)
+GridFluidSim::GridFluidSim(float timeStep)
 {
 	_timeStep = timeStep;
 }
 
-FluidSimulation::~FluidSimulation()
+GridFluidSim::~GridFluidSim()
 {
 	
 }
 
-int FluidSimulation::getDelayTime()
+int GridFluidSim::getDelayTime()
 {
 	return _delayTime;
 }
 
-void FluidSimulation::setGridDomain(int xCount, int yCount)
+void GridFluidSim::setGridDomain(int xCount, int yCount)
 {
 	// 2 are boundaries.
 	_gridCount = xCount + 2;
 }
 
-void FluidSimulation::setDelayTime(int delayTime)
+void GridFluidSim::setDelayTime(int delayTime)
 {
 	_delayTime = delayTime;
 }
 
 
-void FluidSimulation::initialize()
+void GridFluidSim::initialize()
 {
 	// 0 is not allowed.
 	assert(_gridCount != 0);
@@ -69,7 +69,7 @@ void FluidSimulation::initialize()
 }
 
 
-void FluidSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
+void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
 	int N = _gridCount - 2;
 
@@ -107,7 +107,7 @@ void FluidSimulation::_setBoundary(std::vector<XMFLOAT2>& vec)
 	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
 }
 
-void FluidSimulation::_setBoundary(std::vector<float>& scalar)
+void GridFluidSim::_setBoundary(std::vector<float>& scalar)
 {
 	int N = _gridCount - 2;
 
@@ -135,7 +135,7 @@ void FluidSimulation::_setBoundary(std::vector<float>& scalar)
 	scalar[_INDEX(N + 1, N + 1)] = (scalar[_INDEX(N + 1, N)] + scalar[_INDEX(N, N + 1)]) / 2.0f;
 }
 
-void FluidSimulation::_paintGrid()
+void GridFluidSim::_paintGrid()
 {
 	int N = _gridCount - 2;
 	// Reset _grid
@@ -170,7 +170,7 @@ void FluidSimulation::_paintGrid()
 }
 
 
-void FluidSimulation::_updateParticlePosition()
+void GridFluidSim::_updateParticlePosition()
 {
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -189,7 +189,7 @@ void FluidSimulation::_updateParticlePosition()
 // For example, if the scale is 1.0f, the result is (index * 1.0f).
 // But if the scale is 0.5f, the result is (index * 0.5f).
 // The index value should of course be immutable.
-int FluidSimulation::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
+int GridFluidSim::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
 {
 	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
 	float value;
@@ -220,7 +220,7 @@ int FluidSimulation::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 p
 // ------------------------------------------------------------------
 // _PaintGrid() uses the face as the transition point.
 // _updateParticlePosition() uses the center as the transition point.
-int FluidSimulation::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
+int GridFluidSim::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
 {
 	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
 	// 2.
@@ -241,7 +241,7 @@ int FluidSimulation::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2
 	}
 }
 
-XMFLOAT2 FluidSimulation::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
+XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
 {
 	// 2. 3.
 	int minXIndex = _computeCenterMinMaxIndex(VALUE::MIN, AXIS::X, pos);
@@ -266,14 +266,14 @@ XMFLOAT2 FluidSimulation::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> 
 	);
 }
 
-float FluidSimulation::_interpolation(float value1, float value2, float ratio)
+float GridFluidSim::_interpolation(float value1, float value2, float ratio)
 {
 	return value1 * (1.0f - ratio) + value2 * ratio;
 }
 
 #pragma region Implementation
 // ################################## Implementation ####################################
-void FluidSimulation::iUpdate()
+void GridFluidSim::iUpdate()
 {
 	float standardTimeStep = 0.1f;
 	int maxSize = static_cast<int>(standardTimeStep / _timeStep);
@@ -285,7 +285,7 @@ void FluidSimulation::iUpdate()
 	Sleep(_delayTime);
 }
 
-void FluidSimulation::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
+void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
 {
 	_gridState.clear();
 	_gridPressure.clear();
@@ -301,7 +301,7 @@ void FluidSimulation::iResetSimulationState(vector<ConstantBuffer>& constantBuff
 	iCreateObjectParticle(constantBuffer);
 }
 
-vector<Vertex> FluidSimulation::iGetVertice()
+vector<Vertex> GridFluidSim::iGetVertice()
 {
 	vector<Vertex> vertices;
 
@@ -325,7 +325,7 @@ vector<Vertex> FluidSimulation::iGetVertice()
 	return vertices;
 }
 
-vector<unsigned int> FluidSimulation::iGetIndice()
+vector<unsigned int> GridFluidSim::iGetIndice()
 {
 	std::vector<unsigned int> indices;
 	indices.push_back(0); indices.push_back(1); indices.push_back(2);
@@ -340,7 +340,7 @@ vector<unsigned int> FluidSimulation::iGetIndice()
 	return indices;
 }
 
-XMFLOAT4 FluidSimulation::iGetColor(int i)
+XMFLOAT4 GridFluidSim::iGetColor(int i)
 {
 	float magnitude;
 	switch (_gridState[i])
@@ -372,17 +372,17 @@ XMFLOAT4 FluidSimulation::iGetColor(int i)
 	}
 }
 
-int FluidSimulation::iGetObjectCount()
+int GridFluidSim::iGetObjectCount()
 {
 	return _gridCount;
 }
 
-XMFLOAT2 FluidSimulation::iGetParticlePos(int i)
+XMFLOAT2 GridFluidSim::iGetParticlePos(int i)
 {
 	return _particlePosition[i];
 }
 
-void FluidSimulation::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
+void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	// ###### Create Object ######
 	for (int i = 0; i < _gridCount; i++)

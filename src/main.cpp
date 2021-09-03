@@ -22,8 +22,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     for (auto& sim : fluidsim)
     {
-        dynamic_cast<FluidSimulation*>(sim)->setGridDomain(30, 20);
-        dynamic_cast<FluidSimulation*>(sim)->initialize();
+        dynamic_cast<GridFluidSim*>(sim)->setGridDomain(30, 20);
+        dynamic_cast<GridFluidSim*>(sim)->initialize();
     }
 
     DX12App* dxapp = new DX12App();

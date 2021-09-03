@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace std;
 
 EulerianGasSimulation::EulerianGasSimulation(float timeStep)
-	:FluidSimulation::FluidSimulation(timeStep)
+	:GridFluidSim::GridFluidSim(timeStep)
 {
 	_delayTime = 10;
 }
