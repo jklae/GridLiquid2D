@@ -20,6 +20,17 @@ FluidSimManager::~FluidSimManager()
 
 }
 
+void FluidSimManager::_setDrawFlag(FLAG flagType, bool flag)
+{
+	int i = static_cast<int>(flagType);
+	_drawFlag[i] = flag;
+}
+
+bool FluidSimManager::_getDrawFlag(FLAG flagType)
+{
+	int i = static_cast<int>(flagType);
+	return _drawFlag[i];
+}
 
 
 #pragma region Implementation
@@ -209,19 +220,6 @@ void FluidSimManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuff
 void FluidSimManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)
 {
 	_sim[_simIndex]->iDraw(mCommandList, size, indexCount, _drawFlag, i);
-}
-
-
-void FluidSimManager::_setDrawFlag(FLAG flagType, bool flag)
-{
-	int i = static_cast<int>(flagType);
-	_drawFlag[i] = flag;
-}
-
-bool FluidSimManager::_getDrawFlag(FLAG flagType)
-{
-	int i = static_cast<int>(flagType);
-	return _drawFlag[i];
 }
 // #######################################################################################
 #pragma endregion
