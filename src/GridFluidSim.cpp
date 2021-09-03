@@ -13,6 +13,8 @@ GridFluidSim::~GridFluidSim()
 	
 }
 
+
+
 void GridFluidSim::setGridDomain(int xCount, int yCount)
 {
 	// 2 are boundaries.
@@ -37,9 +39,9 @@ void GridFluidSim::initialize()
 			{
 				_gridState.push_back(STATE::BOUNDARY);
 			}
-			else if ( ((N + 1) / 2 - 9 < i) 
+			else if (((N + 1) / 2 - 9 < i)
 				&& (i < (N + 1) / 2 + 9)
-				&& ((N + 1) / 2 - 9 < j) 
+				&& ((N + 1) / 2 - 9 < j)
 				&& (j < (N + 1) / 2 + 9)
 				)
 			{
@@ -271,7 +273,7 @@ void GridFluidSim::iUpdate()
 	int maxSize = static_cast<int>(standardTimeStep / _timeStep);
 	for (int i = 0; i < maxSize; i++)
 	{
-		_update();
+		update();
 	}
 
 	Sleep(_delayTime);
@@ -417,7 +419,7 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 					{
 						_particleVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
 						_particlePosition.push_back(
-							{ -0.3f + pos.x + k * _particleScale * 1.1f, 
+							{ -0.3f + pos.x + k * _particleScale * 1.1f,
 							  -0.3f + pos.y + m * _particleScale * 1.1f });
 
 						struct ConstantBuffer particleCB;
@@ -444,11 +446,6 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 
 	constantBuffer.push_back(velocityCB);
 	// ###### ###### ###### ######
-}
-
-void GridFluidSim::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
-{
-
 }
 // #######################################################################################
 #pragma endregion

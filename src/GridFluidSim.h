@@ -1,35 +1,32 @@
 #pragma once
-#include "Win32App.h" // This includes ISimulation.h
+#include "dx12header.h"
 
-class GridFluidSim : public ISimulation
+class GridFluidSim
 {
 public:
 	GridFluidSim(float timeStep, int delayTime);
-	~GridFluidSim() override;
+	virtual ~GridFluidSim();
 
 	void setGridDomain(int xCount, int yCount);
-
 	void initialize();
 
-#pragma region Implementation
-	// ################################## Implementation ####################################
-	void iUpdate() override;
-	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer) override;
+	virtual void update() = 0;
 
-	std::vector<Vertex> iGetVertice() override;
-	std::vector<unsigned int> iGetIndice() override;
-	DirectX::XMFLOAT4 iGetColor(int i) override;
+	void iUpdate();
+	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer);
+
+	std::vector<Vertex> iGetVertice();
+	std::vector<unsigned int> iGetIndice();
+	DirectX::XMFLOAT4 iGetColor(int i);
 
 
-	int iGetObjectCount() override;
-	DirectX::XMFLOAT2 iGetParticlePos(int i) override;
+	int iGetObjectCount();
+	DirectX::XMFLOAT2 iGetParticlePos(int i);
 
-	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
-	void iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
-	// #######################################################################################
-#pragma endregion
+	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer);
 
 protected:
+
 	inline int _INDEX(int i, int j) { return (i + _gridCount * j); };
 
 	// Grid
@@ -48,9 +45,7 @@ protected:
 
 	float _timeStep = 0.0f;
 	int _delayTime = 0;
-
-
-	virtual void _update() = 0;
+	
 
 	virtual void _force() = 0;
 	virtual void _advect() = 0;

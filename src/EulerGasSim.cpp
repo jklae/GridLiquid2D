@@ -6,7 +6,6 @@ using namespace std;
 EulerGasSim::EulerGasSim(float timeStep, int delayTime)
 	:GridFluidSim::GridFluidSim(timeStep, delayTime)
 {
-	_delayTime = 10;
 }
 
 EulerGasSim::~EulerGasSim()
@@ -15,7 +14,7 @@ EulerGasSim::~EulerGasSim()
 }
 
 
-void EulerGasSim::_update()
+void EulerGasSim::update()
 {
 	_force();
 

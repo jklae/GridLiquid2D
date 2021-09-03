@@ -12,7 +12,7 @@ PICLiquidSim::~PICLiquidSim()
 {
 }
 
-void PICLiquidSim::_update()
+void PICLiquidSim::update()
 {
 
 	//_project();
@@ -57,43 +57,38 @@ void PICLiquidSim::_advect()
 		int maxXIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::X, pos);
 		int maxYIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::Y, pos);
 
-		float xRatio = 0.5f;
-		float yRatio = 0.5f;
+		float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
+		float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);
 
-		float ppX1 = _interpolation(0.002f, 0.003f, yRatio);
-		float ppX2 = _interpolation(0.025f, 0.021f, yRatio);
-		float pX = _interpolation(ppX1, ppX2, xRatio);
-		float pY = _interpolation(_interpolation(-0.09f, 0.006f, yRatio), _interpolation(0.02f, 0.08f, yRatio), xRatio);
-
-		float minMin_minMax_X = pX * (1.0f - xRatio);
-		float maxMin_maxMax_X = pX * xRatio;
+		float minMin_minMax_X = _particleVelocity[i].x * (1.0f - xRatio);
+		float maxMin_maxMax_X = _particleVelocity[i].x * xRatio;
 		float minMinX = minMin_minMax_X * (1.0f - yRatio);
 		float minMaxX = minMin_minMax_X * yRatio;
 		float maxMinX = maxMin_maxMax_X * (1.0f - yRatio);
 		float maxMaxX = maxMin_maxMax_X * yRatio;
 
-		float minMin_minMax_Y = pY * (1.0f - xRatio);
-		float maxMin_maxMax_Y = pY * xRatio;
+		float minMin_minMax_Y = _particleVelocity[i].y * (1.0f - xRatio);
+		float maxMin_maxMax_Y = _particleVelocity[i].y * xRatio;
 		float minMinY = minMin_minMax_Y * (1.0f - yRatio);
 		float minMaxY = minMin_minMax_Y * yRatio;
 		float maxMinY = minMin_minMax_Y * (1.0f - yRatio);
 		float maxMaxY = minMin_minMax_Y * yRatio;
 
-		//cout << ppX1 << ", " << ppX2 << ", " << minMin_minMax_X << ", " << maxMin_maxMax_X << endl;
-		//cout << minMinX << ", " << minMinY << ", " << minMaxX << ", " << minMaxY << endl;
-		//cout << maxMinX << ", " << maxMinY << ", " << maxMaxX << ", " << maxMaxY << endl;
+		/*cout << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
+		cout << minMinX << ", " << minMinY << ", " << minMaxX << ", " << minMaxY << endl;
+		cout << maxMinX << ", " << maxMinY << ", " << maxMaxX << ", " << maxMaxY << endl;*/
 
-		_gridVelocity[_INDEX(minXIndex, minYIndex)].x = _particleVelocity[i].x;
-		_gridVelocity[_INDEX(minXIndex, minYIndex)].y = _particleVelocity[i].y;
+		/*_gridVelocity[_INDEX(minXIndex, minYIndex)].x += minMinX;
+		_gridVelocity[_INDEX(minXIndex, minYIndex)].y += minMinY;
 
-		/*_gridVelocity[_INDEX(minXIndex, maxYIndex)].x = minMaxX;
-		_gridVelocity[_INDEX(minXIndex, maxYIndex)].y = minMaxY;
+		_gridVelocity[_INDEX(minXIndex, maxYIndex)].x += minMaxX;
+		_gridVelocity[_INDEX(minXIndex, maxYIndex)].y += minMaxY;
 
-		_gridVelocity[_INDEX(maxXIndex, minYIndex)].x = maxMinX;
-		_gridVelocity[_INDEX(maxXIndex, minYIndex)].y = maxMinY;
+		_gridVelocity[_INDEX(maxXIndex, minYIndex)].x += maxMinX;
+		_gridVelocity[_INDEX(maxXIndex, minYIndex)].y += maxMinY;
 
-		_gridVelocity[_INDEX(maxXIndex, maxYIndex)].x = maxMaxX;
-		_gridVelocity[_INDEX(maxXIndex, maxYIndex)].y = maxMaxY;*/
+		_gridVelocity[_INDEX(maxXIndex, maxYIndex)].x += maxMaxX;
+		_gridVelocity[_INDEX(maxXIndex, maxYIndex)].y += maxMaxY;*/
 		
 
 		//_interpolation(_interpolation(minMinVelocity.x, minMaxVelocity.x, yRatio), _interpolation(maxMinVelocity.x, maxMaxVelocity.x, yRatio), xRatio),

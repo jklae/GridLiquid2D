@@ -5,10 +5,11 @@ class EulerGasSim : public GridFluidSim
 {
 public:
 	EulerGasSim(float timeStep, int delayTime);
-	~EulerGasSim() final;
+	~EulerGasSim() override;
+
+	void update() override;
 
 private:
-	void _update() override;
 
 	void _force() override;
 	void _advect() override;

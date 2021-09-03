@@ -5,10 +5,11 @@ class PICLiquidSim: public GridFluidSim
 {
 public:
 	PICLiquidSim(float timeStep, int delayTime);
-	~PICLiquidSim();
+	~PICLiquidSim() override;
+
+	void update() override;
 
 private:
-	void _update() override;
 
 	void _force() override;
 	void _advect() override;
