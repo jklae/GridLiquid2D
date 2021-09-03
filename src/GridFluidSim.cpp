@@ -1,5 +1,6 @@
 ﻿#include "GridFluidSim.h"
 
+using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
@@ -397,6 +398,42 @@ void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBu
 
 	}
 
+}
+
+void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, vector<ConstantBuffer>& constantBuffer, UINT indexCount, bool* drawFlag, int i)
+{
+	int objectEndIndex = _gridCount * _gridCount;
+	int size = constantBuffer.size();// objectEndIndex* _particleCount* _particleCount;
+
+	if (i < objectEndIndex)
+	{
+		if (drawFlag[(int)FLAG::GRID])
+		{
+			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		}
+	}
+	else if (i >= objectEndIndex && i < size - 1)
+	{
+		if (drawFlag[(int)FLAG::PARTICLE])
+		{
+			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		}
+	}
+	else
+	{
+		if (drawFlag[(int)FLAG::VELOCITY])
+		{
+			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+			mCommandList->DrawIndexedInstanced(
+				indexCount - 6, //count
+				1,
+				6, //  index start 
+				4, //  vertex start
+				0);
+		}
+	}
 }
 
 void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)

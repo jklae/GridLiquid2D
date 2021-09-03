@@ -29,9 +29,16 @@ public:
 	void iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
+	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, std::vector<ConstantBuffer>& constantBuffer, UINT indexCount, int i) override;
 
 	int getI() override;
 	void setI(int i) override;
+
+
+	void setDrawFlag(FLAG flagType, bool flag);
+
+	bool getDrawFlag(FLAG flagType);
+
 	// #######################################################################################
 #pragma endregion
 
@@ -48,5 +55,8 @@ private:
 		SOLVER_GROUP, EULERIAN_RADIO, PIC_RADIO, FLIP_RADIO,
 		DELAY_BAR
 	};
+
+
+	bool _drawFlag[3] = { true, true, false };
 };
 

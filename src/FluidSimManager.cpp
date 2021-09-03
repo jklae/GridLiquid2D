@@ -1,5 +1,6 @@
 #include "FluidSimManager.h"
 
+using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
@@ -59,9 +60,14 @@ void FluidSimManager::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 }
 
 
-void FluidSimManager::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
+void FluidSimManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuffer, int i)
 {
 	_sim[_simIndex]->iUpdateConstantBuffer(constantBuffer, i);
+}
+
+void FluidSimManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, vector<ConstantBuffer>& constantBuffer, UINT indexCount, int i)
+{
+	_sim[_simIndex]->iDraw(mCommandList, constantBuffer, indexCount, _drawFlag, i);
 }
 
 
@@ -72,6 +78,18 @@ int FluidSimManager::getI()
 void FluidSimManager::setI(int i)
 {
 	_simIndex = i;
+}
+
+void FluidSimManager::setDrawFlag(FLAG flagType, bool flag)
+{
+	int i = static_cast<int>(flagType);
+	_drawFlag[i] = flag;
+}
+
+bool FluidSimManager::getDrawFlag(FLAG flagType)
+{
+	int i = static_cast<int>(flagType);
+	return _drawFlag[i];
 }
 // #######################################################################################
 #pragma endregion
