@@ -17,7 +17,6 @@ public:
 
 	std::vector<Vertex> iGetVertice();
 	std::vector<unsigned int> iGetIndice();
-	DirectX::XMFLOAT4 iGetColor(int i);
 
 
 	int iGetObjectCount();
@@ -49,7 +48,8 @@ protected:
 
 	float _timeStep = 0.0f;
 	int _delayTime = 0;
-	
+
+	DirectX::XMFLOAT4 _getColor(int i);
 
 	virtual void _force() = 0;
 	virtual void _advect() = 0;

@@ -43,11 +43,6 @@ vector<unsigned int> FluidSimManager::iGetIndice()
 	return _sim[_simIndex]->iGetIndice();
 }
 
-XMFLOAT4 FluidSimManager::iGetColor(int i)
-{
-	return _sim[_simIndex]->iGetColor(i);
-}
-
 int FluidSimManager::iGetObjectCount()
 {
 	return _sim[_simIndex]->iGetObjectCount();

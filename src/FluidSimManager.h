@@ -21,7 +21,6 @@ public:
 
 	std::vector<Vertex> iGetVertice() override;
 	std::vector<unsigned int> iGetIndice() override;
-	DirectX::XMFLOAT4 iGetColor(int i) override;
 
 
 	int iGetObjectCount() override;

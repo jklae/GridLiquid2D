@@ -334,7 +334,7 @@ vector<unsigned int> GridFluidSim::iGetIndice()
 	return indices;
 }
 
-XMFLOAT4 GridFluidSim::iGetColor(int i)
+XMFLOAT4 GridFluidSim::_getColor(int i)
 {
 	float magnitude;
 	switch (_gridState[i])
@@ -380,7 +380,7 @@ void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBu
 	// Set object color					
 	if (i < objectEndIndex)
 	{
-		constantBuffer[i].color = iGetColor(i);
+		constantBuffer[i].color = _getColor(i);
 	}
 	// Set particle position
 	else if (i >= objectEndIndex && i < size - 1)
