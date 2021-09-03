@@ -31,11 +31,6 @@ public:
 
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i) override;
-
-	void setDrawFlag(FLAG flagType, bool flag);
-
-	bool getDrawFlag(FLAG flagType);
-
 	// #######################################################################################
 #pragma endregion
 
@@ -55,5 +50,7 @@ private:
 
 
 	bool _drawFlag[3] = { true, true, false };
+	void _setDrawFlag(FLAG flagType, bool flag);
+	bool _getDrawFlag(FLAG flagType);
 };
 

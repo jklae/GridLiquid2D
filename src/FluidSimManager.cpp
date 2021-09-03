@@ -107,18 +107,18 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 	{
 		case static_cast<int>(_COM::GRID_BTN) :
 		{
-			bool flag = !getDrawFlag(FLAG::GRID);
+			bool flag = !_getDrawFlag(FLAG::GRID);
 			SetDlgItemText(hwnd, static_cast<int>(_COM::GRID_BTN), flag ? L"Grid : ON " : L"Grid : OFF");
-			setDrawFlag(FLAG::GRID, flag);
+			_setDrawFlag(FLAG::GRID, flag);
 			dxapp->draw();
 		}
 		break;
 
 		case static_cast<int>(_COM::PARTICLE_BTN) :
 		{
-			bool flag = !getDrawFlag(FLAG::PARTICLE);
+			bool flag = !_getDrawFlag(FLAG::PARTICLE);
 			SetDlgItemText(hwnd, static_cast<int>(_COM::PARTICLE_BTN), flag ? L"Particle : ON " : L"Particle : OFF");
-			setDrawFlag(FLAG::PARTICLE, flag);
+			_setDrawFlag(FLAG::PARTICLE, flag);
 			dxapp->draw();
 
 		}
@@ -126,9 +126,9 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 		case static_cast<int>(_COM::VELOCITY_BTN) :
 		{
-			bool flag = !getDrawFlag(FLAG::VELOCITY);
+			bool flag = !_getDrawFlag(FLAG::VELOCITY);
 			SetDlgItemText(hwnd, static_cast<int>(_COM::VELOCITY_BTN), flag ? L"Velocity : ON " : L"Velocity : OFF");
-			setDrawFlag(FLAG::VELOCITY, flag);
+			_setDrawFlag(FLAG::VELOCITY, flag);
 			dxapp->draw();
 		}
 		break;
@@ -212,13 +212,13 @@ void FluidSimManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int
 }
 
 
-void FluidSimManager::setDrawFlag(FLAG flagType, bool flag)
+void FluidSimManager::_setDrawFlag(FLAG flagType, bool flag)
 {
 	int i = static_cast<int>(flagType);
 	_drawFlag[i] = flag;
 }
 
-bool FluidSimManager::getDrawFlag(FLAG flagType)
+bool FluidSimManager::_getDrawFlag(FLAG flagType)
 {
 	int i = static_cast<int>(flagType);
 	return _drawFlag[i];
