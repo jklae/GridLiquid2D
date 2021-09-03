@@ -1,7 +1,7 @@
 #pragma once
-#include "EulerianSimulation.h"
+#include "FluidSimulation.h"
 
-class PICLiquidSimulation : public EulerianSimulation
+class PICLiquidSimulation : public FluidSimulation
 {
 public:
 	PICLiquidSimulation(float timeStep);

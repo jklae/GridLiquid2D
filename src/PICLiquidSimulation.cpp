@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace std;
 
 PICLiquidSimulation::PICLiquidSimulation(float timeStep)
-	:EulerianSimulation(timeStep)
+	:FluidSimulation(timeStep)
 {
 }
 

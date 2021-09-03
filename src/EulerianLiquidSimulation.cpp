@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace std;
 
 EulerianLiquidSimulation::EulerianLiquidSimulation(float timeStep)
-	:EulerianSimulation::EulerianSimulation(timeStep)
+	:FluidSimulation::FluidSimulation(timeStep)
 {
 }
 
