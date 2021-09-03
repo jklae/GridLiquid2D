@@ -1,11 +1,11 @@
 #pragma once
 #include "GridFluidSim.h"
 
-class EulerianGasSimulation : public GridFluidSim
+class EulerGasSim : public GridFluidSim
 {
 public:
-	EulerianGasSimulation(float timeStep);
-	~EulerianGasSimulation() final;
+	EulerGasSim(float timeStep);
+	~EulerGasSim() final;
 
 private:
 	void _update() override;

@@ -1,21 +1,21 @@
-#include "EulerianGasSimulation.h"
+#include "EulerGasSim.h"
 
 using namespace DirectX;
 using namespace std;
 
-EulerianGasSimulation::EulerianGasSimulation(float timeStep)
+EulerGasSim::EulerGasSim(float timeStep)
 	:GridFluidSim::GridFluidSim(timeStep)
 {
 	_delayTime = 10;
 }
 
-EulerianGasSimulation::~EulerianGasSimulation()
+EulerGasSim::~EulerGasSim()
 {
 
 }
 
 
-void EulerianGasSimulation::_update()
+void EulerGasSim::_update()
 {
 	_force();
 
@@ -29,12 +29,12 @@ void EulerianGasSimulation::_update()
 }
 
 
-void EulerianGasSimulation::_force()
+void EulerGasSim::_force()
 {
 	_gridVelocity[_INDEX(5, 5)] = { 1.0f, 1.0f };
 }
 
-void EulerianGasSimulation::_advect()
+void EulerGasSim::_advect()
 {
 	int N = _gridCount - 2;
 	float t0step = _timeStep * N;
@@ -77,12 +77,12 @@ void EulerianGasSimulation::_advect()
 	_setBoundary(_gridVelocity);
 }
 
-void EulerianGasSimulation::_diffuse()
+void EulerGasSim::_diffuse()
 {
 
 }
 
-void EulerianGasSimulation::_project()
+void EulerGasSim::_project()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
