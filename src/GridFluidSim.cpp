@@ -3,9 +3,9 @@
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(float timeStep)
+GridFluidSim::GridFluidSim(float timeStep, int delayTime)
+	:_timeStep(timeStep), _delayTime(delayTime)
 {
-	_timeStep = timeStep;
 }
 
 GridFluidSim::~GridFluidSim()
@@ -13,20 +13,10 @@ GridFluidSim::~GridFluidSim()
 	
 }
 
-int GridFluidSim::getDelayTime()
-{
-	return _delayTime;
-}
-
 void GridFluidSim::setGridDomain(int xCount, int yCount)
 {
 	// 2 are boundaries.
 	_gridCount = xCount + 2;
-}
-
-void GridFluidSim::setDelayTime(int delayTime)
-{
-	_delayTime = delayTime;
 }
 
 
@@ -271,6 +261,8 @@ float GridFluidSim::_interpolation(float value1, float value2, float ratio)
 	return value1 * (1.0f - ratio) + value2 * ratio;
 }
 
+
+
 #pragma region Implementation
 // ################################## Implementation ####################################
 void GridFluidSim::iUpdate()
@@ -419,12 +411,14 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
-				for (int k = 0; k < 4; k++)
+				for (int k = 0; k < _particleCount; k++)
 				{
-					for (int m = 0; m < 4; m++)
+					for (int m = 0; m < _particleCount; m++)
 					{
 						_particleVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
-						_particlePosition.push_back({ -0.3f + pos.x + k * _particleScale * 1.1f, -0.3f + pos.y + m * _particleScale * 1.1f });
+						_particlePosition.push_back(
+							{ -0.3f + pos.x + k * _particleScale * 1.1f, 
+							  -0.3f + pos.y + m * _particleScale * 1.1f });
 
 						struct ConstantBuffer particleCB;
 						particleCB.world = transformMatrix(pos.x, pos.y, -1.0f, _particleScale);
@@ -452,5 +446,9 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 	// ###### ###### ###### ######
 }
 
+void GridFluidSim::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)
+{
+
+}
 // #######################################################################################
 #pragma endregion

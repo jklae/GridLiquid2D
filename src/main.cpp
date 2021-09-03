@@ -16,9 +16,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     winApp.initialize(hInstance);
 
     std::vector<ISimulation*> fluidsim;
-    fluidsim.push_back(new EulerLiquidSim(0.01f));
-    fluidsim.push_back(new EulerGasSim(0.1f));
-    fluidsim.push_back(new PICLiquidSim(0.01f));
+    fluidsim.push_back(new EulerLiquidSim(0.01f, 0));
+    fluidsim.push_back(new EulerGasSim(0.1f, 10));
+    fluidsim.push_back(new PICLiquidSim(0.01f, 0));
 
     for (auto& sim : fluidsim)
     {

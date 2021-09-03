@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerLiquidSim::EulerLiquidSim(float timeStep)
-	:GridFluidSim::GridFluidSim(timeStep)
+EulerLiquidSim::EulerLiquidSim(float timeStep, int delayTime)
+	:GridFluidSim::GridFluidSim(timeStep, delayTime)
 {
 }
 

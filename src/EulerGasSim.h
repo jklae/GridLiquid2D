@@ -4,7 +4,7 @@
 class EulerGasSim : public GridFluidSim
 {
 public:
-	EulerGasSim(float timeStep);
+	EulerGasSim(float timeStep, int delayTime);
 	~EulerGasSim() final;
 
 private:

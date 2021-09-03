@@ -4,13 +4,10 @@
 class GridFluidSim : public ISimulation
 {
 public:
-	GridFluidSim(float timeStep);
+	GridFluidSim(float timeStep, int delayTime);
 	~GridFluidSim() override;
 
-	int getDelayTime();
-
 	void setGridDomain(int xCount, int yCount);
-	void setDelayTime(int delayTime);
 
 	void initialize();
 
@@ -28,6 +25,7 @@ public:
 	DirectX::XMFLOAT2 iGetParticlePos(int i) override;
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
+	void iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 	// #######################################################################################
 #pragma endregion
 
@@ -46,6 +44,7 @@ protected:
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2;
+	int _particleCount = 4;
 
 	float _timeStep = 0.0f;
 	int _delayTime = 0;

@@ -4,7 +4,7 @@
 class PICLiquidSim: public GridFluidSim
 {
 public:
-	PICLiquidSim(float timeStep);
+	PICLiquidSim(float timeStep, int delayTime);
 	~PICLiquidSim();
 
 private:
