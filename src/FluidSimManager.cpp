@@ -54,12 +54,9 @@ void FluidSimManager::iCreateObjectParticle(vector<ConstantBuffer>& constantBuff
 	_sim[_simIndex]->iCreateObjectParticle(constantBuffer);
 }
 
-LRESULT FluidSimManager::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
+void FluidSimManager::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
 {
-	switch (msg)
-	{
-	case WM_CREATE:
-	{
+	
 		CreateWindow(L"button", L"Grid : ON ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 			90, 30, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::GRID_BTN), hInstance, NULL);
 		CreateWindow(L"button", L"Particle : ON ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
@@ -103,11 +100,13 @@ LRESULT FluidSimManager::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 
 		/*SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 		SetScrollPos(scroll, SB_CTL, 10, TRUE);*/
-	}
-	return 0;
+	
+	
+}
 
-	case WM_COMMAND:
-	{
+void FluidSimManager::iSubWndProc2(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
+{
+	
 		switch (LOWORD(wParam))
 		{
 			case static_cast<int>(_COM::GRID_BTN) :
@@ -204,40 +203,9 @@ LRESULT FluidSimManager::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM 
 			}
 			break;
 		}
-	}
-	return 0;
+	
 
-	//case WM_HSCROLL:
-	//{
-	//	switch (LOWORD(wParam))
-	//	{
-	//		case SB_THUMBTRACK:
-	//			cout << HIWORD(wParam) << endl;
-	//			//_sim[_simIndex]->
-	//			SetScrollPos((HWND)lParam, SB_CTL, HIWORD(wParam), TRUE);
-	//			break;
-	//	}
-	//}
-	//	return 0;
-
-	// WM_DESTROY is sent when the window is being destroyed.
-	case WM_DESTROY:
-		PostQuitMessage(0);
-		return 0;
-
-	case WM_MOVING:
-		//_synchronizeWinPos(_WINDOW::MAIN);
-		return 0;
-
-	case WM_SIZE:
-		//_switchWinState(_WINDOW::MAIN);
-		return 0;
-
-	}
-
-	return DefWindowProc(hwnd, msg, wParam, lParam);
 }
-
 
 void FluidSimManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuffer, int i)
 {
