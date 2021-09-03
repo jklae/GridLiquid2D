@@ -1,18 +1,18 @@
-#include "PICLiquidSimulation.h"
+#include "PICLiquidSim.h"
 
 using namespace DirectX;
 using namespace std;
 
-PICLiquidSimulation::PICLiquidSimulation(float timeStep)
+PICLiquidSim::PICLiquidSim(float timeStep)
 	:GridFluidSim::GridFluidSim(timeStep)
 {
 }
 
-PICLiquidSimulation::~PICLiquidSimulation()
+PICLiquidSim::~PICLiquidSim()
 {
 }
 
-void PICLiquidSimulation::_update()
+void PICLiquidSim::_update()
 {
 
 	//_project();
@@ -24,7 +24,7 @@ void PICLiquidSimulation::_update()
 	_paintGrid();
 }
 
-void PICLiquidSimulation::_force()
+void PICLiquidSim::_force()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -36,7 +36,7 @@ void PICLiquidSimulation::_force()
 	}
 }
 
-void PICLiquidSimulation::_advect()
+void PICLiquidSim::_advect()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -103,12 +103,12 @@ void PICLiquidSimulation::_advect()
 	_setBoundary(_gridVelocity);
 }
 
-void PICLiquidSimulation::_diffuse()
+void PICLiquidSim::_diffuse()
 {
 
 }
 
-void PICLiquidSimulation::_project()
+void PICLiquidSim::_project()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)

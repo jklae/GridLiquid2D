@@ -1,11 +1,11 @@
 #pragma once
 #include "GridFluidSim.h"
 
-class PICLiquidSimulation : public GridFluidSim
+class PICLiquidSim: public GridFluidSim
 {
 public:
-	PICLiquidSimulation(float timeStep);
-	~PICLiquidSimulation();
+	PICLiquidSim(float timeStep);
+	~PICLiquidSim();
 
 private:
 	void _update() override;
