@@ -67,6 +67,14 @@ void FluidSimManager::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPa
 {
 
 }
+
+
+void FluidSimManager::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
+{
+	_sim[_simIndex]->iUpdateConstantBuffer(constantBuffer, i);
+}
+
+
 int FluidSimManager::getI()
 {
 	return _simIndex;

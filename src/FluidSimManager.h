@@ -13,7 +13,6 @@ public:
 	FluidSimManager(std::vector<GridFluidSim*>& sim);
 	~FluidSimManager() override;
 
-	int _simIndex = 2;
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
@@ -31,6 +30,8 @@ public:
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
 	void iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) override;
 
+	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
+
 	int getI() override;
 	void setI(int i) override;
 	// #######################################################################################
@@ -39,7 +40,15 @@ public:
 
 private:
 	std::vector<GridFluidSim*> _sim;
+	int _simIndex = 2;
 
-
+	enum class _COM
+	{
+		GRID_BTN, PARTICLE_BTN, VELOCITY_BTN,
+		PLAY, STOP, NEXTSTEP,
+		STATE_GROUP, LIQUID_RADIO, GAS_RADIO,
+		SOLVER_GROUP, EULERIAN_RADIO, PIC_RADIO, FLIP_RADIO,
+		DELAY_BAR
+	};
 };
 

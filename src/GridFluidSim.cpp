@@ -376,6 +376,33 @@ XMFLOAT2 GridFluidSim::iGetParticlePos(int i)
 	return _particlePosition[i];
 }
 
+void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
+{
+	int objectEndIndex = _gridCount * _gridCount;
+	int size = constantBuffer.size();
+
+	// Set object color					
+	if (i < objectEndIndex)
+	{
+		constantBuffer[i].color = iGetColor(i);
+	}
+	// Set particle position
+	else if (i >= objectEndIndex && i < size - 1)
+	{												// Due to velocity field
+		int particleIndex = i - objectEndIndex;
+		XMFLOAT2 pos = _particlePosition[particleIndex];
+
+		constantBuffer[i].world._41 = pos.x;
+		constantBuffer[i].world._42 = pos.y;
+
+	}// Set velocity
+	else
+	{
+
+	}
+
+}
+
 void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	// ###### Create Object ######

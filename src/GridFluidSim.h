@@ -23,6 +23,8 @@ public:
 	int iGetObjectCount();
 	DirectX::XMFLOAT2 iGetParticlePos(int i);
 
+	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i);
+
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer);
 
 protected:
