@@ -25,7 +25,6 @@ public:
 
 
 	int iGetObjectCount() override;
-	DirectX::XMFLOAT2 iGetParticlePos(int i) override;
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
 	void iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) override;

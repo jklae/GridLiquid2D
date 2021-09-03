@@ -53,11 +53,6 @@ int FluidSimManager::iGetObjectCount()
 	return _sim[_simIndex]->iGetObjectCount();
 }
 
-XMFLOAT2 FluidSimManager::iGetParticlePos(int i)
-{
-	return _sim[_simIndex]->iGetParticlePos(i);
-}
-
 void FluidSimManager::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	_sim[_simIndex]->iCreateObjectParticle(constantBuffer);

@@ -371,10 +371,6 @@ int GridFluidSim::iGetObjectCount()
 	return _gridCount;
 }
 
-XMFLOAT2 GridFluidSim::iGetParticlePos(int i)
-{
-	return _particlePosition[i];
-}
 
 void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
 {
