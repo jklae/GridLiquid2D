@@ -10,7 +10,7 @@
 class FluidSimManager : public ISimulation
 {
 public:
-	FluidSimManager();
+	FluidSimManager(std::vector<GridFluidSim*>& sim);
 	~FluidSimManager() override;
 
 	int _simIndex = 2;

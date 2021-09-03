@@ -10,13 +10,25 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
+    // Window init
     Win32App winApp(800, 800);
     winApp.initialize(hInstance);
 
-    FluidSimManager* fluidsim = new FluidSimManager();
-    //fluidsim->setGridDomain(30, 20);
-    //fluidsim->initialize();
+    // Simulation init
+    std::vector<GridFluidSim*> sims;
+    sims.push_back(new EulerLiquidSim(0.01f, 0));
+    sims.push_back(new EulerGasSim(0.1f, 10));
+    sims.push_back(new PICLiquidSim(0.01f, 0));
 
+    for (auto& sim : sims)
+    {
+        sim->setGridDomain(30, 20);
+        sim->initialize();
+    }
+
+    FluidSimManager* fluidsim = new FluidSimManager(sims);
+
+    // DirectX init
     DX12App* dxapp = new DX12App();
     dxapp->setProjectionType(PROJ::ORTHOGRAPHIC);
 

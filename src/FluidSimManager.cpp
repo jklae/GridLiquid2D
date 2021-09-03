@@ -5,17 +5,9 @@ using namespace std;
 
 
 
-FluidSimManager::FluidSimManager()
+FluidSimManager::FluidSimManager(vector<GridFluidSim*>& sim)
 {
-	_sim.push_back(new EulerLiquidSim(0.01f, 0));
-	_sim.push_back(new EulerGasSim(0.1f, 10));
-	_sim.push_back(new PICLiquidSim(0.01f, 0));
-
-	for (auto& sim : _sim)
-	{
-		dynamic_cast<GridFluidSim*>(sim)->setGridDomain(30, 20);
-		dynamic_cast<GridFluidSim*>(sim)->initialize();
-	}
+	_sim = sim;
 }
 
 FluidSimManager::~FluidSimManager()
