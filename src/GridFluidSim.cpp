@@ -400,10 +400,9 @@ void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBu
 
 }
 
-void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, vector<ConstantBuffer>& constantBuffer, UINT indexCount, bool* drawFlag, int i)
+void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i)
 {
 	int objectEndIndex = _gridCount * _gridCount;
-	int size = constantBuffer.size();// objectEndIndex* _particleCount* _particleCount;
 
 	if (i < objectEndIndex)
 	{

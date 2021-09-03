@@ -65,9 +65,9 @@ void FluidSimManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuff
 	_sim[_simIndex]->iUpdateConstantBuffer(constantBuffer, i);
 }
 
-void FluidSimManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, vector<ConstantBuffer>& constantBuffer, UINT indexCount, int i)
+void FluidSimManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)
 {
-	_sim[_simIndex]->iDraw(mCommandList, constantBuffer, indexCount, _drawFlag, i);
+	_sim[_simIndex]->iDraw(mCommandList, size, indexCount, _drawFlag, i);
 }
 
 
