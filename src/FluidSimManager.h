@@ -21,8 +21,6 @@ public:
 
 	std::vector<Vertex> iGetVertice() override;
 	std::vector<unsigned int> iGetIndice() override;
-
-
 	int iGetObjectCount() override;
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;

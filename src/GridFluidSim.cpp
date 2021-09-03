@@ -406,7 +406,7 @@ void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int si
 
 	if (i < objectEndIndex)
 	{
-		if (drawFlag[(int)FLAG::GRID])
+		if (drawFlag[static_cast<int>(FLAG::GRID)])
 		{
 			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -414,7 +414,7 @@ void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int si
 	}
 	else if (i >= objectEndIndex && i < size - 1)
 	{
-		if (drawFlag[(int)FLAG::PARTICLE])
+		if (drawFlag[static_cast<int>(FLAG::PARTICLE)])
 		{
 			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
@@ -422,7 +422,7 @@ void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int si
 	}
 	else
 	{
-		if (drawFlag[(int)FLAG::VELOCITY])
+		if (drawFlag[static_cast<int>(FLAG::VELOCITY)])
 		{
 			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
 			mCommandList->DrawIndexedInstanced(

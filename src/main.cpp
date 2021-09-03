@@ -10,8 +10,6 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-   
-
     // Simulation init
     std::vector<GridFluidSim*> sims;
     sims.push_back(new EulerLiquidSim(0.01f, 0));
