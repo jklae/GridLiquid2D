@@ -33,50 +33,42 @@ FluidSimManager::~FluidSimManager()
 // ################################## Implementation ####################################
 void FluidSimManager::iUpdate()
 {
-	GridFluidSim* sim = _sim[_simIndex];
-	sim->iUpdate();
+	_sim[_simIndex]->iUpdate();
 }
 
 void FluidSimManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
 {
-	GridFluidSim* sim = _sim[_simIndex];
-	sim->iResetSimulationState(constantBuffer);
+	_sim[_simIndex]->iResetSimulationState(constantBuffer);
 }
 
 vector<Vertex> FluidSimManager::iGetVertice()
 {
-	GridFluidSim* sim = _sim[_simIndex];
-	return sim->iGetVertice();;
+	return _sim[_simIndex]->iGetVertice();;
 }
 
 vector<unsigned int> FluidSimManager::iGetIndice()
 {
-	GridFluidSim* sim = _sim[_simIndex];
-	return sim->iGetIndice();
+	return _sim[_simIndex]->iGetIndice();
 }
 
 XMFLOAT4 FluidSimManager::iGetColor(int i)
 {
-	GridFluidSim* sim = _sim[_simIndex];
-	return sim->iGetColor(i);
+	return _sim[_simIndex]->iGetColor(i);
 }
 
 int FluidSimManager::iGetObjectCount()
 {
-	GridFluidSim* sim = _sim[_simIndex];
-	return sim->iGetObjectCount();
+	return _sim[_simIndex]->iGetObjectCount();
 }
 
 XMFLOAT2 FluidSimManager::iGetParticlePos(int i)
 {
-	GridFluidSim* sim = _sim[_simIndex];
-	return sim->iGetParticlePos(i);
+	return _sim[_simIndex]->iGetParticlePos(i);
 }
 
 void FluidSimManager::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
-	GridFluidSim* sim = _sim[_simIndex];
-	sim->iCreateObjectParticle(constantBuffer);
+	_sim[_simIndex]->iCreateObjectParticle(constantBuffer);
 }
 
 void FluidSimManager::iSubWndProc(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam)

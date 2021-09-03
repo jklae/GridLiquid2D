@@ -31,7 +31,7 @@ void PICLiquidSim::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 1.0f * _timeStep;
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 1.0f * _timeStep;
 		}
 	}
 }
@@ -52,10 +52,10 @@ void PICLiquidSim::_advect()
 	{
 		XMFLOAT2 pos = _particlePosition[i];
 
-		int minXIndex = _computeCenterMinMaxIndex(VALUE::MIN, AXIS::X, pos);
-		int minYIndex = _computeCenterMinMaxIndex(VALUE::MIN, AXIS::Y, pos);
-		int maxXIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::X, pos);
-		int maxYIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::Y, pos);
+		int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
+		int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::Y, pos);
+		int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::X, pos);
+		int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::Y, pos);
 
 		float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
 		float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);

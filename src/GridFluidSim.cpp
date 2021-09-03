@@ -37,7 +37,7 @@ void GridFluidSim::initialize()
 				|| i == N + 1
 				|| j == N + 1)
 			{
-				_gridState.push_back(STATE::BOUNDARY);
+				_gridState.push_back(_STATE::BOUNDARY);
 			}
 			else if (((N + 1) / 2 - 9 < i)
 				&& (i < (N + 1) / 2 + 9)
@@ -45,11 +45,11 @@ void GridFluidSim::initialize()
 				&& (j < (N + 1) / 2 + 9)
 				)
 			{
-				_gridState.push_back(STATE::FLUID);
+				_gridState.push_back(_STATE::FLUID);
 			}
 			else
 			{
-				_gridState.push_back(STATE::AIR);
+				_gridState.push_back(_STATE::AIR);
 			}
 
 			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.01f));
@@ -135,29 +135,29 @@ void GridFluidSim::_paintGrid()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			_gridState[_INDEX(i, j)] = STATE::AIR;
+			_gridState[_INDEX(i, j)] = _STATE::AIR;
 		}
 	}
 
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		int minXIndex = _computeFaceMinMaxIndex(VALUE::MIN, AXIS::X, _particlePosition[i]);
-		int minYIndex = _computeFaceMinMaxIndex(VALUE::MIN, AXIS::Y, _particlePosition[i]);
-		int maxXIndex = _computeFaceMinMaxIndex(VALUE::MAX, AXIS::X, _particlePosition[i]);
-		int maxYIndex = _computeFaceMinMaxIndex(VALUE::MAX, AXIS::Y, _particlePosition[i]);
+		int minXIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _AXIS::X, _particlePosition[i]);
+		int minYIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _AXIS::Y, _particlePosition[i]);
+		int maxXIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _AXIS::X, _particlePosition[i]);
+		int maxYIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _AXIS::Y, _particlePosition[i]);
 
 		// Painting
-		STATE& minMin = _gridState[_INDEX(minXIndex, minYIndex)];
-		STATE& minMax = _gridState[_INDEX(minXIndex, maxYIndex)];
-		STATE& maxMin = _gridState[_INDEX(maxXIndex, minYIndex)];
-		STATE& maxMax = _gridState[_INDEX(maxXIndex, maxYIndex)];
+		_STATE& minMin = _gridState[_INDEX(minXIndex, minYIndex)];
+		_STATE& minMax = _gridState[_INDEX(minXIndex, maxYIndex)];
+		_STATE& maxMin = _gridState[_INDEX(maxXIndex, minYIndex)];
+		_STATE& maxMax = _gridState[_INDEX(maxXIndex, maxYIndex)];
 
 		// Boundary Checking
-		if (minMin != STATE::BOUNDARY) minMin = STATE::FLUID;
-		if (minMax != STATE::BOUNDARY) minMax = STATE::FLUID;
-		if (maxMin != STATE::BOUNDARY) maxMin = STATE::FLUID;
-		if (maxMax != STATE::BOUNDARY) maxMax = STATE::FLUID;
+		if (minMin != _STATE::BOUNDARY) minMin = _STATE::FLUID;
+		if (minMax != _STATE::BOUNDARY) minMax = _STATE::FLUID;
+		if (maxMin != _STATE::BOUNDARY) maxMin = _STATE::FLUID;
+		if (maxMax != _STATE::BOUNDARY) maxMax = _STATE::FLUID;
 	}
 }
 
@@ -181,18 +181,18 @@ void GridFluidSim::_updateParticlePosition()
 // For example, if the scale is 1.0f, the result is (index * 1.0f).
 // But if the scale is 0.5f, the result is (index * 0.5f).
 // The index value should of course be immutable.
-int GridFluidSim::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
+int GridFluidSim::_computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 particlePos)
 {
-	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
+	float pos = (axis == _AXIS::X) ? particlePos.x : particlePos.y;
 	float value;
 
 	// Compute position by normalizing from (-N, N) to (0, N + 1)
 	switch (vState)
 	{
-	case VALUE::MIN:
+	case _VALUE::MIN:
 		value = pos + 0.5f - 0.5f * _particleScale;
 		break;
-	case VALUE::MAX:
+	case _VALUE::MAX:
 		value = pos + 0.5f + 0.5f * _particleScale;
 		break;
 	default:
@@ -212,18 +212,18 @@ int GridFluidSim::_computeFaceMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 part
 // ------------------------------------------------------------------
 // _PaintGrid() uses the face as the transition point.
 // _updateParticlePosition() uses the center as the transition point.
-int GridFluidSim::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 particlePos)
+int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 particlePos)
 {
-	float pos = (axis == AXIS::X) ? particlePos.x : particlePos.y;
+	float pos = (axis == _AXIS::X) ? particlePos.x : particlePos.y;
 	// 2.
 	float value = pos;
 
 	switch (vState)
 	{
-	case VALUE::MIN:
+	case _VALUE::MIN:
 		return static_cast<int>(floor(value));
 		break;
-	case VALUE::MAX:
+	case _VALUE::MAX:
 		// 3.
 		return static_cast<int>(ceil(value));
 		break;
@@ -236,10 +236,10 @@ int GridFluidSim::_computeCenterMinMaxIndex(VALUE vState, AXIS axis, XMFLOAT2 pa
 XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
 {
 	// 2. 3.
-	int minXIndex = _computeCenterMinMaxIndex(VALUE::MIN, AXIS::X, pos);
-	int minYIndex = _computeCenterMinMaxIndex(VALUE::MIN, AXIS::Y, pos);
-	int maxXIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::X, pos);
-	int maxYIndex = _computeCenterMinMaxIndex(VALUE::MAX, AXIS::Y, pos);
+	int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
+	int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::Y, pos);
+	int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::X, pos);
+	int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::Y, pos);
 
 	float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
 	float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);
@@ -339,7 +339,7 @@ XMFLOAT4 GridFluidSim::iGetColor(int i)
 	float magnitude;
 	switch (_gridState[i])
 	{
-	case STATE::FLUID:
+	case _STATE::FLUID:
 		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
 
 		/*if (magnitude > 0.05f && magnitude < 0.2f)
@@ -352,11 +352,11 @@ XMFLOAT4 GridFluidSim::iGetColor(int i)
 		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;
 
-	case STATE::BOUNDARY:
+	case _STATE::BOUNDARY:
 		return XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 		break;
 
-	case STATE::AIR:
+	case _STATE::AIR:
 		return XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
 		break;
 
@@ -411,7 +411,7 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 				(float)j,    // "j"
 				(float)i);   // "i"
 
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
 				for (int k = 0; k < _particleCount; k++)
 				{

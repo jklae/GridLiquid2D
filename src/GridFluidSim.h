@@ -26,11 +26,14 @@ public:
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer);
 
 protected:
+	enum class _STATE { FLUID, BOUNDARY, AIR };
+	enum class _VALUE { MIN, MAX };
+	enum class _AXIS { X, Y };
 
 	inline int _INDEX(int i, int j) { return (i + _gridCount * j); };
 
 	// Grid
-	std::vector<STATE> _gridState;
+	std::vector<_STATE> _gridState;
 	std::vector<DirectX::XMFLOAT2> _gridPosition;
 	std::vector<DirectX::XMFLOAT2> _gridVelocity;
 	std::vector<float> _gridPressure;
@@ -59,8 +62,8 @@ protected:
 
 	// ---
 
-	int _computeFaceMinMaxIndex(VALUE vState, AXIS axis, DirectX::XMFLOAT2 particlePos);
-	int _computeCenterMinMaxIndex(VALUE vState, AXIS axis, DirectX::XMFLOAT2 particlePos);
+	int _computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
+	int _computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
 	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, std::vector<DirectX::XMFLOAT2> oldvel);
 	float _interpolation(float value1, float value2, float ratio);
 };
