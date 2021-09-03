@@ -1,18 +1,18 @@
-#include "EulerianLiquidSimulation.h"
+#include "EulerLiquidSim.h"
 
 using namespace DirectX;
 using namespace std;
 
-EulerianLiquidSimulation::EulerianLiquidSimulation(float timeStep)
+EulerLiquidSim::EulerLiquidSim(float timeStep)
 	:GridFluidSim::GridFluidSim(timeStep)
 {
 }
 
-EulerianLiquidSimulation::~EulerianLiquidSimulation()
+EulerLiquidSim::~EulerLiquidSim()
 {
 }
 
-void EulerianLiquidSimulation::_update()
+void EulerLiquidSim::_update()
 {
 	_force();
 
@@ -24,7 +24,7 @@ void EulerianLiquidSimulation::_update()
 	_paintGrid();
 }
 
-void EulerianLiquidSimulation::_force()
+void EulerLiquidSim::_force()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -36,7 +36,7 @@ void EulerianLiquidSimulation::_force()
 	}
 }
 
-void EulerianLiquidSimulation::_advect()
+void EulerLiquidSim::_advect()
 {
 	int N = _gridCount - 2;
 
@@ -78,12 +78,12 @@ void EulerianLiquidSimulation::_advect()
 	_setBoundary(_gridVelocity);
 }
 
-void EulerianLiquidSimulation::_diffuse()
+void EulerLiquidSim::_diffuse()
 {
 
 }
 
-void EulerianLiquidSimulation::_project()
+void EulerLiquidSim::_project()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
