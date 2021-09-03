@@ -99,7 +99,6 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	/*SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 	SetScrollPos(scroll, SB_CTL, 10, TRUE);*/
-	
 }
 
 void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
@@ -164,7 +163,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 		case static_cast<int>(_COM::LIQUID_RADIO) :
 		{
-			if (getI() != 2) setI(0);
+			if (_simIndex != 2) _simIndex = 0;
 			dxapp->resetSimulationState();
 			dxapp->update();
 			dxapp->draw();
@@ -172,7 +171,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 		case static_cast<int>(_COM::GAS_RADIO) :
 		{
-			setI(1);
+			_simIndex = 1;
 			dxapp->resetSimulationState();
 			dxapp->update();
 			dxapp->draw();
@@ -180,7 +179,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 		case static_cast<int>(_COM::EULERIAN_RADIO) :
 		{
-			if (getI() == 2) setI(0);
+			if (_simIndex == 2) _simIndex = 0;
 			dxapp->resetSimulationState();
 			dxapp->update();
 			dxapp->draw();
@@ -190,7 +189,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 		case static_cast<int>(_COM::PIC_RADIO) :
 		{
-			setI(2);
+			_simIndex = 2;
 			dxapp->resetSimulationState();
 			dxapp->update();
 			dxapp->draw();
@@ -212,15 +211,6 @@ void FluidSimManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int
 	_sim[_simIndex]->iDraw(mCommandList, size, indexCount, _drawFlag, i);
 }
 
-
-int FluidSimManager::getI()
-{
-	return _simIndex;
-}
-void FluidSimManager::setI(int i)
-{
-	_simIndex = i;
-}
 
 void FluidSimManager::setDrawFlag(FLAG flagType, bool flag)
 {
