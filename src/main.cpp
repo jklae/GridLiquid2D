@@ -10,9 +10,7 @@
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-    // Window init
-    Win32App winApp(800, 800);
-    winApp.initialize(hInstance);
+   
 
     // Simulation init
     std::vector<GridFluidSim*> sims;
@@ -32,7 +30,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     DX12App* dxapp = new DX12App();
     dxapp->setProjectionType(PROJ::ORTHOGRAPHIC);
 
-    winApp.initDirectX(dxapp, fluidsim);
+    // Window init
+    Win32App winApp(800, 800);
+    winApp.initialize(hInstance, dxapp, fluidsim);
+    //winApp.initDirectX(dxapp, fluidsim);
 
     return winApp.run();
 }
