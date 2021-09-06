@@ -171,8 +171,8 @@ void GridFluidSim::_updateParticlePosition()
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 
 
-		_particlePosition[i].x += _particleVelocity[i].x * _timeStep * 10.0f;
-		_particlePosition[i].y += _particleVelocity[i].y * _timeStep * 10.0f;
+		_particlePosition[i].x += _particleVelocity[i].x * _timeStep * 1.0f;
+		_particlePosition[i].y += _particleVelocity[i].y * _timeStep * 1.0f;
 	}
 }
 
@@ -311,7 +311,7 @@ vector<Vertex> GridFluidSim::iGetVertice()
 		for (int j = 1; j <= N; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 30.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 30.0f };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 5.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 5.0f };
 			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -2.0f) }));
 			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -2.0f) }));
 		}

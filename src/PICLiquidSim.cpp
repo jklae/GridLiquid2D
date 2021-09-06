@@ -39,12 +39,15 @@ void PICLiquidSim::_force()
 void PICLiquidSim::_advect()
 {
 	int N = _gridCount - 2;
-	for (int i = 1; i <= N; i++)
+	vector<XMFLOAT2> pCount;
+	vector<XMFLOAT2> tempVel;
+
+	for (int i = 0; i < _gridCount; i++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int j = 0; j < _gridCount; j++)
 		{
-			_gridVelocity[_INDEX(i, j)].x = 0.0f;
-			_gridVelocity[_INDEX(i, j)].y = 0.0f;
+			pCount.push_back(XMFLOAT2(0.0f, 0.0f));
+			tempVel.push_back(XMFLOAT2(0.0f, 0.0f));
 		}
 	}
 
@@ -71,28 +74,54 @@ void PICLiquidSim::_advect()
 		float maxMin_maxMax_Y = _particleVelocity[i].y * xRatio;
 		float minMinY = minMin_minMax_Y * (1.0f - yRatio);
 		float minMaxY = minMin_minMax_Y * yRatio;
-		float maxMinY = minMin_minMax_Y * (1.0f - yRatio);
-		float maxMaxY = minMin_minMax_Y * yRatio;
+		float maxMinY = maxMin_maxMax_Y * (1.0f - yRatio);
+		float maxMaxY = maxMin_maxMax_Y * yRatio;
 
 		/*cout << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
+		_gridVelocity[_INDEX(maxXIndex, maxYIndex)].y += maxMaxY* 0.001f;
 		cout << minMinX << ", " << minMinY << ", " << minMaxX << ", " << minMaxY << endl;
 		cout << maxMinX << ", " << maxMinY << ", " << maxMaxX << ", " << maxMaxY << endl;*/
 
-		/*_gridVelocity[_INDEX(minXIndex, minYIndex)].x += minMinX;
-		_gridVelocity[_INDEX(minXIndex, minYIndex)].y += minMinY;
+		tempVel[_INDEX(minXIndex, minYIndex)].x += minMinX;
+		pCount[_INDEX(minXIndex, minYIndex)].x += (1.0f - xRatio) * (1.0f - yRatio);
+		tempVel[_INDEX(minXIndex, minYIndex)].y += minMinY;
+		pCount[_INDEX(minXIndex, minYIndex)].y += (1.0f - xRatio) * (1.0f - yRatio);
 
-		_gridVelocity[_INDEX(minXIndex, maxYIndex)].x += minMaxX;
-		_gridVelocity[_INDEX(minXIndex, maxYIndex)].y += minMaxY;
+		tempVel[_INDEX(minXIndex, maxYIndex)].x += minMaxX;
+		pCount[_INDEX(minXIndex, maxYIndex)].x += (1.0f - xRatio) * yRatio;
+		tempVel[_INDEX(minXIndex, maxYIndex)].y += minMaxY;
+		pCount[_INDEX(minXIndex, maxYIndex)].y += (1.0f - xRatio) * yRatio;
 
-		_gridVelocity[_INDEX(maxXIndex, minYIndex)].x += maxMinX;
-		_gridVelocity[_INDEX(maxXIndex, minYIndex)].y += maxMinY;
+		tempVel[_INDEX(maxXIndex, minYIndex)].x += maxMinX;
+		pCount[_INDEX(maxXIndex, minYIndex)].x += xRatio * (1.0f - yRatio);
+		tempVel[_INDEX(maxXIndex, minYIndex)].y += maxMinY;
+		pCount[_INDEX(maxXIndex, minYIndex)].y += xRatio * (1.0f - yRatio);
 
-		_gridVelocity[_INDEX(maxXIndex, maxYIndex)].x += maxMaxX;
-		_gridVelocity[_INDEX(maxXIndex, maxYIndex)].y += maxMaxY;*/
+		tempVel[_INDEX(maxXIndex, maxYIndex)].x += maxMaxX;
+		pCount[_INDEX(maxXIndex, maxYIndex)].x += xRatio * yRatio;
+		tempVel[_INDEX(maxXIndex, maxYIndex)].y += maxMaxY;
+		pCount[_INDEX(maxXIndex, maxYIndex)].y += xRatio * yRatio;
 		
 
 		//_interpolation(_interpolation(minMinVelocity.x, minMaxVelocity.x, yRatio), _interpolation(maxMinVelocity.x, maxMaxVelocity.x, yRatio), xRatio),
 		//_interpolation(_interpolation(minMinVelocity.y, minMaxVelocity.y, yRatio), _interpolation(maxMinVelocity.y, maxMaxVelocity.y, yRatio), xRatio)
+	}
+
+	float eps = 0.000001f;
+	for (int i = 0; i < _gridCount; i++)
+	{
+		for (int j = 0; j < _gridCount; j++)
+		{
+			if (pCount[_INDEX(i, j)].x > eps)
+			{
+				_gridVelocity[_INDEX(i, j)].x = tempVel[_INDEX(i, j)].x / pCount[_INDEX(i, j)].x;
+			}
+
+			if (pCount[_INDEX(i, j)].y > eps)
+			{
+				_gridVelocity[_INDEX(i, j)].y = tempVel[_INDEX(i, j)].y / pCount[_INDEX(i, j)].y;
+			}
+		}
 	}
 
 	_setBoundary(_gridVelocity);
