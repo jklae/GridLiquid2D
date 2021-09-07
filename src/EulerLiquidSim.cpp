@@ -78,11 +78,6 @@ void EulerLiquidSim::_advect()
 	_setBoundary(_gridVelocity);
 }
 
-void EulerLiquidSim::_diffuse()
-{
-
-}
-
 void EulerLiquidSim::_project()
 {
 	int N = _gridCount - 2;

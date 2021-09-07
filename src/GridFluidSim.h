@@ -52,11 +52,6 @@ protected:
 
 	DirectX::XMFLOAT4 _getColor(int i);
 
-	virtual void _force() = 0;
-	virtual void _advect() = 0;
-	virtual void _diffuse() = 0;
-	virtual void _project() = 0;
-
 	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
 	void _setBoundary(std::vector<float>& scalar);
 	void _paintGrid();

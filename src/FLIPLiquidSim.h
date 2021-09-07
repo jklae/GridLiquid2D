@@ -1,5 +1,6 @@
 #pragma once
 #include "GridFluidSim.h"
+
 class FLIPLiquidSim : public GridFluidSim
 {
 public:
@@ -10,9 +11,10 @@ public:
 
 private:
 
-	void _force() override;
-	void _advect() override;
-	void _diffuse() override;
-	void _project() override;
+	std::vector<DirectX::XMFLOAT2> oldVel;
+
+	void _advect();
+	void _force();
+	void _project();
 };
 

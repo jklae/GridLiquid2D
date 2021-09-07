@@ -32,7 +32,7 @@ public:
 
 private:
 	std::vector<GridFluidSim*> _sim;
-	int _simIndex = 2;
+	int _simIndex = 3;
 
 	enum class _COM
 	{

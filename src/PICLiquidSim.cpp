@@ -107,11 +107,6 @@ void PICLiquidSim::_advect()
 	_setBoundary(_gridVelocity);
 }
 
-void PICLiquidSim::_diffuse()
-{
-
-}
-
 void PICLiquidSim::_project()
 {
 	int N = _gridCount - 2;

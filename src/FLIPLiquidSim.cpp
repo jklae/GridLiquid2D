@@ -15,11 +15,10 @@ FLIPLiquidSim::~FLIPLiquidSim()
 void FLIPLiquidSim::update()
 {
 
-	//_project();
-	//_advect();
+	_advect();
 	_force();
 
-	//_project();
+	_project();
 	_updateParticlePosition();
 	_paintGrid();
 }
@@ -105,11 +104,6 @@ void FLIPLiquidSim::_advect()
 	}
 
 	_setBoundary(_gridVelocity);
-}
-
-void FLIPLiquidSim::_diffuse()
-{
-
 }
 
 void FLIPLiquidSim::_project()

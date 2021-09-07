@@ -20,7 +20,6 @@ void EulerGasSim::update()
 
 	_project();
 	_advect();
-	//_diffuse(timestep);
 	_project();
 
 	_updateParticlePosition();
@@ -74,11 +73,6 @@ void EulerGasSim::_advect()
 		}
 	}
 	_setBoundary(_gridVelocity);
-}
-
-void EulerGasSim::_diffuse()
-{
-
 }
 
 void EulerGasSim::_project()
