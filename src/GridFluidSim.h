@@ -54,8 +54,9 @@ protected:
 
 	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
 	void _setBoundary(std::vector<float>& scalar);
+
+	virtual void _updateParticlePos();
 	void _paintGrid();
-	void _updateParticlePosition();
 
 	// ---
 

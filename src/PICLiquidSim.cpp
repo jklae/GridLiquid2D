@@ -19,8 +19,9 @@ void PICLiquidSim::update()
 	_advect();
 	_force();
 
+	_setBoundary(_gridVelocity);
 	_project();
-	_updateParticlePosition();
+	_updateParticlePos();
 	_paintGrid();
 }
 
@@ -89,7 +90,7 @@ void PICLiquidSim::_advect()
 
 		tempVel[_INDEX(maxXIndex, maxYIndex)] += { maxMaxX, maxMaxY };
 		pCount[_INDEX(maxXIndex, maxYIndex)] += xRatio * yRatio;
-		
+
 	}
 
 	float eps = 0.000001f;
@@ -103,8 +104,6 @@ void PICLiquidSim::_advect()
 			}
 		}
 	}
-
-	_setBoundary(_gridVelocity);
 }
 
 void PICLiquidSim::_project()
@@ -150,6 +149,4 @@ void PICLiquidSim::_project()
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
 	}
-	_setBoundary(_gridVelocity);
-
 }

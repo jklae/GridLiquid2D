@@ -16,10 +16,12 @@ void FLIPLiquidSim::update()
 {
 
 	_advect();
+	_saveVelocity();
 	_force();
-
+	_setBoundary(_gridVelocity);
 	_project();
-	_updateParticlePosition();
+	_updateParticlePos();
+
 	_paintGrid();
 }
 
@@ -30,7 +32,7 @@ void FLIPLiquidSim::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 1.0f * _timeStep;
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 4.0f * _timeStep;
 		}
 	}
 }
@@ -102,8 +104,11 @@ void FLIPLiquidSim::_advect()
 			}
 		}
 	}
+}
 
-	_setBoundary(_gridVelocity);
+void FLIPLiquidSim::_saveVelocity()
+{
+	_oldVel = _gridVelocity;
 }
 
 void FLIPLiquidSim::_project()
@@ -149,6 +154,31 @@ void FLIPLiquidSim::_project()
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
 	}
-	_setBoundary(_gridVelocity);
 
+}
+
+void FLIPLiquidSim::_updateParticlePos()
+{
+	int N = _gridCount - 2;
+	for (int i = 0; i < _oldVel.size(); i++)
+	{
+		_oldVel[i] = _gridVelocity[i] - _oldVel[i];
+	}
+
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
+
+	for (int i = 0; i < _particlePosition.size(); i++)
+	{
+		_particleVelocity[i] += _velocityInterpolation(_particlePosition[i], _oldVel);
+		_particlePosition[i] += _particleVelocity[i] * _timeStep;
+
+		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
+		else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
+
+		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
+		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
+	}
 }

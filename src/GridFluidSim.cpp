@@ -40,10 +40,10 @@ void GridFluidSim::initialize()
 			{
 				_gridState.push_back(_STATE::BOUNDARY);
 			}
-			else if (((N + 1) / 2 - 9 < i)
-				&& (i < (N + 1) / 2 + 9)
-				&& ((N + 1) / 2 - 9 < j)
-				&& (j < (N + 1) / 2 + 9)
+			else if (((N + 1) / 2 - 6 < i)
+				&& (i < (N + 1) / 2 + 6)
+				&& ((N + 1) / 2 - 6 < j)
+				&& (j < (N + 1) / 2 + 6)
 				)
 			{
 				_gridState.push_back(_STATE::FLUID);
@@ -128,6 +128,19 @@ void GridFluidSim::_setBoundary(std::vector<float>& scalar)
 	scalar[_INDEX(N + 1, N + 1)] = (scalar[_INDEX(N + 1, N)] + scalar[_INDEX(N, N + 1)]) / 2.0f;
 }
 
+
+void GridFluidSim::_updateParticlePos()
+{
+	for (int i = 0; i < _particlePosition.size(); i++)
+	{
+		// 2. 3.
+		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
+		_particlePosition[i] += _particleVelocity[i] * _timeStep;
+	}
+}
+
+
+
 void GridFluidSim::_paintGrid()
 {
 	int N = _gridCount - 2;
@@ -159,17 +172,6 @@ void GridFluidSim::_paintGrid()
 		if (minMax != _STATE::BOUNDARY) minMax = _STATE::FLUID;
 		if (maxMin != _STATE::BOUNDARY) maxMin = _STATE::FLUID;
 		if (maxMax != _STATE::BOUNDARY) maxMax = _STATE::FLUID;
-	}
-}
-
-
-void GridFluidSim::_updateParticlePosition()
-{
-	for (int i = 0; i < _particlePosition.size(); i++)
-	{
-		// 2. 3.
-		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-		_particlePosition[i] += _particleVelocity[i] * _timeStep * 1.0f;
 	}
 }
 
@@ -231,6 +233,7 @@ int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 
 	}
 }
 
+															// For semi-Lagrangian
 XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
 {
 	// 2. 3.
@@ -308,7 +311,7 @@ vector<Vertex> GridFluidSim::iGetVertice()
 		for (int j = 1; j <= N; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 5.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 5.0f };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 2.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 2.0f };
 			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -2.0f) }));
 			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -2.0f) }));
 		}

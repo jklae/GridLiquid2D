@@ -11,10 +11,12 @@ public:
 
 private:
 
-	std::vector<DirectX::XMFLOAT2> oldVel;
+	std::vector<DirectX::XMFLOAT2> _oldVel;
 
 	void _advect();
+	void _saveVelocity();
 	void _force();
 	void _project();
+	void _updateParticlePos() override;
 };
 
