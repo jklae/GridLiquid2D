@@ -82,25 +82,17 @@ void PICLiquidSim::_advect()
 		cout << minMinX << ", " << minMinY << ", " << minMaxX << ", " << minMaxY << endl;
 		cout << maxMinX << ", " << maxMinY << ", " << maxMaxX << ", " << maxMaxY << endl;*/
 
-		tempVel[_INDEX(minXIndex, minYIndex)].x += minMinX;
-		pCount[_INDEX(minXIndex, minYIndex)].x += (1.0f - xRatio) * (1.0f - yRatio);
-		tempVel[_INDEX(minXIndex, minYIndex)].y += minMinY;
-		pCount[_INDEX(minXIndex, minYIndex)].y += (1.0f - xRatio) * (1.0f - yRatio);
+		tempVel[_INDEX(minXIndex, minYIndex)] += { minMinX, minMinY };
+		pCount[_INDEX(minXIndex, minYIndex)] += (1.0f - xRatio) * (1.0f - yRatio);
 
-		tempVel[_INDEX(minXIndex, maxYIndex)].x += minMaxX;
-		pCount[_INDEX(minXIndex, maxYIndex)].x += (1.0f - xRatio) * yRatio;
-		tempVel[_INDEX(minXIndex, maxYIndex)].y += minMaxY;
-		pCount[_INDEX(minXIndex, maxYIndex)].y += (1.0f - xRatio) * yRatio;
+		tempVel[_INDEX(minXIndex, maxYIndex)] += { minMaxX, minMaxY };
+		pCount[_INDEX(minXIndex, maxYIndex)] += (1.0f - xRatio) * yRatio;
 
-		tempVel[_INDEX(maxXIndex, minYIndex)].x += maxMinX;
-		pCount[_INDEX(maxXIndex, minYIndex)].x += xRatio * (1.0f - yRatio);
-		tempVel[_INDEX(maxXIndex, minYIndex)].y += maxMinY;
-		pCount[_INDEX(maxXIndex, minYIndex)].y += xRatio * (1.0f - yRatio);
+		tempVel[_INDEX(maxXIndex, minYIndex)] += { maxMinX, maxMinY };
+		pCount[_INDEX(maxXIndex, minYIndex)] += xRatio * (1.0f - yRatio);
 
-		tempVel[_INDEX(maxXIndex, maxYIndex)].x += maxMaxX;
-		pCount[_INDEX(maxXIndex, maxYIndex)].x += xRatio * yRatio;
-		tempVel[_INDEX(maxXIndex, maxYIndex)].y += maxMaxY;
-		pCount[_INDEX(maxXIndex, maxYIndex)].y += xRatio * yRatio;
+		tempVel[_INDEX(maxXIndex, maxYIndex)] += { maxMaxX, maxMaxY };
+		pCount[_INDEX(maxXIndex, maxYIndex)] += xRatio * yRatio;
 		
 
 		//_interpolation(_interpolation(minMinVelocity.x, minMaxVelocity.x, yRatio), _interpolation(maxMinVelocity.x, maxMaxVelocity.x, yRatio), xRatio),
