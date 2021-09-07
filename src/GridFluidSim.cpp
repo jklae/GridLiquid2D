@@ -28,6 +28,8 @@ void GridFluidSim::initialize()
 	// 0 is not allowed.
 	assert(_gridCount != 0);
 
+	int offset = 8;
+
 	// Set _fluid
 	int N = _gridCount - 2;
 	for (int i = 0; i < _gridCount; i++)
@@ -40,13 +42,24 @@ void GridFluidSim::initialize()
 			{
 				_gridState.push_back(_STATE::BOUNDARY);
 			}
-			else if (((N + 1) / 2 - 9 < i)
-				&& (i < (N + 1) / 2 + 9)
-				&& ((N + 1) / 2 - 9 < j)
-				&& (j < (N + 1) / 2 + 9)
+			else if (
+				((N + 1) / 2 - offset <= i)
+				&& (i <= (N + 1) / 2 + offset)
+				&& ((N + 1) / 2 - offset <= j)
+				&& (j <= (N + 1) / 2 + offset)
 				)
 			{
-				_gridState.push_back(_STATE::FLUID);
+				if (i == (N + 1) / 2 - offset
+					|| j == (N + 1) / 2 - offset
+					|| i == (N + 1) / 2 + offset
+					|| j == (N + 1) / 2 + offset)
+				{
+					_gridState.push_back(_STATE::SURFACE);
+				}
+				else
+				{
+					_gridState.push_back(_STATE::FLUID);
+				}
 			}
 			else
 			{
@@ -359,6 +372,10 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 
 	case _STATE::AIR:
 		return XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+		break;
+
+	case _STATE::SURFACE:
+		return XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 		break;
 
 	default:

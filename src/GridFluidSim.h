@@ -27,7 +27,7 @@ public:
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer);
 
 protected:
-	enum class _STATE { FLUID, BOUNDARY, AIR };
+	enum class _STATE { FLUID, BOUNDARY, AIR, SURFACE };
 	enum class _VALUE { MIN, MAX };
 	enum class _AXIS { X, Y };
 
