@@ -3,9 +3,6 @@
 					  // Win32App is required in main().
 
 #include "GridFluidSim.h"
-#include "EulerGasSim.h" 
-#include "EulerLiquidSim.h"
-#include "PICLiquidSim.h"
 
 class FluidSimManager : public ISimulation
 {

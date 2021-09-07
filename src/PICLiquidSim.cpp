@@ -39,15 +39,15 @@ void PICLiquidSim::_force()
 void PICLiquidSim::_advect()
 {
 	int N = _gridCount - 2;
-	vector<XMFLOAT2> pCount;
 	vector<XMFLOAT2> tempVel;
+	vector<float> pCount;
 
 	for (int i = 0; i < _gridCount; i++)
 	{
 		for (int j = 0; j < _gridCount; j++)
 		{
-			pCount.push_back(XMFLOAT2(0.0f, 0.0f));
 			tempVel.push_back(XMFLOAT2(0.0f, 0.0f));
+			pCount.push_back(0.0f);
 		}
 	}
 
@@ -77,10 +77,6 @@ void PICLiquidSim::_advect()
 		float maxMinY = maxMin_maxMax_Y * (1.0f - yRatio);
 		float maxMaxY = maxMin_maxMax_Y * yRatio;
 
-		/*cout << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
-		_gridVelocity[_INDEX(maxXIndex, maxYIndex)].y += maxMaxY* 0.001f;
-		cout << minMinX << ", " << minMinY << ", " << minMaxX << ", " << minMaxY << endl;
-		cout << maxMinX << ", " << maxMinY << ", " << maxMaxX << ", " << maxMaxY << endl;*/
 
 		tempVel[_INDEX(minXIndex, minYIndex)] += { minMinX, minMinY };
 		pCount[_INDEX(minXIndex, minYIndex)] += (1.0f - xRatio) * (1.0f - yRatio);
@@ -94,9 +90,6 @@ void PICLiquidSim::_advect()
 		tempVel[_INDEX(maxXIndex, maxYIndex)] += { maxMaxX, maxMaxY };
 		pCount[_INDEX(maxXIndex, maxYIndex)] += xRatio * yRatio;
 		
-
-		//_interpolation(_interpolation(minMinVelocity.x, minMaxVelocity.x, yRatio), _interpolation(maxMinVelocity.x, maxMaxVelocity.x, yRatio), xRatio),
-		//_interpolation(_interpolation(minMinVelocity.y, minMaxVelocity.y, yRatio), _interpolation(maxMinVelocity.y, maxMaxVelocity.y, yRatio), xRatio)
 	}
 
 	float eps = 0.000001f;
@@ -104,14 +97,9 @@ void PICLiquidSim::_advect()
 	{
 		for (int j = 0; j < _gridCount; j++)
 		{
-			if (pCount[_INDEX(i, j)].x > eps)
+			if (pCount[_INDEX(i, j)] > eps)
 			{
-				_gridVelocity[_INDEX(i, j)].x = tempVel[_INDEX(i, j)].x / pCount[_INDEX(i, j)].x;
-			}
-
-			if (pCount[_INDEX(i, j)].y > eps)
-			{
-				_gridVelocity[_INDEX(i, j)].y = tempVel[_INDEX(i, j)].y / pCount[_INDEX(i, j)].y;
+				_gridVelocity[_INDEX(i, j)] = tempVel[_INDEX(i, j)] / pCount[_INDEX(i, j)];
 			}
 		}
 	}
