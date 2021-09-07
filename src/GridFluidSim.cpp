@@ -169,10 +169,7 @@ void GridFluidSim::_updateParticlePosition()
 	{
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-
-
-		_particlePosition[i].x += _particleVelocity[i].x * _timeStep * 1.0f;
-		_particlePosition[i].y += _particleVelocity[i].y * _timeStep * 1.0f;
+		_particlePosition[i] += _particleVelocity[i] * _timeStep * 1.0f;
 	}
 }
 
