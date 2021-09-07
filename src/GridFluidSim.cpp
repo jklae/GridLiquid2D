@@ -40,10 +40,10 @@ void GridFluidSim::initialize()
 			{
 				_gridState.push_back(_STATE::BOUNDARY);
 			}
-			else if (((N + 1) / 2 - 6 < i)
-				&& (i < (N + 1) / 2 + 6)
-				&& ((N + 1) / 2 - 6 < j)
-				&& (j < (N + 1) / 2 + 6)
+			else if (((N + 1) / 2 - 9 < i)
+				&& (i < (N + 1) / 2 + 9)
+				&& ((N + 1) / 2 - 9 < j)
+				&& (j < (N + 1) / 2 + 9)
 				)
 			{
 				_gridState.push_back(_STATE::FLUID);
