@@ -186,6 +186,24 @@ void GridFluidSim::_paintGrid()
 		if (maxMin != _STATE::BOUNDARY) maxMin = _STATE::FLUID;
 		if (maxMax != _STATE::BOUNDARY) maxMax = _STATE::FLUID;
 	}
+
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			{
+				if (_gridState[_INDEX(i + 1, j)] == _STATE::AIR
+					|| _gridState[_INDEX(i - 1, j)] == _STATE::AIR
+					|| _gridState[_INDEX(i, j + 1)] == _STATE::AIR
+					|| _gridState[_INDEX(i, j - 1)] == _STATE::AIR)
+				{
+					_gridState[_INDEX(i, j)] = _STATE::SURFACE;
+				}
+			}
+		}
+	}
+
 }
 
 
@@ -487,7 +505,8 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 				(float)j,    // "j"
 				(float)i);   // "i"
 
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID 
+				|| _gridState[_INDEX(i, j)] == _STATE::SURFACE)
 			{
 				for (int k = 0; k < _particleCount; k++)
 				{
