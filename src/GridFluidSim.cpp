@@ -42,24 +42,19 @@ void GridFluidSim::initialize()
 			{
 				_gridState.push_back(_STATE::BOUNDARY);
 			}
-			else if (
-				((N + 1) / 2 - offset <= i)
-				&& (i <= (N + 1) / 2 + offset)
-				&& ((N + 1) / 2 - offset <= j)
-				&& (j <= (N + 1) / 2 + offset)
-				)
+			else if (((N + 1) / 2 - offset < i) 
+				&& (i < (N + 1) / 2 + offset)
+				&& ((N + 1) / 2 - offset < j)
+				&& (j < (N + 1) / 2 + offset))
 			{
-				if (i == (N + 1) / 2 - offset
-					|| j == (N + 1) / 2 - offset
-					|| i == (N + 1) / 2 + offset
-					|| j == (N + 1) / 2 + offset)
-				{
-					_gridState.push_back(_STATE::SURFACE);
-				}
-				else
-				{
-					_gridState.push_back(_STATE::FLUID);
-				}
+				_gridState.push_back(_STATE::FLUID);
+			}
+			else if (i == (N + 1) / 2 - offset
+				|| j == (N + 1) / 2 - offset
+				|| i == (N + 1) / 2 + offset
+				|| j == (N + 1) / 2 + offset)
+			{
+				_gridState.push_back(_STATE::SURFACE);
 			}
 			else
 			{
@@ -193,13 +188,17 @@ void GridFluidSim::_paintGrid()
 		{
 			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
-				if (_gridState[_INDEX(i + 1, j)] == _STATE::AIR
-					|| _gridState[_INDEX(i - 1, j)] == _STATE::AIR
-					|| _gridState[_INDEX(i, j + 1)] == _STATE::AIR
-					|| _gridState[_INDEX(i, j - 1)] == _STATE::AIR)
-				{
-					_gridState[_INDEX(i, j)] = _STATE::SURFACE;
-				}
+				if (_gridState[_INDEX(i + 1, j)] == _STATE::AIR) 
+					_gridState[_INDEX(i + 1, j)] = _STATE::SURFACE;
+
+				if (_gridState[_INDEX(i - 1, j)] == _STATE::AIR) 
+					_gridState[_INDEX(i - 1, j)] = _STATE::SURFACE;
+
+				if (_gridState[_INDEX(i, j + 1)] == _STATE::AIR)
+					_gridState[_INDEX(i, j + 1)] = _STATE::SURFACE;
+
+				if (_gridState[_INDEX(i, j - 1)] == _STATE::AIR) 
+					_gridState[_INDEX(i, j - 1)] = _STATE::SURFACE;
 			}
 		}
 	}
@@ -505,8 +504,7 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 				(float)j,    // "j"
 				(float)i);   // "i"
 
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID 
-				|| _gridState[_INDEX(i, j)] == _STATE::SURFACE)
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
 				for (int k = 0; k < _particleCount; k++)
 				{

@@ -15,14 +15,16 @@ FLIPLiquidSim::~FLIPLiquidSim()
 void FLIPLiquidSim::update()
 {
 
-	//_advect();
-	//_saveVelocity();
-	//_force();
-	//_setBoundary(_gridVelocity);
-	//_project();
-	//_updateParticlePos();
+	_advect();
+	_saveVelocity();
+	_force();
+	_setBoundary(_gridVelocity);
+	_project();
+	// Solve boundary condition again due to numerical errors in previous step
+	_setBoundary(_gridVelocity);
+	_updateParticlePos();
 
-	//_paintGrid();
+	_paintGrid();
 }
 
 void FLIPLiquidSim::_force()
@@ -32,7 +34,10 @@ void FLIPLiquidSim::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 4.0f * _timeStep;
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			{
+				_gridVelocity[_INDEX(i, j)].y -= 4.0f * _timeStep;
+			}
 		}
 	}
 }
