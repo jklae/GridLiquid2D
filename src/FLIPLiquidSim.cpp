@@ -17,8 +17,10 @@ void FLIPLiquidSim::update()
 
 	_advect();
 	_saveVelocity();
+
 	_force();
 	_setBoundary(_gridVelocity);
+
 	_project();
 	// Solve boundary condition again due to numerical errors in previous step
 	_setBoundary(_gridVelocity);
@@ -34,10 +36,9 @@ void FLIPLiquidSim::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
-			{
-				_gridVelocity[_INDEX(i, j)].y -= 4.0f * _timeStep;
-			}
+			
+				_gridVelocity[_INDEX(i, j)].y -= 2.0f * _timeStep;
+			
 		}
 	}
 }
@@ -139,12 +140,16 @@ void FLIPLiquidSim::_project()
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				_gridPressure[_INDEX(i, j)] =
-					(
-						_gridDivergence[_INDEX(i, j)] -
-						(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
-							_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
-						) / -4.0f;
+				if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+				{
+					_gridPressure[_INDEX(i, j)] =
+						(
+							_gridDivergence[_INDEX(i, j)] -
+							(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
+								_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
+							) / -4.0f;
+				}
+			
 			}
 
 		}

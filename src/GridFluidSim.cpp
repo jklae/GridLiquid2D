@@ -44,18 +44,18 @@ void GridFluidSim::initialize()
 			}
 			else if (((N + 1) / 2 - offset < i) 
 				&& (i < (N + 1) / 2 + offset)
-				&& ((N + 1) / 2 - offset < j)
-				&& (j < (N + 1) / 2 + offset))
+				&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)
+				&& (j < N))            //(j < (N + 1) / 2 + offset))
 			{
 				_gridState.push_back(_STATE::FLUID);
-			}
+			}/*
 			else if (i == (N + 1) / 2 - offset
 				|| j == (N + 1) / 2 - offset
 				|| i == (N + 1) / 2 + offset
 				|| j == (N + 1) / 2 + offset)
 			{
 				_gridState.push_back(_STATE::SURFACE);
-			}
+			}*/
 			else
 			{
 				_gridState.push_back(_STATE::AIR);
@@ -106,6 +106,7 @@ void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 	// (xCount, yCount)
 	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
 	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
+
 }
 
 void GridFluidSim::_setBoundary(std::vector<float>& scalar)
@@ -182,6 +183,9 @@ void GridFluidSim::_paintGrid()
 		if (maxMax != _STATE::BOUNDARY) maxMax = _STATE::FLUID;
 	}
 
+
+	// Surface painting 
+	/*
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
@@ -201,7 +205,7 @@ void GridFluidSim::_paintGrid()
 					_gridState[_INDEX(i, j - 1)] = _STATE::SURFACE;
 			}
 		}
-	}
+	} */
 
 }
 
