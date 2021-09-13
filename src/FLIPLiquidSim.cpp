@@ -2,7 +2,7 @@
 
 using namespace DirectX;
 using namespace std;
-
+#include <iostream>
 FLIPLiquidSim::FLIPLiquidSim(float timeStep, int delayTime)
 	:GridFluidSim::GridFluidSim(timeStep, delayTime)
 {
@@ -14,7 +14,17 @@ FLIPLiquidSim::~FLIPLiquidSim()
 
 void FLIPLiquidSim::update()
 {
+	for (int i = 0; i < _gridCount; i++)
+	{
+		for (int j = 0; j < _gridCount; j++)
+		{
+			_picVel.push_back({ 0.0f, 0.0f });
+			_flipVel.push_back({ 0.0f, 0.0f });
 
+			if (_gridState[_INDEX(i, j)] != _STATE::FLUID)
+				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
+		}
+	}
 	_advect();
 	_saveVelocity();
 
@@ -23,7 +33,7 @@ void FLIPLiquidSim::update()
 
 	_project();
 	// Solve boundary condition again due to numerical errors in previous step
-	_setBoundary(_gridVelocity);
+	//_setBoundary(_gridVelocity);
 	_updateParticlePos();
 
 	_paintGrid();
@@ -36,9 +46,10 @@ void FLIPLiquidSim::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			
-				_gridVelocity[_INDEX(i, j)].y -= 2.0f * _timeStep;
-			
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			{
+				_gridVelocity[_INDEX(i, j)].y -= 0.98f * _timeStep;
+			}
 		}
 	}
 }

@@ -28,7 +28,7 @@ void GridFluidSim::initialize()
 	// 0 is not allowed.
 	assert(_gridCount != 0);
 
-	int offset = 8;
+	int offset = 15;
 
 	// Set _fluid
 	int N = _gridCount - 2;
@@ -48,14 +48,14 @@ void GridFluidSim::initialize()
 				&& (j < N))            //(j < (N + 1) / 2 + offset))
 			{
 				_gridState.push_back(_STATE::FLUID);
-			}/*
+			}
 			else if (i == (N + 1) / 2 - offset
 				|| j == (N + 1) / 2 - offset
 				|| i == (N + 1) / 2 + offset
 				|| j == (N + 1) / 2 + offset)
 			{
 				_gridState.push_back(_STATE::SURFACE);
-			}*/
+			}
 			else
 			{
 				_gridState.push_back(_STATE::AIR);
@@ -107,6 +107,48 @@ void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
 	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
 
+
+
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			if (_gridState[_INDEX(i, j)] == _STATE::SURFACE)
+			{
+				XMFLOAT2 temp = { 0.0f, 0.0f };
+				int count = 0;
+
+				if (_gridState[_INDEX(i + 1, j)] == _STATE::FLUID)
+				{
+					temp = vec[_INDEX(i + 1, j)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i - 1, j)] == _STATE::FLUID)
+				{
+					temp = vec[_INDEX(i - 1, j)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i, j + 1)] == _STATE::FLUID)
+				{
+					temp = vec[_INDEX(i, j + 1)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i, j - 1)] == _STATE::FLUID)
+				{
+					temp = vec[_INDEX(i, j - 1)];
+					count++;
+				}
+
+				if (count > 0)
+				{
+					vec[_INDEX(i, j)] = temp;
+				}
+			}
+		}
+	}
 }
 
 void GridFluidSim::_setBoundary(std::vector<float>& scalar)
@@ -185,7 +227,7 @@ void GridFluidSim::_paintGrid()
 
 
 	// Surface painting 
-	/*
+	
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
@@ -205,7 +247,7 @@ void GridFluidSim::_paintGrid()
 					_gridState[_INDEX(i, j - 1)] = _STATE::SURFACE;
 			}
 		}
-	} */
+	} 
 
 }
 
@@ -345,7 +387,7 @@ vector<Vertex> GridFluidSim::iGetVertice()
 		for (int j = 1; j <= N; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 2.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 2.0f };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 1.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 1.0f };
 			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -2.0f) }));
 			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -2.0f) }));
 		}
