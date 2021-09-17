@@ -28,7 +28,7 @@ void GridFluidSim::initialize()
 	// 0 is not allowed.
 	assert(_gridCount != 0);
 
-	int offset = 15;
+	int offset = 10;
 
 	// Set _fluid
 	int N = _gridCount - 2;
