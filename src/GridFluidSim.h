@@ -12,12 +12,13 @@ public:
 
 	virtual void update() = 0;
 
+#pragma region Implementation
+	// ################################## Implementation ####################################
 	void iUpdate();
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer);
 
 	std::vector<Vertex> iGetVertice();
 	std::vector<unsigned int> iGetIndice();
-
 
 	int iGetObjectCount();
 
@@ -25,6 +26,7 @@ public:
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i);
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer);
+	// #######################################################################################
 
 protected:
 	enum class _STATE { FLUID, BOUNDARY, AIR, SURFACE };
