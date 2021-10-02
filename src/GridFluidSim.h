@@ -12,12 +12,13 @@ public:
 
 	virtual void update() = 0;
 
+#pragma region Implementation
+	// ################################## Implementation ####################################
 	void iUpdate();
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer);
 
 	std::vector<Vertex> iGetVertice();
 	std::vector<unsigned int> iGetIndice();
-
 
 	int iGetObjectCount();
 
@@ -25,9 +26,10 @@ public:
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i);
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer);
+	// #######################################################################################
 
 protected:
-	enum class _STATE { FLUID, BOUNDARY, AIR };
+	enum class _STATE { FLUID, BOUNDARY, AIR, SURFACE };
 	enum class _VALUE { MIN, MAX };
 	enum class _AXIS { X, Y };
 
@@ -52,15 +54,11 @@ protected:
 
 	DirectX::XMFLOAT4 _getColor(int i);
 
-	virtual void _force() = 0;
-	virtual void _advect() = 0;
-	virtual void _diffuse() = 0;
-	virtual void _project() = 0;
-
 	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
 	void _setBoundary(std::vector<float>& scalar);
+
+	virtual void _updateParticlePos();
 	void _paintGrid();
-	void _updateParticlePosition();
 
 	// ---
 

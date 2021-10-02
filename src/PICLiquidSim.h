@@ -8,12 +8,11 @@ public:
 	~PICLiquidSim() override;
 
 	void update() override;
-
+	
 private:
 
-	void _force() override;
-	void _advect() override;
-	void _diffuse() override;
-	void _project() override;
+	void _advect();
+	void _force();
+	void _project();
 };
 

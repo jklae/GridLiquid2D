@@ -20,7 +20,7 @@ void EulerLiquidSim::update()
 	_advect();
 
 	_project();
-	_updateParticlePosition();
+	_updateParticlePos();
 	_paintGrid();
 }
 
@@ -31,7 +31,10 @@ void EulerLiquidSim::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 2.0f * _timeStep;
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			{
+				_gridVelocity[_INDEX(i, j)].y -= 0.98f * _timeStep;
+			}
 		}
 	}
 }
@@ -78,11 +81,6 @@ void EulerLiquidSim::_advect()
 	_setBoundary(_gridVelocity);
 }
 
-void EulerLiquidSim::_diffuse()
-{
-
-}
-
 void EulerLiquidSim::_project()
 {
 	int N = _gridCount - 2;
@@ -109,12 +107,15 @@ void EulerLiquidSim::_project()
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				_gridPressure[_INDEX(i, j)] =
-					(
-						_gridDivergence[_INDEX(i, j)] -
-						(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
-							_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
-						) / -4.0f;
+				if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+				{
+					_gridPressure[_INDEX(i, j)] =
+						(
+							_gridDivergence[_INDEX(i, j)] -
+							(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
+								_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
+							) / -4.0f;
+				}
 			}
 
 		}

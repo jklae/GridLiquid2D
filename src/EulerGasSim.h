@@ -11,9 +11,8 @@ public:
 
 private:
 
-	void _force() override;
-	void _advect() override;
-	void _diffuse() override;
-	void _project() override;
+	void _force();
+	void _advect();
+	void _project();
 };
 

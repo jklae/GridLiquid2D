@@ -1,47 +1,60 @@
-#include "PICLiquidSim.h"
+#include "FLIPLiquidSim.h"
 
 using namespace DirectX;
 using namespace std;
-
-PICLiquidSim::PICLiquidSim(float timeStep, int delayTime)
+#include <iostream>
+FLIPLiquidSim::FLIPLiquidSim(float timeStep, int delayTime)
 	:GridFluidSim::GridFluidSim(timeStep, delayTime)
 {
 }
 
-PICLiquidSim::~PICLiquidSim()
+FLIPLiquidSim::~FLIPLiquidSim()
 {
 }
 
-void PICLiquidSim::update()
+void FLIPLiquidSim::update()
 {
+	for (int i = 0; i < _gridCount; i++)
+	{
+		for (int j = 0; j < _gridCount; j++)
+		{
+			_picVel.push_back({ 0.0f, 0.0f });
+			_flipVel.push_back({ 0.0f, 0.0f });
 
-	//_project();
+			if (_gridState[_INDEX(i, j)] != _STATE::FLUID)
+				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
+		}
+	}
 	_advect();
-	_force();
+	_saveVelocity();
 
+	_force();
 	_setBoundary(_gridVelocity);
+
 	_project();
+	// Solve boundary condition again due to numerical errors in previous step
+	//_setBoundary(_gridVelocity);
 	_updateParticlePos();
+
 	_paintGrid();
 }
 
-void PICLiquidSim::_force()
+void FLIPLiquidSim::_force()
 {
 	int N = _gridCount - 2;
-	
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
 			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
-				_gridVelocity[_INDEX(i, j)].y -= 1.0f * _timeStep;
+				_gridVelocity[_INDEX(i, j)].y -= 0.98f * _timeStep;
 			}
 		}
 	}
 }
 
-void PICLiquidSim::_advect()
+void FLIPLiquidSim::_advect()
 {
 	int N = _gridCount - 2;
 	vector<XMFLOAT2> tempVel;
@@ -110,7 +123,12 @@ void PICLiquidSim::_advect()
 	}
 }
 
-void PICLiquidSim::_project()
+void FLIPLiquidSim::_saveVelocity()
+{
+	_oldVel = _gridVelocity;
+}
+
+void FLIPLiquidSim::_project()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -142,6 +160,7 @@ void PICLiquidSim::_project()
 								_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
 							) / -4.0f;
 				}
+			
 			}
 
 		}
@@ -155,5 +174,32 @@ void PICLiquidSim::_project()
 			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
+	}
+
+}
+
+void FLIPLiquidSim::_updateParticlePos()
+{
+	int N = _gridCount - 2;
+	for (int i = 0; i < _oldVel.size(); i++)
+	{
+		_oldVel[i] = _gridVelocity[i] - _oldVel[i];
+	}
+
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
+
+	for (int i = 0; i < _particlePosition.size(); i++)
+	{
+		_particleVelocity[i] += _velocityInterpolation(_particlePosition[i], _oldVel);
+		_particlePosition[i] += _particleVelocity[i] * _timeStep;
+
+		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
+		else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
+
+		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
+		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
 	}
 }
