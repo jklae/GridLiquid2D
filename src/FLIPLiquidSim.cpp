@@ -2,7 +2,7 @@
 
 using namespace DirectX;
 using namespace std;
-
+#include <iostream>
 FLIPLiquidSim::FLIPLiquidSim(float timeStep, int delayTime)
 	:GridFluidSim::GridFluidSim(timeStep, delayTime)
 {
@@ -14,12 +14,26 @@ FLIPLiquidSim::~FLIPLiquidSim()
 
 void FLIPLiquidSim::update()
 {
+	for (int i = 0; i < _gridCount; i++)
+	{
+		for (int j = 0; j < _gridCount; j++)
+		{
+			_picVel.push_back({ 0.0f, 0.0f });
+			_flipVel.push_back({ 0.0f, 0.0f });
 
+			if (_gridState[_INDEX(i, j)] != _STATE::FLUID)
+				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
+		}
+	}
 	_advect();
 	_saveVelocity();
+
 	_force();
 	_setBoundary(_gridVelocity);
+
 	_project();
+	// Solve boundary condition again due to numerical errors in previous step
+	//_setBoundary(_gridVelocity);
 	_updateParticlePos();
 
 	_paintGrid();
@@ -32,7 +46,10 @@ void FLIPLiquidSim::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 4.0f * _timeStep;
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			{
+				_gridVelocity[_INDEX(i, j)].y -= 0.98f * _timeStep;
+			}
 		}
 	}
 }
@@ -134,12 +151,16 @@ void FLIPLiquidSim::_project()
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				_gridPressure[_INDEX(i, j)] =
-					(
-						_gridDivergence[_INDEX(i, j)] -
-						(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
-							_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
-						) / -4.0f;
+				if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+				{
+					_gridPressure[_INDEX(i, j)] =
+						(
+							_gridDivergence[_INDEX(i, j)] -
+							(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
+								_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
+							) / -4.0f;
+				}
+			
 			}
 
 		}

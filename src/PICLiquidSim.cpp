@@ -28,11 +28,15 @@ void PICLiquidSim::update()
 void PICLiquidSim::_force()
 {
 	int N = _gridCount - 2;
+	
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID) _gridVelocity[_INDEX(i, j)].y -= 1.0f * _timeStep;
+			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			{
+				_gridVelocity[_INDEX(i, j)].y -= 1.0f * _timeStep;
+			}
 		}
 	}
 }
@@ -129,12 +133,15 @@ void PICLiquidSim::_project()
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				_gridPressure[_INDEX(i, j)] =
-					(
-						_gridDivergence[_INDEX(i, j)] -
-						(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
-							_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
-						) / -4.0f;
+				if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+				{
+					_gridPressure[_INDEX(i, j)] =
+						(
+							_gridDivergence[_INDEX(i, j)] -
+							(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
+								_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
+							) / -4.0f;
+				}
 			}
 
 		}
