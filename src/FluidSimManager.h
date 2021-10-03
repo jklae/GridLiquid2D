@@ -1,4 +1,6 @@
 #pragma once
+#include <ctime>
+
 #include "Win32App.h" // This includes ISimulation.h.
 					  // Win32App is required in main().
 
@@ -32,7 +34,7 @@ public:
 
 private:
 	std::vector<GridFluidSim*> _sim;
-	int _simIndex = 3;
+	int _simIndex = 0;
 
 	enum class _COM
 	{

@@ -11,8 +11,8 @@ public:
 
 private:
 
-	void _force();
-	void _advect();
+	void _force(float dt);
+	void _advect(float dt);
 	void _project();
 };
 
