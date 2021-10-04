@@ -22,7 +22,7 @@ void EulerGasSim::update()
 	_advect();
 	_project();
 
-	_updateParticlePos();
+	_updateParticlePos(_timeStep);
 	_paintGrid();
 }
 

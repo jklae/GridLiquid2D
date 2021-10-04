@@ -20,6 +20,6 @@ private:
 	void _saveVelocity();
 	void _force();
 	void _project();
-	void _updateParticlePos() override;
+	void _updateParticlePos(float dt) override;
 };
 

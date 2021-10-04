@@ -34,7 +34,7 @@ void FLIPLiquidSim::update()
 	_project();
 	// Solve boundary condition again due to numerical errors in previous step
 	//_setBoundary(_gridVelocity);
-	_updateParticlePos();
+	_updateParticlePos(0.0f);
 
 	_paintGrid();
 }
@@ -178,7 +178,7 @@ void FLIPLiquidSim::_project()
 
 }
 
-void FLIPLiquidSim::_updateParticlePos()
+void FLIPLiquidSim::_updateParticlePos(float dt)
 {
 	int N = _gridCount - 2;
 	for (int i = 0; i < _oldVel.size(); i++)

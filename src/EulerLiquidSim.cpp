@@ -14,7 +14,15 @@ EulerLiquidSim::~EulerLiquidSim()
 
 void EulerLiquidSim::update()
 {
+	for (int i = 0; i < _gridCount; i++)
+	{
+		for (int j = 0; j < _gridCount; j++)
+		{
 
+			if (_gridState[_INDEX(i, j)] != _STATE::FLUID)
+				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
+		}
+	}
 	clock_t startTime = clock();
 
 	_force(_timeStep);
@@ -23,7 +31,7 @@ void EulerLiquidSim::update()
 	_advect(_timeStep);
 
 	_project();
-	_updateParticlePos();
+	_updateParticlePos(_timeStep);
 	_paintGrid();
 
 	clock_t endTime = clock();
@@ -32,7 +40,6 @@ void EulerLiquidSim::update()
 	clock_t elapsed = endTime - startTime;
 	
 	std::cout << elapsed << std::endl;
-
 }
 
 void EulerLiquidSim::_force(float dt)
@@ -44,6 +51,8 @@ void EulerLiquidSim::_force(float dt)
 		{
 			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
+
+
 				_gridVelocity[_INDEX(i, j)].y -= 0.98f * dt;
 			}
 		}
@@ -65,14 +74,24 @@ void EulerLiquidSim::_advect(float dt)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			/*float magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
+			float magnitude = sqrtf(powf(_gridVelocity[_INDEX(i, j)].x, 2.0f) + powf(_gridVelocity[_INDEX(i, j)].y, 2.0f));
 
-			if (magnitude > 0.05f && magnitude < 0.1f)
-				t0step /= 2.0f;
-			else if (magnitude >= 0.1f)
-				t0step /= 4.0f;
+			/*if (magnitude > 0.5f && magnitude < 1.0f)
+				dt = 0.02f;
+			else if (magnitude >= 1.0f)
+				dt = 0.01f;
 			else
-				t0step /= 1.0f;*/
+				dt = 0.04f;*/
+
+			/*if (magnitude >= 0.5f)
+				dt = 0.01f;
+			else
+				dt = 0.01f;*/
+
+			/*float eps = 0.000001f;
+			if (magnitude > eps)
+				dt = 0.01f / magnitude;*/
+
 
 			XMFLOAT2 backPos =
 				XMFLOAT2(
@@ -122,7 +141,7 @@ void EulerLiquidSim::_project()
 				{
 					_gridPressure[_INDEX(i, j)] =
 						(
-							_gridDivergence[_INDEX(i, j)] -
+							_gridDivergence[_INDEX(i, j)] / _timeStep -
 							(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
 								_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
 							) / -4.0f;
@@ -137,8 +156,8 @@ void EulerLiquidSim::_project()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
-			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
+			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f * _timeStep;
+			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f * _timeStep;
 		}
 	}
 	_setBoundary(_gridVelocity);

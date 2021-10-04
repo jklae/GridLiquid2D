@@ -181,13 +181,13 @@ void GridFluidSim::_setBoundary(std::vector<float>& scalar)
 }
 
 
-void GridFluidSim::_updateParticlePos()
+void GridFluidSim::_updateParticlePos(float dt)
 {
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-		_particlePosition[i] += _particleVelocity[i] * _timeStep;
+		_particlePosition[i] += _particleVelocity[i] * dt;
 	}
 }
 
@@ -420,12 +420,12 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 	case _STATE::FLUID:
 		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
 
-		/*if (magnitude > 0.05f && magnitude < 0.2f)
+		if (magnitude > 0.5f && magnitude < 1.0f)
 			return XMFLOAT4(0.8f, 1.0f, 0.0f, 1.0f);
-		else if (magnitude >= 0.2f)
+		else if (magnitude >= 1.0f)
 			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		else
-			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);*/
+			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 
 		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;

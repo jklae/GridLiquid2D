@@ -21,7 +21,7 @@ void PICLiquidSim::update()
 
 	_setBoundary(_gridVelocity);
 	_project();
-	_updateParticlePos();
+	_updateParticlePos(0.0f);
 	_paintGrid();
 }
 
