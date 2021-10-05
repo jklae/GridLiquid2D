@@ -2,7 +2,7 @@
 
 using namespace DirectX;
 using namespace std;
-#include <iostream>
+
 FLIPLiquidSim::FLIPLiquidSim(float timeStep, int delayTime)
 	:GridFluidSim::GridFluidSim(timeStep, delayTime)
 {
@@ -18,13 +18,12 @@ void FLIPLiquidSim::update()
 	{
 		for (int j = 0; j < _gridCount; j++)
 		{
-			_picVel.push_back({ 0.0f, 0.0f });
-			_flipVel.push_back({ 0.0f, 0.0f });
-
 			if (_gridState[_INDEX(i, j)] != _STATE::FLUID)
 				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
 		}
 	}
+	clock_t startTime = clock();
+
 	_advect();
 	_saveVelocity();
 
@@ -37,6 +36,14 @@ void FLIPLiquidSim::update()
 	_updateParticlePos(0.0f);
 
 	_paintGrid();
+
+
+	clock_t endTime = clock();
+
+	// ms
+	clock_t elapsed = endTime - startTime;
+
+	std::cout << elapsed << std::endl;
 }
 
 void FLIPLiquidSim::_force()
@@ -193,7 +200,10 @@ void FLIPLiquidSim::_updateParticlePos(float dt)
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		_particleVelocity[i] += _velocityInterpolation(_particlePosition[i], _oldVel);
+		XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
+		XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
+
+		_particleVelocity[i] = _picVel * 0.02f + _flipVel * 0.98f;
 		_particlePosition[i] += _particleVelocity[i] * _timeStep;
 
 		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;

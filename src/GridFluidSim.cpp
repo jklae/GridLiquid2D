@@ -28,7 +28,7 @@ void GridFluidSim::initialize()
 	// 0 is not allowed.
 	assert(_gridCount != 0);
 
-	int offset = 5;
+	int offset = 7;
 
 	// Set _fluid
 	int N = _gridCount - 2;
@@ -42,10 +42,10 @@ void GridFluidSim::initialize()
 			{
 				_gridState.push_back(_STATE::BOUNDARY);
 			}
-			else if ((0 < i) //((N + 1) / 2 - offset
+			else if ((N + 1) / 2 - offset < i //
 				&& (i < (N + 1) / 2 + offset)
-				&& (0 < j)  //((N + 1) / 2 - offset < j)     (N + 1) / 2
-				&& (j < (N + 1) / 2 + offset))            //
+				&& ((N + 1) / 2  < j)  //((N + 1) / 2 - offset < j)     
+				&& (j < (N)))            //
 			{
 				_gridState.push_back(_STATE::FLUID);
 			}
@@ -145,7 +145,7 @@ void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 
 				if (count > 0)
 				{
-					vec[_INDEX(i, j)] = temp;
+					vec[_INDEX(i, j)] = temp ;
 				}
 			}
 		}
@@ -420,12 +420,12 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 	case _STATE::FLUID:
 		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
 
-		if (magnitude > 0.5f && magnitude < 1.0f)
+		/*if (magnitude > 0.5f && magnitude < 1.0f)
 			return XMFLOAT4(0.8f, 1.0f, 0.0f, 1.0f);
 		else if (magnitude >= 1.0f)
 			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		else
-			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
+			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);*/
 
 		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;

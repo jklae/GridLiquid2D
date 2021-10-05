@@ -23,7 +23,6 @@ void EulerLiquidSim::update()
 				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
 		}
 	}
-	clock_t startTime = clock();
 
 	_force(_timeStep);
 
@@ -34,12 +33,6 @@ void EulerLiquidSim::update()
 	_updateParticlePos(_timeStep);
 	_paintGrid();
 
-	clock_t endTime = clock();
-
-	// ms
-	clock_t elapsed = endTime - startTime;
-	
-	std::cout << elapsed << std::endl;
 }
 
 void EulerLiquidSim::_force(float dt)

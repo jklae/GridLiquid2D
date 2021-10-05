@@ -84,11 +84,9 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"button", L"Solver", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 		30, 160, 220, 50, hwnd, reinterpret_cast<HMENU>(_COM::SOLVER_GROUP), hInstance, NULL);
 	CreateWindow(L"button", L"Eulerian", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
-		50, 177, 75, 25, hwnd, reinterpret_cast<HMENU>(_COM::EULERIAN_RADIO), hInstance, NULL);
-	CreateWindow(L"button", L"PIC", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		127, 177, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::PIC_RADIO), hInstance, NULL);
-	CreateWindow(L"button", L"FLIP", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		180, 177, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_RADIO), hInstance, NULL);
+		60, 177, 75, 25, hwnd, reinterpret_cast<HMENU>(_COM::EULERIAN_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"PIC/FLIP", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		140, 177, 80, 25, hwnd, reinterpret_cast<HMENU>(_COM::PICFLIP_RADIO), hInstance, NULL);
 
 	/*CreateWindow(L"static", L"Delay", WS_CHILD | WS_VISIBLE,
 		50, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
@@ -104,7 +102,7 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		175, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::NEXTSTEP), hInstance, NULL);
 
 	CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
-	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::FLIP_RADIO), static_cast<int>(_COM::EULERIAN_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::EULERIAN_RADIO));
 
 	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
 	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
@@ -201,21 +199,9 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), true);
 		}
 		break;
-		case static_cast<int>(_COM::PIC_RADIO) :
+		case static_cast<int>(_COM::PICFLIP_RADIO) :
 		{
 			_simIndex = 2;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-
-			CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), false);
-		}
-		break;
-		case static_cast<int>(_COM::FLIP_RADIO) :
-		{
-			_simIndex = 3;
 			dxapp->resetSimulationState();
 			dxapp->update();
 			dxapp->draw();
