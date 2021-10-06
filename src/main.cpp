@@ -6,9 +6,6 @@
 //#endif
 
 #include "FluidSimManager.h" // This includes Win32App.h
-#include "EulerGasSim.h" 
-#include "EulerLiquidSim.h"
-#include "PICFLIPSim.h"
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)

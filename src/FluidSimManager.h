@@ -5,6 +5,9 @@
 					  // Win32App is required in main().
 
 #include "GridFluidSim.h"
+#include "EulerGasSim.h" 
+#include "EulerLiquidSim.h"
+#include "PICFLIPSim.h"
 
 class FluidSimManager : public ISimulation
 {
@@ -36,7 +39,7 @@ public:
 private:
 	std::vector<GridFluidSim*> _sim;
 	int _simIndex = 0;
-	int _scrollPos;
+	int _scrollPos = 99;
 
 	enum class _COM
 	{
@@ -44,7 +47,7 @@ private:
 		PLAY, STOP, NEXTSTEP,
 		STATE_GROUP, LIQUID_RADIO, GAS_RADIO,
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
-		DELAY_BAR
+		RATIO_BAR
 	};
 
 

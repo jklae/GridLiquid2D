@@ -12,6 +12,11 @@ PICFLIPSim::~PICFLIPSim()
 {
 }
 
+void PICFLIPSim::setFlipRatio(int value)
+{
+	_flipRatio = static_cast<float>(value) / 100.0f;
+}
+
 void PICFLIPSim::initialize()
 {
 	GridFluidSim::initialize();
@@ -203,8 +208,7 @@ void PICFLIPSim::_updateParticlePos(float dt)
 		XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 		XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
 
-		float ratio = 0.99f;
-		_particleVelocity[i] = _picVel * (1 - ratio) + _flipVel * ratio;
+		_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
 		_particlePosition[i] += _particleVelocity[i] * _timeStep;
 
 		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
