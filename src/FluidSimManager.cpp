@@ -32,6 +32,13 @@ bool FluidSimManager::_getDrawFlag(FLAG flagType)
 	return _drawFlag[i];
 }
 
+wchar_t* FluidSimManager::int2wchar(int value)
+{
+	wchar_t buffer[5];
+	_itow(value, buffer, 10);
+	return buffer;
+}
+
 
 #pragma region Implementation
 // ################################## Implementation ####################################
@@ -80,7 +87,7 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		60, 117, 70, 25, hwnd, reinterpret_cast<HMENU>(_COM::LIQUID_RADIO), hInstance, NULL);
 	CreateWindow(L"button", L"Gas", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
 		140, 117, 70, 25, hwnd, reinterpret_cast<HMENU>(_COM::GAS_RADIO), hInstance, NULL);
-
+	
 	CreateWindow(L"button", L"Solver", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 		30, 160, 220, 50, hwnd, reinterpret_cast<HMENU>(_COM::SOLVER_GROUP), hInstance, NULL);
 	CreateWindow(L"button", L"Eulerian", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
@@ -88,8 +95,14 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"button", L"PIC/FLIP", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
 		140, 177, 80, 25, hwnd, reinterpret_cast<HMENU>(_COM::PICFLIP_RADIO), hInstance, NULL);
 
-	CreateWindow(L"static", L"Delay", WS_CHILD | WS_VISIBLE,
-		50, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", L"PIC  :", WS_CHILD | WS_VISIBLE,
+		60, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", int2wchar(100 - _scrollPos), WS_CHILD | WS_VISIBLE,
+		100, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_RATIO), hInstance, NULL);
+	CreateWindow(L"static", L"FLIP :", WS_CHILD | WS_VISIBLE,
+		150, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", int2wchar(_scrollPos), WS_CHILD | WS_VISIBLE,
+		190, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_RATIO), hInstance, NULL);
 	HWND scroll =
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
 			40, 250, 200, 20, hwnd, reinterpret_cast<HMENU>(_COM::RATIO_BAR), hInstance, NULL);
@@ -141,6 +154,8 @@ void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTA
 	}
 
 	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
+	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), int2wchar(100 - _scrollPos));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), int2wchar(_scrollPos));
 }
 
 void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)

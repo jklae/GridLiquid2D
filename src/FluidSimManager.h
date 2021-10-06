@@ -47,12 +47,14 @@ private:
 		PLAY, STOP, NEXTSTEP,
 		STATE_GROUP, LIQUID_RADIO, GAS_RADIO,
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
-		RATIO_BAR
+		RATIO_BAR, PIC_RATIO, FLIP_RATIO
 	};
 
-
 	bool _drawFlag[3] = { true, true, false };
+
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
+
+	wchar_t* int2wchar(int value);
 };
 
