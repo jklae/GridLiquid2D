@@ -22,6 +22,7 @@ void FLIPLiquidSim::update()
 				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
 		}
 	}
+
 	clock_t startTime = clock();
 
 	_advect();
@@ -29,6 +30,7 @@ void FLIPLiquidSim::update()
 
 	_force();
 	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 
 	_project();
 	// Solve boundary condition again due to numerical errors in previous step
