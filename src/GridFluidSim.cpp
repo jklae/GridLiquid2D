@@ -4,8 +4,8 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(float timeStep, int delayTime)
-	:_timeStep(timeStep), _delayTime(delayTime)
+GridFluidSim::GridFluidSim(float timeStep)
+	:_timeStep(timeStep)
 {
 }
 
@@ -68,7 +68,54 @@ void GridFluidSim::initialize()
 	}
 
 }
+void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
+{
+	int N = _gridCount - 2;
 
+	// Free surface boundary
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			if (_gridState[_INDEX(i, j)] == _STATE::SURFACE)
+			{
+				XMFLOAT2 temp = { 0.0f, 0.0f };
+				int count = 0;
+
+				if (_gridState[_INDEX(i + 1, j)] == _STATE::FLUID)
+				{
+					temp += vec[_INDEX(i + 1, j)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i - 1, j)] == _STATE::FLUID)
+				{
+					temp += vec[_INDEX(i - 1, j)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i, j + 1)] == _STATE::FLUID)
+				{
+					temp += vec[_INDEX(i, j + 1)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i, j - 1)] == _STATE::FLUID)
+				{
+					temp += vec[_INDEX(i, j - 1)];
+					count++;
+				}
+
+				if (count > 0)
+				{
+					vec[_INDEX(i, j)] = temp / (float)count;
+				}
+			}
+
+
+		}
+	}
+}
 
 void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
@@ -106,50 +153,6 @@ void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 	// (xCount, yCount)
 	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
 	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
-
-
-
-	// Free surface boundary
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			if (_gridState[_INDEX(i, j)] == _STATE::SURFACE)
-			{
-				XMFLOAT2 temp = { 0.0f, 0.0f };
-				int count = 0;
-
-				if (_gridState[_INDEX(i + 1, j)] == _STATE::FLUID)
-				{
-					temp = vec[_INDEX(i + 1, j)];
-					count++;
-				}
-
-				if (_gridState[_INDEX(i - 1, j)] == _STATE::FLUID)
-				{
-					temp = vec[_INDEX(i - 1, j)];
-					count++;
-				}
-
-				if (_gridState[_INDEX(i, j + 1)] == _STATE::FLUID)
-				{
-					temp = vec[_INDEX(i, j + 1)];
-					count++;
-				}
-
-				if (_gridState[_INDEX(i, j - 1)] == _STATE::FLUID)
-				{
-					temp = vec[_INDEX(i, j - 1)];
-					count++;
-				}
-
-				if (count > 0)
-				{
-					vec[_INDEX(i, j)] = temp ;
-				}
-			}
-		}
-	}
 }
 
 void GridFluidSim::_setBoundary(std::vector<float>& scalar)
@@ -310,7 +313,7 @@ int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 
 	}
 }
 
-															// For semi-Lagrangian
+															// For semi-Lagrangian and FLIP
 XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
 {
 	// 2. 3.
@@ -354,7 +357,7 @@ void GridFluidSim::iUpdate()
 		update();
 	}
 
-	Sleep(_delayTime);
+	//Sleep(_delayTime);
 }
 
 void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)

@@ -4,7 +4,7 @@
 class GridFluidSim
 {
 public:
-	GridFluidSim(float timeStep, int delayTime);
+	GridFluidSim(float timeStep);
 	virtual ~GridFluidSim();
 
 	void setGridDomain(int xCount, int yCount);
@@ -50,12 +50,12 @@ protected:
 	int _particleCount = 4;
 
 	float _timeStep = 0.0f;
-	int _delayTime = 0;
 
 	DirectX::XMFLOAT4 _getColor(int i);
 
 	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
 	void _setBoundary(std::vector<float>& scalar);
+	void _setFreeSurface(std::vector<DirectX::XMFLOAT2>& vec);
 
 	virtual void _updateParticlePos(float dt);
 	void _paintGrid();

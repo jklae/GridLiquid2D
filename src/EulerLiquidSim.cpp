@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerLiquidSim::EulerLiquidSim(float timeStep, int delayTime)
-	:GridFluidSim::GridFluidSim(timeStep, delayTime)
+EulerLiquidSim::EulerLiquidSim(float timeStep)
+	:GridFluidSim::GridFluidSim(timeStep)
 {
 }
 
@@ -14,16 +14,6 @@ EulerLiquidSim::~EulerLiquidSim()
 
 void EulerLiquidSim::update()
 {
-	for (int i = 0; i < _gridCount; i++)
-	{
-		for (int j = 0; j < _gridCount; j++)
-		{
-
-			if (_gridState[_INDEX(i, j)] != _STATE::FLUID)
-				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
-		}
-	}
-
 	_force(_timeStep);
 
 	//_project();
@@ -44,12 +34,16 @@ void EulerLiquidSim::_force(float dt)
 		{
 			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
-
-
 				_gridVelocity[_INDEX(i, j)].y -= 0.98f * dt;
+			}
+			else
+			{
+				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
 			}
 		}
 	}
+	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 }
 
 void EulerLiquidSim::_advect(float dt)
@@ -102,6 +96,7 @@ void EulerLiquidSim::_advect(float dt)
 		}
 	}
 	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 }
 
 void EulerLiquidSim::_project()
@@ -154,5 +149,6 @@ void EulerLiquidSim::_project()
 		}
 	}
 	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 
 }

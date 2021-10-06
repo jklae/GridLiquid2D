@@ -4,7 +4,7 @@
 class FLIPLiquidSim : public GridFluidSim
 {
 public:
-	FLIPLiquidSim(float timeStep, int delayTime);
+	FLIPLiquidSim(float timeStep);
 	~FLIPLiquidSim() override;
 
 	void update() override;
