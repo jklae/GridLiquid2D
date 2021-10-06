@@ -4,8 +4,8 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(float timeStep, int delayTime)
-	:_timeStep(timeStep), _delayTime(delayTime)
+GridFluidSim::GridFluidSim(float timeStep)
+	:_timeStep(timeStep)
 {
 }
 
@@ -121,31 +121,31 @@ void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 
 				if (_gridState[_INDEX(i + 1, j)] == _STATE::FLUID)
 				{
-					temp = vec[_INDEX(i + 1, j)];
+					temp += vec[_INDEX(i + 1, j)];
 					count++;
 				}
 
 				if (_gridState[_INDEX(i - 1, j)] == _STATE::FLUID)
 				{
-					temp = vec[_INDEX(i - 1, j)];
+					temp += vec[_INDEX(i - 1, j)];
 					count++;
 				}
 
 				if (_gridState[_INDEX(i, j + 1)] == _STATE::FLUID)
 				{
-					temp = vec[_INDEX(i, j + 1)];
+					temp += vec[_INDEX(i, j + 1)];
 					count++;
 				}
 
 				if (_gridState[_INDEX(i, j - 1)] == _STATE::FLUID)
 				{
-					temp = vec[_INDEX(i, j - 1)];
+					temp += vec[_INDEX(i, j - 1)];
 					count++;
 				}
 
 				if (count > 0)
 				{
-					vec[_INDEX(i, j)] = temp ;
+					vec[_INDEX(i, j)] = temp / (float)count ;
 				}
 			}
 		}
@@ -310,7 +310,7 @@ int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 
 	}
 }
 
-															// For semi-Lagrangian
+															// For semi-Lagrangian and FLIP
 XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
 {
 	// 2. 3.
@@ -354,7 +354,7 @@ void GridFluidSim::iUpdate()
 		update();
 	}
 
-	Sleep(_delayTime);
+	//Sleep(_delayTime);
 }
 
 void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)

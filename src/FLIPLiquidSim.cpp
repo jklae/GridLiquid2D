@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-FLIPLiquidSim::FLIPLiquidSim(float timeStep, int delayTime)
-	:GridFluidSim::GridFluidSim(timeStep, delayTime)
+FLIPLiquidSim::FLIPLiquidSim(float timeStep)
+	:GridFluidSim::GridFluidSim(timeStep)
 {
 }
 

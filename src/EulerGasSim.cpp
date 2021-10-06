@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerGasSim::EulerGasSim(float timeStep, int delayTime)
-	:GridFluidSim::GridFluidSim(timeStep, delayTime)
+EulerGasSim::EulerGasSim(float timeStep)
+	:GridFluidSim::GridFluidSim(timeStep)
 {
 }
 
@@ -48,15 +48,6 @@ void EulerGasSim::_advect()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			/*float magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
-
-			if (magnitude > 0.05f && magnitude < 0.1f)
-				t0step /= 2.0f;
-			else if (magnitude >= 0.1f)
-				t0step /= 4.0f;
-			else
-				t0step /= 1.0f;*/
-
 			XMFLOAT2 backPos =
 				XMFLOAT2(
 					_gridPosition[_INDEX(i, j)].x - t0step * oldVelocity[_INDEX(i, j)].x,

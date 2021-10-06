@@ -15,9 +15,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 {
     // Simulation init
     std::vector<GridFluidSim*> sims;
-    sims.push_back(new EulerLiquidSim(0.01f, 0));
-    sims.push_back(new EulerGasSim(0.1f, 0));
-    sims.push_back(new FLIPLiquidSim(0.01f, 0));
+    sims.push_back(new EulerLiquidSim(0.01f));
+    sims.push_back(new EulerGasSim(0.1f));
+    sims.push_back(new FLIPLiquidSim(0.01f));
 
     for (auto& sim : sims)
     {
