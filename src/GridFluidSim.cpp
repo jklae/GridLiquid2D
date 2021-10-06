@@ -28,7 +28,7 @@ void GridFluidSim::initialize()
 	// 0 is not allowed.
 	assert(_gridCount != 0);
 
-	int offset = 7;
+	int offset = 6;
 
 	// Set _fluid
 	int N = _gridCount - 2;
@@ -43,7 +43,7 @@ void GridFluidSim::initialize()
 				_gridState.push_back(_STATE::BOUNDARY);
 			}
 			else if ((N + 1) / 2 - offset < i //
-				&& (i < (N + 1) / 2 + offset)
+				&& (i < (N + 1) / 2 + offset + 1)
 				&& ((N + 1) / 2  < j)  //((N + 1) / 2 - offset < j)     
 				&& (j < (N)))            //
 			{
