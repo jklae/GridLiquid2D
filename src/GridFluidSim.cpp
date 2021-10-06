@@ -111,6 +111,8 @@ void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 					vec[_INDEX(i, j)] = temp / (float)count;
 				}
 			}
+
+
 		}
 	}
 }

@@ -14,14 +14,6 @@ FLIPLiquidSim::~FLIPLiquidSim()
 
 void FLIPLiquidSim::update()
 {
-	for (int i = 0; i < _gridCount; i++)
-	{
-		for (int j = 0; j < _gridCount; j++)
-		{
-			if (_gridState[_INDEX(i, j)] != _STATE::FLUID)
-				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
-		}
-	}
 
 	clock_t startTime = clock();
 
@@ -35,6 +27,7 @@ void FLIPLiquidSim::update()
 	_project();
 	// Solve boundary condition again due to numerical errors in previous step
 	//_setBoundary(_gridVelocity);
+	//_setFreeSurface(_gridVelocity);
 	_updateParticlePos(0.0f);
 
 	_paintGrid();
@@ -75,6 +68,7 @@ void FLIPLiquidSim::_advect()
 		{
 			tempVel.push_back(XMFLOAT2(0.0f, 0.0f));
 			pCount.push_back(0.0f);
+
 		}
 	}
 
@@ -127,6 +121,10 @@ void FLIPLiquidSim::_advect()
 			if (pCount[_INDEX(i, j)] > eps)
 			{
 				_gridVelocity[_INDEX(i, j)] = tempVel[_INDEX(i, j)] / pCount[_INDEX(i, j)];
+			}
+			else
+			{
+				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
 			}
 		}
 	}
