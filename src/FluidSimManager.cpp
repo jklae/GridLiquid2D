@@ -120,38 +120,26 @@ void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTA
 	switch (LOWORD(wParam))
 	{
 		case SB_THUMBTRACK:
-		{
-			//_sim[_simIndex]->
 			_scrollPos = HIWORD(wParam);
-		}
-		break;
+			break;
 
 		case SB_LINELEFT:
-		{
 			_scrollPos = max(0, _scrollPos - 1);
-		}
-		break;
+			break;
 
 		case SB_LINERIGHT:
-		{
 			_scrollPos = min(100, _scrollPos + 1);
-		}
-		break;
+			break;
 
 		case SB_PAGELEFT:
-		{
 			_scrollPos = max(0, _scrollPos - 5);
-		}
-		break;
+			break;
 
 		case SB_PAGERIGHT:
-		{
 			_scrollPos = min(100, _scrollPos + 5);
-		}
-		break;
+			break;
 	}
 
-	cout << _scrollPos << endl;
 	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
 }
 

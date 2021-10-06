@@ -1,18 +1,18 @@
-#include "FLIPLiquidSim.h"
+#include "PICFLIPSim.h"
 
 using namespace DirectX;
 using namespace std;
 
-FLIPLiquidSim::FLIPLiquidSim(float timeStep)
+PICFLIPSim::PICFLIPSim(float timeStep)
 	:GridFluidSim::GridFluidSim(timeStep)
 {
 }
 
-FLIPLiquidSim::~FLIPLiquidSim()
+PICFLIPSim::~PICFLIPSim()
 {
 }
 
-void FLIPLiquidSim::initialize()
+void PICFLIPSim::initialize()
 {
 	GridFluidSim::initialize();
 
@@ -23,7 +23,7 @@ void FLIPLiquidSim::initialize()
 	_pCount.assign(vSize, 0.0f);
 }
 
-void FLIPLiquidSim::update()
+void PICFLIPSim::update()
 {
 	clock_t startTime = clock();
 
@@ -50,7 +50,7 @@ void FLIPLiquidSim::update()
 	//std::cout << elapsed << std::endl;
 }
 
-void FLIPLiquidSim::_force()
+void PICFLIPSim::_force()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -65,7 +65,7 @@ void FLIPLiquidSim::_force()
 	}
 }
 
-void FLIPLiquidSim::_advect()
+void PICFLIPSim::_advect()
 {
 	int N = _gridCount - 2;
 
@@ -133,7 +133,7 @@ void FLIPLiquidSim::_advect()
 	}
 }
 
-void FLIPLiquidSim::_project()
+void PICFLIPSim::_project()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -183,7 +183,7 @@ void FLIPLiquidSim::_project()
 
 }
 
-void FLIPLiquidSim::_updateParticlePos(float dt)
+void PICFLIPSim::_updateParticlePos(float dt)
 {
 	int N = _gridCount - 2;
 	for (int i = 0; i < _oldVel.size(); i++)

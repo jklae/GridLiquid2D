@@ -8,7 +8,7 @@
 #include "FluidSimManager.h" // This includes Win32App.h
 #include "EulerGasSim.h" 
 #include "EulerLiquidSim.h"
-#include "FLIPLiquidSim.h"
+#include "PICFLIPSim.h"
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -17,7 +17,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     std::vector<GridFluidSim*> sims;
     sims.push_back(new EulerLiquidSim(0.01f));
     sims.push_back(new EulerGasSim(0.1f));
-    sims.push_back(new FLIPLiquidSim(0.01f));
+    sims.push_back(new PICFLIPSim(0.01f));
 
     for (auto& sim : sims)
     {
