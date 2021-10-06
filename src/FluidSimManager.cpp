@@ -115,16 +115,44 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 }
 
 
-void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
+void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, int& scrollPos)
 {
 	switch (LOWORD(wParam))
 	{
 		case SB_THUMBTRACK:
-			cout << HIWORD(wParam) << endl;
+		{
 			//_sim[_simIndex]->
-			SetScrollPos((HWND)lParam, SB_CTL, HIWORD(wParam), TRUE);
-			break;
+			scrollPos = HIWORD(wParam);
+		}
+		break;
+
+		case SB_LINELEFT:
+		{
+			scrollPos = max(0, scrollPos - 1);
+		}
+		break;
+
+		case SB_LINERIGHT:
+		{
+			scrollPos = min(100, scrollPos + 1);
+		}
+		break;
+
+		case SB_PAGELEFT:
+		{
+			scrollPos = max(0, scrollPos - 5);
+		}
+		break;
+
+		case SB_PAGERIGHT:
+		{
+			scrollPos = min(100, scrollPos + 5);
+		}
+		break;
 	}
+
+	cout << scrollPos << endl;
+	SetScrollPos((HWND)lParam, SB_CTL, scrollPos, TRUE);
 }
 
 void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
