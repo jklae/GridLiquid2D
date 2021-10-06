@@ -203,7 +203,8 @@ void FLIPLiquidSim::_updateParticlePos(float dt)
 		XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 		XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
 
-		_particleVelocity[i] = _picVel * 0.02f + _flipVel * 0.98f;
+		float ratio = 0.99f;
+		_particleVelocity[i] = _picVel * (1 - ratio) + _flipVel * ratio;
 		_particlePosition[i] += _particleVelocity[i] * _timeStep;
 
 		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;

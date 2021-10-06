@@ -88,11 +88,11 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"button", L"PIC/FLIP", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
 		140, 177, 80, 25, hwnd, reinterpret_cast<HMENU>(_COM::PICFLIP_RADIO), hInstance, NULL);
 
-	/*CreateWindow(L"static", L"Delay", WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", L"Delay", WS_CHILD | WS_VISIBLE,
 		50, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	HWND scroll =
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
-			40, 250, 200, 20, hwnd, reinterpret_cast<HMENU>(_COM::DELAY_BAR), hInstance, NULL);*/
+			40, 250, 200, 20, hwnd, reinterpret_cast<HMENU>(_COM::DELAY_BAR), hInstance, NULL);
 
 	CreateWindow(L"button", L"бл", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		65, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::PLAY), hInstance, NULL);
@@ -105,11 +105,26 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::EULERIAN_RADIO));
 
 	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
+
+	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::DELAY_BAR)), false);
 	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
 	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), false);
 
-	/*SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
-	SetScrollPos(scroll, SB_CTL, 10, TRUE);*/
+	SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
+	SetScrollPos(scroll, SB_CTL, 10, TRUE);
+}
+
+
+void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
+{
+	switch (LOWORD(wParam))
+	{
+		case SB_THUMBTRACK:
+			cout << HIWORD(wParam) << endl;
+			//_sim[_simIndex]->
+			SetScrollPos((HWND)lParam, SB_CTL, HIWORD(wParam), TRUE);
+			break;
+	}
 }
 
 void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
@@ -213,6 +228,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 	}
 }
+
 
 void FluidSimManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuffer, int i)
 {
