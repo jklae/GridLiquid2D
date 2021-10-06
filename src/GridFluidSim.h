@@ -8,7 +8,7 @@ public:
 	virtual ~GridFluidSim();
 
 	void setGridDomain(int xCount, int yCount);
-	void initialize();
+	virtual void initialize();
 
 	virtual void update() = 0;
 

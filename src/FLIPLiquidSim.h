@@ -8,6 +8,7 @@ public:
 	~FLIPLiquidSim() override;
 
 	void update() override;
+	void initialize() override;
 
 private:
 

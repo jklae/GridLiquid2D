@@ -6,12 +6,20 @@ using namespace std;
 FLIPLiquidSim::FLIPLiquidSim(float timeStep)
 	:GridFluidSim::GridFluidSim(timeStep)
 {
-	tempVel.assign(42 * 42, { 0.0f, 0.0f });
-	pCount.assign(42 * 42, 0.0f);
 }
 
 FLIPLiquidSim::~FLIPLiquidSim()
 {
+}
+
+void FLIPLiquidSim::initialize()
+{
+	GridFluidSim::initialize();
+
+	size_t vSize = static_cast<size_t>(_gridCount) * static_cast<size_t>(_gridCount);
+
+	tempVel.assign(vSize, { 0.0f, 0.0f });
+	pCount.assign(vSize, 0.0f);
 }
 
 void FLIPLiquidSim::update()
