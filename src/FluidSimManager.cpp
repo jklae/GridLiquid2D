@@ -96,11 +96,11 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		140, 177, 80, 25, hwnd, reinterpret_cast<HMENU>(_COM::PICFLIP_RADIO), hInstance, NULL);
 
 	CreateWindow(L"static", L"PIC  :", WS_CHILD | WS_VISIBLE,
-		60, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+		60, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_TEXT), hInstance, NULL);
 	CreateWindow(L"static", int2wchar(100 - _scrollPos), WS_CHILD | WS_VISIBLE,
 		100, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_RATIO), hInstance, NULL);
 	CreateWindow(L"static", L"FLIP :", WS_CHILD | WS_VISIBLE,
-		150, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+		150, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_TEXT), hInstance, NULL);
 	CreateWindow(L"static", int2wchar(_scrollPos), WS_CHILD | WS_VISIBLE,
 		190, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_RATIO), hInstance, NULL);
 	HWND scroll =
@@ -118,7 +118,12 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::EULERIAN_RADIO));
 
 	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
+
 	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), false);
+	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), false);
+	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), false);
+	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), false);
+	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), false);
 
 	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
 	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), false);
@@ -197,7 +202,15 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STOP)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), !updateFlag);
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), !updateFlag);
+
+			if (_simIndex == 2)
+			{
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), !updateFlag);
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), !updateFlag);
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), !updateFlag);
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), !updateFlag);
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), !updateFlag);
+			}
 		}
 		break;
 
@@ -246,6 +259,12 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), true);
+
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), false);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), false);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), false);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), false);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), false);
 		}
 		break;
 		case static_cast<int>(_COM::PICFLIP_RADIO) :
@@ -259,6 +278,15 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), false);
+
+			if (!updateFlag)
+			{
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), true);
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), true);
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), true);
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), true);
+				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), true);
+			}
 		}
 		break;
 	}
