@@ -35,8 +35,8 @@ void FLIPLiquidSim::update()
 
 	_project();
 	// Solve boundary condition again due to numerical errors in previous step
-	//_setBoundary(_gridVelocity);
-	//_setFreeSurface(_gridVelocity);
+	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 	_updateParticlePos(0.0f);
 
 	_paintGrid();
@@ -150,7 +150,7 @@ void FLIPLiquidSim::_project()
 	_setBoundary(_gridDivergence);
 	_setBoundary(_gridPressure);
 
-	for (int iter = 0; iter < 20; iter++)
+	for (int iter = 0; iter < 200; iter++)
 	{
 		for (int i = 1; i <= N; i++)
 		{
@@ -191,10 +191,12 @@ void FLIPLiquidSim::_updateParticlePos(float dt)
 		_oldVel[i] = _gridVelocity[i] - _oldVel[i];
 	}
 
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
-	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
-	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
+	// 0.5f is the correct value.
+	// However, 0.5f is too 'correct', which causes particles to stick at the edges. (velocity is zero)
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 1.3f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 1.3f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 1.3f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 1.3f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{

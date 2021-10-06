@@ -21,7 +21,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     for (auto& sim : sims)
     {
-        sim->setGridDomain(30, 20);
+        sim->setGridDomain(60, 20);
         sim->initialize();
     }
 

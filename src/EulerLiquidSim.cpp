@@ -119,7 +119,7 @@ void EulerLiquidSim::_project()
 	_setBoundary(_gridDivergence);
 	_setBoundary(_gridPressure);
 
-	for (int iter = 0; iter < 20; iter++)
+	for (int iter = 0; iter < 200; iter++)
 	{
 		for (int i = 1; i <= N; i++)
 		{
