@@ -6,6 +6,8 @@ using namespace std;
 FLIPLiquidSim::FLIPLiquidSim(float timeStep)
 	:GridFluidSim::GridFluidSim(timeStep)
 {
+	tempVel.assign(42 * 42, { 0.0f, 0.0f });
+	pCount.assign(42 * 42, 0.0f);
 }
 
 FLIPLiquidSim::~FLIPLiquidSim()
@@ -14,7 +16,6 @@ FLIPLiquidSim::~FLIPLiquidSim()
 
 void FLIPLiquidSim::update()
 {
-
 	clock_t startTime = clock();
 
 	_advect();
@@ -26,8 +27,8 @@ void FLIPLiquidSim::update()
 
 	_project();
 	// Solve boundary condition again due to numerical errors in previous step
-	//_setBoundary(_gridVelocity);
-	//_setFreeSurface(_gridVelocity);
+	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 	_updateParticlePos(0.0f);
 
 	_paintGrid();
@@ -38,7 +39,7 @@ void FLIPLiquidSim::update()
 	// ms
 	clock_t elapsed = endTime - startTime;
 
-	std::cout << elapsed << std::endl;
+	//std::cout << elapsed << std::endl;
 }
 
 void FLIPLiquidSim::_force()
@@ -59,18 +60,8 @@ void FLIPLiquidSim::_force()
 void FLIPLiquidSim::_advect()
 {
 	int N = _gridCount - 2;
-	vector<XMFLOAT2> tempVel;
-	vector<float> pCount;
 
-	for (int i = 0; i < _gridCount; i++)
-	{
-		for (int j = 0; j < _gridCount; j++)
-		{
-			tempVel.push_back(XMFLOAT2(0.0f, 0.0f));
-			pCount.push_back(0.0f);
 
-		}
-	}
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -126,6 +117,10 @@ void FLIPLiquidSim::_advect()
 			{
 				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
 			}
+
+			// Reset
+			tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+			pCount[_INDEX(i, j)] = 0.0f;
 		}
 	}
 }

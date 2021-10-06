@@ -314,7 +314,7 @@ int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 
 }
 
 															// For semi-Lagrangian and FLIP
-XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
+XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2>& oldvel)
 {
 	// 2. 3.
 	int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
@@ -350,12 +350,12 @@ float GridFluidSim::_interpolation(float value1, float value2, float ratio)
 // ################################## Implementation ####################################
 void GridFluidSim::iUpdate()
 {
-	float standardTimeStep = 0.1f;
-	int maxSize = static_cast<int>(standardTimeStep / _timeStep);
-	for (int i = 0; i < maxSize; i++)
-	{
+	//float standardTimeStep = 0.01f;
+	//int maxSize = static_cast<int>(standardTimeStep / _timeStep);
+	//for (int i = 0; i < maxSize; i++)
+	//{
 		update();
-	}
+	//}
 
 	//Sleep(_delayTime);
 }

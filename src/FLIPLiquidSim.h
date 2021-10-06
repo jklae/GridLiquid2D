@@ -12,6 +12,8 @@ public:
 private:
 
 	std::vector<DirectX::XMFLOAT2> _oldVel;
+	std::vector<DirectX::XMFLOAT2> tempVel;
+	std::vector<float> pCount;
 
 	void _advect();
 	void _saveVelocity();
