@@ -50,6 +50,7 @@ void EulerLiquidSim::_force(float dt)
 			}
 		}
 	}
+	_setBoundary(_gridVelocity);
 }
 
 void EulerLiquidSim::_advect(float dt)
