@@ -130,8 +130,14 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 	SetScrollPos(scroll, SB_CTL, _scrollPos, TRUE);
+
+	SetTimer(hwnd, 1, 10, NULL);
 }
 
+void FluidSimManager::iWMTimer(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
+{
+
+}
 
 void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
