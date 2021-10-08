@@ -30,8 +30,6 @@ void PICFLIPSim::initialize()
 
 void PICFLIPSim::update()
 {
-	clock_t startTime = clock();
-
 	_advect();
 
 	_force();
@@ -45,14 +43,6 @@ void PICFLIPSim::update()
 	_updateParticlePos(0.0f);
 
 	_paintGrid();
-
-
-	clock_t endTime = clock();
-
-	// ms
-	clock_t elapsed = endTime - startTime;
-
-	//std::cout << elapsed << std::endl;
 }
 
 void PICFLIPSim::_force()

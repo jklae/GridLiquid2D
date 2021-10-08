@@ -29,7 +29,7 @@ public:
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
 	void iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp) override;
 	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp) override;
-	void iWMTimer() override;
+	void iWMTimer(HWND hwnd) override;
 	void iWMDestory(HWND hwnd) override;
 
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
@@ -49,7 +49,8 @@ private:
 		PLAY, STOP, NEXTSTEP,
 		STATE_GROUP, LIQUID_RADIO, GAS_RADIO,
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
-		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO
+		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO,
+		TIME_TEXT
 	};
 
 	bool _drawFlag[3] = { true, true, false };
@@ -59,5 +60,7 @@ private:
 
 	wchar_t wBuffer[5];
 	wchar_t* int2wchar(int value);
+
+	clock_t time = 0;
 };
 
