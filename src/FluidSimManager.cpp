@@ -134,9 +134,14 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	SetTimer(hwnd, 1, 10, NULL);
 }
 
-void FluidSimManager::iWMTimer(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
+void FluidSimManager::iWMTimer()
 {
+	cout << "hi";
+}
 
+void FluidSimManager::iWMDestory(HWND hwnd)
+{
+	KillTimer(hwnd, 1);
 }
 
 void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
