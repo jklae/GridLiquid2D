@@ -34,9 +34,8 @@ bool FluidSimManager::_getDrawFlag(FLAG flagType)
 
 wchar_t* FluidSimManager::int2wchar(int value)
 {
-	wchar_t buffer[5];
-	_itow(value, buffer, 10);
-	return buffer;
+	_itow(value, wBuffer, 10);
+	return wBuffer;
 }
 
 

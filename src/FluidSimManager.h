@@ -57,6 +57,7 @@ private:
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
 
+	wchar_t wBuffer[5];
 	wchar_t* int2wchar(int value);
 };
 
