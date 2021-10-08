@@ -144,7 +144,7 @@ void FluidSimManager::iWMDestory(HWND hwnd)
 	KillTimer(hwnd, 1);
 }
 
-void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
+void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp)
 {
 	switch (LOWORD(wParam))
 	{
@@ -172,6 +172,11 @@ void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTA
 	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
 	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), int2wchar(100 - _scrollPos));
 	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), int2wchar(_scrollPos));
+
+	dynamic_cast<PICFLIPSim*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
+	dxapp->resetSimulationState();
+	dxapp->update();
+	dxapp->draw();
 }
 
 void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
@@ -213,22 +218,11 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STOP)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), !updateFlag);
-
-			if (_simIndex == 2)
-			{
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), !updateFlag);
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), !updateFlag);
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), !updateFlag);
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), !updateFlag);
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), !updateFlag);
-			}
 		}
 		break;
 
 		case static_cast<int>(_COM::STOP) :
 		{
-			if (_simIndex == 2) 
-				dynamic_cast<PICFLIPSim*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
 			dxapp->resetSimulationState();
 			dxapp->update();
 			dxapp->draw();
@@ -281,7 +275,6 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		case static_cast<int>(_COM::PICFLIP_RADIO) :
 		{
 			_simIndex = 2;
-			dynamic_cast<PICFLIPSim*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
 			dxapp->resetSimulationState();
 			dxapp->update();
 			dxapp->draw();
@@ -290,14 +283,12 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), false);
 
-			if (!updateFlag)
-			{
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), true);
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), true);
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), true);
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), true);
-				EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), true);
-			}
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), true);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), true);
+			
 		}
 		break;
 	}

@@ -28,7 +28,7 @@ public:
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
 	void iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp) override;
-	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance) override;
+	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp) override;
 	void iWMTimer() override;
 	void iWMDestory(HWND hwnd) override;
 
