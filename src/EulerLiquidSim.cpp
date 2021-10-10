@@ -42,8 +42,8 @@ void EulerLiquidSim::_force(float dt)
 			}
 		}
 	}
-	_setBoundary(_gridVelocity);
 	_setFreeSurface(_gridVelocity);
+	_setBoundary(_gridVelocity);
 }
 
 void EulerLiquidSim::_advect(float dt)
@@ -95,8 +95,8 @@ void EulerLiquidSim::_advect(float dt)
 			_gridVelocity[_INDEX(i, j)] = _velocityInterpolation(backPos, oldVelocity);
 		}
 	}
-	_setBoundary(_gridVelocity);
 	_setFreeSurface(_gridVelocity);
+	_setBoundary(_gridVelocity);
 }
 
 void EulerLiquidSim::_project()
@@ -148,7 +148,7 @@ void EulerLiquidSim::_project()
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f * _timeStep;
 		}
 	}
-	_setBoundary(_gridVelocity);
 	_setFreeSurface(_gridVelocity);
+	_setBoundary(_gridVelocity);
 
 }

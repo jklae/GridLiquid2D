@@ -33,13 +33,13 @@ void PICFLIPSim::update()
 	_advect();
 
 	_force();
-	_setBoundary(_gridVelocity);
 	_setFreeSurface(_gridVelocity);
+	_setBoundary(_gridVelocity);
 
 	_project();
 	// Solve boundary condition again due to numerical errors in previous step
-	_setBoundary(_gridVelocity);
 	_setFreeSurface(_gridVelocity);
+	_setBoundary(_gridVelocity);
 	_updateParticlePos(0.0f);
 
 	_paintGrid();
