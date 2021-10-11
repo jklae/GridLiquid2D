@@ -314,7 +314,7 @@ int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 
 }
 
 															// For semi-Lagrangian and FLIP
-XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2>& oldvel)
+XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, const vector<XMFLOAT2>& oldvel)
 {
 	// 2. 3.
 	int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
