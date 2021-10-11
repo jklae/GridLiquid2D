@@ -4,6 +4,9 @@
 # Prerequisites
 *.d
 
+# Shader files
+*.cso
+
 # Compiled Object files
 *.slo
 *.lo
@@ -24,8 +27,6 @@
 *.so
 *.dylib
 *.dll
-!DXViewer.dll
-!DXViewerRel.dll
 
 # Fortran module files
 *.mod
@@ -36,8 +37,6 @@
 *.la
 *.a
 *.lib
-!DXViewer.lib
-!DXViewerRel.lib
 
 # Executables
 *.exe
@@ -126,7 +125,6 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
-!DXViewer-1.0.0/bin/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
