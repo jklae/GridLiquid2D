@@ -4,8 +4,8 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(float timeStep, int delayTime)
-	:_timeStep(timeStep), _delayTime(delayTime)
+GridFluidSim::GridFluidSim(float timeStep)
+	:_timeStep(timeStep)
 {
 }
 
@@ -28,7 +28,7 @@ void GridFluidSim::initialize()
 	// 0 is not allowed.
 	assert(_gridCount != 0);
 
-	int offset = 10;
+	int offset = _gridCount / 4;
 
 	// Set _fluid
 	int N = _gridCount - 2;
@@ -42,10 +42,10 @@ void GridFluidSim::initialize()
 			{
 				_gridState.push_back(_STATE::BOUNDARY);
 			}
-			else if (((N + 1) / 2 - offset < i) 
-				&& (i < (N + 1) / 2 + offset)
-				&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)
-				&& (j < N))            //(j < (N + 1) / 2 + offset))
+			else if ((N + 1) / 2 - offset < i //
+				&& (i < (N + 1) / 2 + offset + 1)
+				&& ((N + 1) / 2  < j)  //((N + 1) / 2 - offset < j)     
+				&& (j < (N)))            //
 			{
 				_gridState.push_back(_STATE::FLUID);
 			}
@@ -68,7 +68,54 @@ void GridFluidSim::initialize()
 	}
 
 }
+void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
+{
+	int N = _gridCount - 2;
 
+	// Free surface boundary
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			if (_gridState[_INDEX(i, j)] == _STATE::SURFACE)
+			{
+				XMFLOAT2 temp = { 0.0f, 0.0f };
+				int count = 0;
+
+				if (_gridState[_INDEX(i + 1, j)] == _STATE::FLUID)
+				{
+					temp += vec[_INDEX(i + 1, j)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i - 1, j)] == _STATE::FLUID)
+				{
+					temp += vec[_INDEX(i - 1, j)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i, j + 1)] == _STATE::FLUID)
+				{
+					temp += vec[_INDEX(i, j + 1)];
+					count++;
+				}
+
+				if (_gridState[_INDEX(i, j - 1)] == _STATE::FLUID)
+				{
+					temp += vec[_INDEX(i, j - 1)];
+					count++;
+				}
+
+				if (count > 0)
+				{
+					vec[_INDEX(i, j)] = temp / (float)count;
+				}
+			}
+
+
+		}
+	}
+}
 
 void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
@@ -106,50 +153,6 @@ void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 	// (xCount, yCount)
 	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
 	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
-
-
-
-	// Free surface boundary
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			if (_gridState[_INDEX(i, j)] == _STATE::SURFACE)
-			{
-				XMFLOAT2 temp = { 0.0f, 0.0f };
-				int count = 0;
-
-				if (_gridState[_INDEX(i + 1, j)] == _STATE::FLUID)
-				{
-					temp = vec[_INDEX(i + 1, j)];
-					count++;
-				}
-
-				if (_gridState[_INDEX(i - 1, j)] == _STATE::FLUID)
-				{
-					temp = vec[_INDEX(i - 1, j)];
-					count++;
-				}
-
-				if (_gridState[_INDEX(i, j + 1)] == _STATE::FLUID)
-				{
-					temp = vec[_INDEX(i, j + 1)];
-					count++;
-				}
-
-				if (_gridState[_INDEX(i, j - 1)] == _STATE::FLUID)
-				{
-					temp = vec[_INDEX(i, j - 1)];
-					count++;
-				}
-
-				if (count > 0)
-				{
-					vec[_INDEX(i, j)] = temp;
-				}
-			}
-		}
-	}
 }
 
 void GridFluidSim::_setBoundary(std::vector<float>& scalar)
@@ -181,13 +184,13 @@ void GridFluidSim::_setBoundary(std::vector<float>& scalar)
 }
 
 
-void GridFluidSim::_updateParticlePos()
+void GridFluidSim::_updateParticlePos(float dt)
 {
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-		_particlePosition[i] += _particleVelocity[i] * _timeStep;
+		_particlePosition[i] += _particleVelocity[i] * dt;
 	}
 }
 
@@ -310,8 +313,8 @@ int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 
 	}
 }
 
-															// For semi-Lagrangian
-XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2> oldvel)
+															// For semi-Lagrangian and FLIP
+XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, vector<XMFLOAT2>& oldvel)
 {
 	// 2. 3.
 	int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
@@ -347,14 +350,14 @@ float GridFluidSim::_interpolation(float value1, float value2, float ratio)
 // ################################## Implementation ####################################
 void GridFluidSim::iUpdate()
 {
-	float standardTimeStep = 0.1f;
-	int maxSize = static_cast<int>(standardTimeStep / _timeStep);
-	for (int i = 0; i < maxSize; i++)
-	{
+	//float standardTimeStep = 0.01f;
+	//int maxSize = static_cast<int>(standardTimeStep / _timeStep);
+	//for (int i = 0; i < maxSize; i++)
+	//{
 		update();
-	}
+	//}
 
-	Sleep(_delayTime);
+	//Sleep(_delayTime);
 }
 
 void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
@@ -420,9 +423,9 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 	case _STATE::FLUID:
 		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
 
-		/*if (magnitude > 0.05f && magnitude < 0.2f)
+		/*if (magnitude > 0.5f && magnitude < 1.0f)
 			return XMFLOAT4(0.8f, 1.0f, 0.0f, 1.0f);
-		else if (magnitude >= 0.2f)
+		else if (magnitude >= 1.0f)
 			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
 		else
 			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);*/

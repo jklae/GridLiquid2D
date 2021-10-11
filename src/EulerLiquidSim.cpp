@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerLiquidSim::EulerLiquidSim(float timeStep, int delayTime)
-	:GridFluidSim::GridFluidSim(timeStep, delayTime)
+EulerLiquidSim::EulerLiquidSim(float timeStep)
+	:GridFluidSim::GridFluidSim(timeStep)
 {
 }
 
@@ -14,17 +14,18 @@ EulerLiquidSim::~EulerLiquidSim()
 
 void EulerLiquidSim::update()
 {
-	_force();
+	_force(_timeStep);
 
 	//_project();
-	_advect();
+	_advect(_timeStep);
 
 	_project();
-	_updateParticlePos();
+	_updateParticlePos(_timeStep);
 	_paintGrid();
+
 }
 
-void EulerLiquidSim::_force()
+void EulerLiquidSim::_force(float dt)
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -33,13 +34,19 @@ void EulerLiquidSim::_force()
 		{
 			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
-				_gridVelocity[_INDEX(i, j)].y -= 0.98f * _timeStep;
+				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
+			}
+			else
+			{
+				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
 			}
 		}
 	}
+	_setFreeSurface(_gridVelocity);
+	_setBoundary(_gridVelocity);
 }
 
-void EulerLiquidSim::_advect()
+void EulerLiquidSim::_advect(float dt)
 {
 	int N = _gridCount - 2;
 
@@ -54,19 +61,29 @@ void EulerLiquidSim::_advect()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			/*float magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
+			float magnitude = sqrtf(powf(_gridVelocity[_INDEX(i, j)].x, 2.0f) + powf(_gridVelocity[_INDEX(i, j)].y, 2.0f));
 
-			if (magnitude > 0.05f && magnitude < 0.1f)
-				t0step /= 2.0f;
-			else if (magnitude >= 0.1f)
-				t0step /= 4.0f;
+			/*if (magnitude > 0.5f && magnitude < 1.0f)
+				dt = 0.02f;
+			else if (magnitude >= 1.0f)
+				dt = 0.01f;
 			else
-				t0step /= 1.0f;*/
+				dt = 0.04f;*/
+
+			/*if (magnitude >= 0.5f)
+				dt = 0.01f;
+			else
+				dt = 0.01f;*/
+
+			/*float eps = 0.000001f;
+			if (magnitude > eps)
+				dt = 0.01f / magnitude;*/
+
 
 			XMFLOAT2 backPos =
 				XMFLOAT2(
-					_gridPosition[_INDEX(i, j)].x - _timeStep * oldVelocity[_INDEX(i, j)].x,
-					_gridPosition[_INDEX(i, j)].y - _timeStep * oldVelocity[_INDEX(i, j)].y
+					_gridPosition[_INDEX(i, j)].x - dt * oldVelocity[_INDEX(i, j)].x,
+					_gridPosition[_INDEX(i, j)].y - dt * oldVelocity[_INDEX(i, j)].y
 				);
 			if (backPos.x > xMax) backPos.x = xMax;
 			else if (backPos.x < xMin) backPos.x = xMin;
@@ -78,6 +95,7 @@ void EulerLiquidSim::_advect()
 			_gridVelocity[_INDEX(i, j)] = _velocityInterpolation(backPos, oldVelocity);
 		}
 	}
+	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
 }
 
@@ -101,7 +119,7 @@ void EulerLiquidSim::_project()
 	_setBoundary(_gridDivergence);
 	_setBoundary(_gridPressure);
 
-	for (int iter = 0; iter < 20; iter++)
+	for (int iter = 0; iter < 200; iter++)
 	{
 		for (int i = 1; i <= N; i++)
 		{
@@ -130,6 +148,7 @@ void EulerLiquidSim::_project()
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
 	}
+	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
 
 }

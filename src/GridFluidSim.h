@@ -4,11 +4,11 @@
 class GridFluidSim
 {
 public:
-	GridFluidSim(float timeStep, int delayTime);
+	GridFluidSim(float timeStep);
 	virtual ~GridFluidSim();
 
 	void setGridDomain(int xCount, int yCount);
-	void initialize();
+	virtual void initialize();
 
 	virtual void update() = 0;
 
@@ -50,21 +50,21 @@ protected:
 	int _particleCount = 4;
 
 	float _timeStep = 0.0f;
-	int _delayTime = 0;
 
 	DirectX::XMFLOAT4 _getColor(int i);
 
 	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
 	void _setBoundary(std::vector<float>& scalar);
+	void _setFreeSurface(std::vector<DirectX::XMFLOAT2>& vec);
 
-	virtual void _updateParticlePos();
+	virtual void _updateParticlePos(float dt);
 	void _paintGrid();
 
 	// ---
 
 	int _computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
 	int _computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
-	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, std::vector<DirectX::XMFLOAT2> oldvel);
+	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, std::vector<DirectX::XMFLOAT2>& oldvel);
 	float _interpolation(float value1, float value2, float ratio);
 };
 

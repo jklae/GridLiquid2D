@@ -1,8 +1,13 @@
 #pragma once
+#include <ctime>
+
 #include "Win32App.h" // This includes ISimulation.h.
 					  // Win32App is required in main().
 
 #include "GridFluidSim.h"
+#include "EulerGasSim.h" 
+#include "EulerLiquidSim.h"
+#include "PICFLIPSim.h"
 
 class FluidSimManager : public ISimulation
 {
@@ -23,6 +28,9 @@ public:
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
 	void iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp) override;
+	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp) override;
+	void iWMTimer(HWND hwnd) override;
+	void iWMDestory(HWND hwnd) override;
 
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i) override;
@@ -32,20 +40,27 @@ public:
 
 private:
 	std::vector<GridFluidSim*> _sim;
-	int _simIndex = 3;
+	int _simIndex = 0;
+	int _scrollPos = 99;
 
 	enum class _COM
 	{
 		GRID_BTN, PARTICLE_BTN, VELOCITY_BTN,
 		PLAY, STOP, NEXTSTEP,
 		STATE_GROUP, LIQUID_RADIO, GAS_RADIO,
-		SOLVER_GROUP, EULERIAN_RADIO, PIC_RADIO, FLIP_RADIO,
-		DELAY_BAR
+		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
+		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO,
+		TIME_TEXT
 	};
 
-
 	bool _drawFlag[3] = { true, true, false };
+
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
+
+	wchar_t wBuffer[5];
+	wchar_t* int2wchar(int value);
+
+	clock_t time = 0;
 };
 
