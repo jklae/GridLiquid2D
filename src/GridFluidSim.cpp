@@ -344,6 +344,42 @@ float GridFluidSim::_interpolation(float value1, float value2, float ratio)
 	return value1 * (1.0f - ratio) + value2 * ratio;
 }
 
+XMFLOAT4 GridFluidSim::_getColor(int i)
+{
+	float magnitude;
+	switch (_gridState[i])
+	{
+	case _STATE::FLUID:
+		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
+
+		/*if (magnitude > 0.5f && magnitude < 1.0f)
+			return XMFLOAT4(0.8f, 1.0f, 0.0f, 1.0f);
+		else if (magnitude >= 1.0f)
+			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+		else
+			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);*/
+
+		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
+		break;
+
+	case _STATE::BOUNDARY:
+		return XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+		break;
+
+	case _STATE::AIR:
+		return XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
+		break;
+
+	case _STATE::SURFACE:
+		return XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
+		break;
+
+	default:
+		return XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+		break;
+	}
+}
+
 
 
 #pragma region Implementation
@@ -415,108 +451,9 @@ vector<unsigned int> GridFluidSim::iGetIndice()
 	return indices;
 }
 
-XMFLOAT4 GridFluidSim::_getColor(int i)
-{
-	float magnitude;
-	switch (_gridState[i])
-	{
-	case _STATE::FLUID:
-		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
-
-		/*if (magnitude > 0.5f && magnitude < 1.0f)
-			return XMFLOAT4(0.8f, 1.0f, 0.0f, 1.0f);
-		else if (magnitude >= 1.0f)
-			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-		else
-			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);*/
-
-		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
-		break;
-
-	case _STATE::BOUNDARY:
-		return XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
-		break;
-
-	case _STATE::AIR:
-		return XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
-		break;
-
-	case _STATE::SURFACE:
-		return XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
-		break;
-
-	default:
-		return XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
-		break;
-	}
-}
-
 int GridFluidSim::iGetObjectCount()
 {
 	return _gridCount;
-}
-
-
-void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
-{
-	int objectEndIndex = _gridCount * _gridCount;
-	int size = constantBuffer.size();
-
-	// Set object color					
-	if (i < objectEndIndex)
-	{
-		constantBuffer[i].color = _getColor(i);
-	}
-	// Set particle position
-	else if (i >= objectEndIndex && i < size - 1)
-	{												// Due to velocity field
-		int particleIndex = i - objectEndIndex;
-		XMFLOAT2 pos = _particlePosition[particleIndex];
-
-		constantBuffer[i].world._41 = pos.x;
-		constantBuffer[i].world._42 = pos.y;
-
-	}// Set velocity
-	else
-	{
-
-	}
-
-}
-
-void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i)
-{
-	int objectEndIndex = _gridCount * _gridCount;
-
-	if (i < objectEndIndex)
-	{
-		if (drawFlag[static_cast<int>(FLAG::GRID)])
-		{
-			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-		}
-	}
-	else if (i >= objectEndIndex && i < size - 1)
-	{
-		if (drawFlag[static_cast<int>(FLAG::PARTICLE)])
-		{
-			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-		}
-	}
-	else
-	{
-		if (drawFlag[static_cast<int>(FLAG::VELOCITY)])
-		{
-			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
-			mCommandList->DrawIndexedInstanced(
-				indexCount - 6, //count
-				1,
-				6, //  index start 
-				4, //  vertex start
-				0);
-		}
-	}
 }
 
 void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
@@ -590,5 +527,67 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 	constantBuffer.push_back(velocityCB);
 	// ###### ###### ###### ######
 }
+
+void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
+{
+	int objectEndIndex = _gridCount * _gridCount;
+	int size = constantBuffer.size();
+
+	// Set object color					
+	if (i < objectEndIndex)
+	{
+		constantBuffer[i].color = _getColor(i);
+	}
+	// Set particle position
+	else if (i >= objectEndIndex && i < size - 1)
+	{												// Due to velocity field
+		int particleIndex = i - objectEndIndex;
+		XMFLOAT2 pos = _particlePosition[particleIndex];
+
+		constantBuffer[i].world._41 = pos.x;
+		constantBuffer[i].world._42 = pos.y;
+
+	}// Set velocity
+	else
+	{
+
+	}
+}
+
+void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i)
+{
+	int objectEndIndex = _gridCount * _gridCount;
+
+	if (i < objectEndIndex)
+	{
+		if (drawFlag[static_cast<int>(FLAG::GRID)])
+		{
+			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		}
+	}
+	else if (i >= objectEndIndex && i < size - 1)
+	{
+		if (drawFlag[static_cast<int>(FLAG::PARTICLE)])
+		{
+			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			mCommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+		}
+	}
+	else
+	{
+		if (drawFlag[static_cast<int>(FLAG::VELOCITY)])
+		{
+			mCommandList->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINELIST);
+			mCommandList->DrawIndexedInstanced(
+				indexCount - 6, //count
+				1,
+				6, //  index start 
+				4, //  vertex start
+				0);
+		}
+	}
+}
+
 // #######################################################################################
 #pragma endregion
