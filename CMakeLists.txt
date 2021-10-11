@@ -1,30 +1,34 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 3.19.0)
 
 # Set the project name
-SET( PROJECT_NAME DXViewer )
+SET( PROJECT_NAME EulerianFluids )
 PROJECT(${PROJECT_NAME})
 
 # Define character set as Unicode
 add_definitions(-DUNICODE -D_UNICODE)
 
-# Collect shader files
-FILE( GLOB VS_SHD ${CMAKE_SOURCE_DIR}/shader/vertexShader.hlsl )
-FILE( GLOB PS_SHD ${CMAKE_SOURCE_DIR}/shader/fragShader.hlsl )
+# Set configuration types
+Set(CMAKE_CONFIGURATION_TYPES Debug Release)
 
-# Set the shader type of files
-set_property(SOURCE ${VS_SHD} PROPERTY VS_SHADER_TYPE Vertex)
-set_property(SOURCE ${PS_SHD} PROPERTY VS_SHADER_TYPE Pixel)
+# Set the include/lib directory
+INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-2.0.0/include)
+LINK_DIRECTORIES(${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-2.0.0/lib)
 
-# Set the header directory
-INCLUDE_DIRECTORIES(${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-1.0.0/include)
+# Copy DLLs
+FILE(GLOB DLL ${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-2.0.0/bin/*.dll)
+FILE(COPY ${DLL} DESTINATION ${CMAKE_BINARY_DIR})
 
+# Copy CSOs
+FILE(GLOB CSO ${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-2.0.0/*.cso)
+FILE(COPY ${CSO} DESTINATION ${CMAKE_BINARY_DIR})
 
 # Collect source files
-FILE( GLOB SRC ${CMAKE_SOURCE_DIR}/ext/DXViewer/src/*.cpp
-                ${CMAKE_SOURCE_DIR}/src/*.cpp)
-FILE( GLOB HDR ${CMAKE_SOURCE_DIR}/ext/DXViewer/DXViewer-1.0.0/include/*.h 
-                ${CMAKE_SOURCE_DIR}/src/*.h)
-FILE( GLOB SHD ${VS_SHD} ${PS_SHD} )
+FILE( GLOB SRC ${CMAKE_SOURCE_DIR}/src/*.cpp )
+FILE( GLOB HDR ${CMAKE_SOURCE_DIR}/src/*.h )
 
-# Link Source files
-ADD_EXECUTABLE( ${PROJECT_NAME} WIN32 ${SRC} ${HDR} ${SHD} )
+# Link Source files ('WIN32' keyword is used for win32 project)
+ADD_EXECUTABLE( ${PROJECT_NAME} WIN32 ${SRC} ${HDR} )
+
+# Set 'Additional Dependencies'
+SET(LIB $<$<CONFIG:DEBUG>:DXViewer.lib> $<$<CONFIG:RELEASE>:DXViewerRel.lib>)
+TARGET_LINK_LIBRARIES( ${PROJECT_NAME} ${LIB})

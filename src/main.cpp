@@ -1,29 +1,37 @@
 #pragma once
 
 // Console window is displayed in debug mode.
-#ifdef _DEBUG
+//#ifdef _DEBUG
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
-#endif
+//#endif
 
-#include "AdhocSimulation.h" // This includes Win32App.h
+#include "FluidSimManager.h" // This includes Win32App.h
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
-    int width = 800;
-    int height = 800;
+    // Simulation init
+    std::vector<GridFluidSim*> sims;
+    sims.push_back(new EulerLiquidSim(0.01f));
+    sims.push_back(new EulerGasSim(0.1f));
+    sims.push_back(new PICFLIPSim(0.01f));
 
-    Win32App winApp(width, height);
-    winApp.initialize(hInstance);
+    for (auto& sim : sims)
+    {
+        sim->setGridDomain(60, 20);
+        sim->initialize();
+    }
 
-    AdhocSimulation* adhocsim = new AdhocSimulation();
-    adhocsim->iSetObjectCountXYZ(10, 10, 1);
-    adhocsim->iSetObjectScale(0.1f);
+    FluidSimManager* fluidsim = new FluidSimManager(sims);
 
+    // DirectX init
     DX12App* dxapp = new DX12App();
-    dxapp->setSimulation(adhocsim, 0.05);
+    dxapp->setProjectionType(PROJ::ORTHOGRAPHIC);
 
-    winApp.initDirectX(dxapp);
+    // Window init
+    Win32App winApp(800, 800);
+    winApp.initialize(hInstance, dxapp, fluidsim);
+    //winApp.initDirectX(dxapp, fluidsim);
 
     return winApp.run();
 }
