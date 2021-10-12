@@ -23,6 +23,6 @@ private:
 	void _advect();
 	void _force();
 	void _project();
-	void _updateParticlePos(float dt) override;
+	void _updateParticlePos() override;
 };
 

@@ -14,18 +14,23 @@ EulerLiquidSim::~EulerLiquidSim()
 
 void EulerLiquidSim::update()
 {
-	_force(_timeStep);
+	_force();
 
 	//_project();
-	_advect(_timeStep);
+	_advect();
 
 	_project();
-	_updateParticlePos(_timeStep);
+	_updateParticlePos();
 	_paintGrid();
+
+	float magnitude = sqrtf(powf(_gridVelocity[_INDEX(10, 2)].x, 2.0f) + powf(_gridVelocity[_INDEX(10, 2)].y, 2.0f));
+	float timestep = magnitude ? (1 / magnitude) * 0.25f : 0.0f;
+	cout << timestep << endl;
+	//cout << _gridVelocity[_INDEX(10, 2)].x << ", " << _gridVelocity[_INDEX(10, 2)].y << endl;
 
 }
 
-void EulerLiquidSim::_force(float dt)
+void EulerLiquidSim::_force()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -34,7 +39,7 @@ void EulerLiquidSim::_force(float dt)
 		{
 			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
 			{
-				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
+				_gridVelocity[_INDEX(i, j)].y -= 9.8f * _timeStep;
 			}
 			else
 			{
@@ -46,7 +51,7 @@ void EulerLiquidSim::_force(float dt)
 	_setBoundary(_gridVelocity);
 }
 
-void EulerLiquidSim::_advect(float dt)
+void EulerLiquidSim::_advect()
 {
 	int N = _gridCount - 2;
 
@@ -82,8 +87,8 @@ void EulerLiquidSim::_advect(float dt)
 
 			XMFLOAT2 backPos =
 				XMFLOAT2(
-					_gridPosition[_INDEX(i, j)].x - dt * oldVelocity[_INDEX(i, j)].x,
-					_gridPosition[_INDEX(i, j)].y - dt * oldVelocity[_INDEX(i, j)].y
+					_gridPosition[_INDEX(i, j)].x - _timeStep * oldVelocity[_INDEX(i, j)].x,
+					_gridPosition[_INDEX(i, j)].y - _timeStep * oldVelocity[_INDEX(i, j)].y
 				);
 			if (backPos.x > xMax) backPos.x = xMax;
 			else if (backPos.x < xMin) backPos.x = xMin;

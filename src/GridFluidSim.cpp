@@ -184,13 +184,13 @@ void GridFluidSim::_setBoundary(std::vector<float>& scalar)
 }
 
 
-void GridFluidSim::_updateParticlePos(float dt)
+void GridFluidSim::_updateParticlePos()
 {
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-		_particlePosition[i] += _particleVelocity[i] * dt;
+		_particlePosition[i] += _particleVelocity[i] * _timeStep;
 	}
 }
 

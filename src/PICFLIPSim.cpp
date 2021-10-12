@@ -40,7 +40,7 @@ void PICFLIPSim::update()
 	// Solve boundary condition again due to numerical errors in previous step
 	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
-	_updateParticlePos(0.0f);
+	_updateParticlePos();
 
 	_paintGrid();
 }
@@ -178,7 +178,7 @@ void PICFLIPSim::_project()
 
 }
 
-void PICFLIPSim::_updateParticlePos(float dt)
+void PICFLIPSim::_updateParticlePos()
 {
 	int N = _gridCount - 2;
 	for (int i = 0; i < _oldVel.size(); i++)
