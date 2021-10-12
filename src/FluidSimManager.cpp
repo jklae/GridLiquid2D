@@ -206,6 +206,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 {
 	switch (LOWORD(wParam))
 	{
+		// ### Top 3 buttons ###
 		case static_cast<int>(_COM::GRID_BTN) :
 		{
 			bool flag = !_getDrawFlag(FLAG::GRID);
@@ -233,7 +234,9 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->draw();
 		}
 		break;
+		// #####################
 
+		// ### Execution buttons ###
 		case static_cast<int>(_COM::PLAY) :
 		{
 			updateFlag = !updateFlag;
@@ -243,7 +246,6 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), !updateFlag);
 		}
 		break;
-
 		case static_cast<int>(_COM::STOP) :
 		{
 			dxapp->resetSimulationState();
@@ -251,7 +253,6 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->draw();
 		}
 		break;
-
 		case static_cast<int>(_COM::NEXTSTEP) :
 		{
 			if (!updateFlag)
@@ -261,7 +262,9 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			}
 		}
 		break;
+		// #####################
 
+		// ### State radio buttons ###
 		case static_cast<int>(_COM::LIQUID_RADIO) :
 		{
 			_simIndex = 0;
@@ -278,6 +281,9 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->draw();
 		}
 		break;
+		// #####################
+
+		// ### Solver radio buttons ###
 		case static_cast<int>(_COM::EULERIAN_RADIO) :
 		{
 			if (_simIndex > 1) _simIndex = 0;
@@ -314,6 +320,30 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			
 		}
 		break;
+		// #####################
+
+		// ### Time integration radio buttons ###
+		case static_cast<int>(_COM::FIXED_RADIO) :
+		{
+		}
+		break;
+		case static_cast<int>(_COM::GLOBAL_RADIO) :
+		{
+		}
+		break;
+		case static_cast<int>(_COM::REINHARDT_RADIO) :
+		{
+		}
+		break;
+		case static_cast<int>(_COM::KOIKE_RADIO) :
+		{
+		}
+		break;
+		case static_cast<int>(_COM::OURS_RADIO) :
+		{
+		}
+		break;
+		// #####################
 	}
 }
 
