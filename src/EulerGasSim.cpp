@@ -14,7 +14,7 @@ EulerGasSim::~EulerGasSim()
 }
 
 
-void EulerGasSim::update()
+void EulerGasSim::_update()
 {
 	_force();
 

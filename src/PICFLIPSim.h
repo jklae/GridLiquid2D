@@ -9,7 +9,6 @@ public:
 
 	void setFlipRatio(int value);
 
-	void update() override;
 	void initialize() override;
 
 private:
@@ -20,6 +19,7 @@ private:
 
 	float _flipRatio = 0.99f;
 
+	void _update() override;
 	void _advect();
 	void _force();
 	void _project();

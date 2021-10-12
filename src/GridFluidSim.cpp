@@ -390,7 +390,7 @@ void GridFluidSim::iUpdate()
 	//int maxSize = static_cast<int>(standardTimeStep / _timeStep);
 	//for (int i = 0; i < maxSize; i++)
 	//{
-		update();
+		_update();
 	//}
 
 	//Sleep(_delayTime);

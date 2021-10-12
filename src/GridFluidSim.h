@@ -10,8 +10,6 @@ public:
 	void setGridDomain(int xCount, int yCount);
 	virtual void initialize();
 
-	virtual void update() = 0;
-
 #pragma region Implementation
 	// ################################## Implementation ####################################
 	void iUpdate();
@@ -46,7 +44,7 @@ protected:
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
-	float _particleScale = 0.2;
+	float _particleScale = 0.2f;
 	int _particleCount = 4;
 
 	float _timeStep = 0.0f;
@@ -59,6 +57,8 @@ protected:
 
 	virtual void _updateParticlePos();
 	void _paintGrid();
+
+	virtual void _update() = 0;
 
 	// ---
 

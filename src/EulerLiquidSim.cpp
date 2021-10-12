@@ -12,7 +12,7 @@ EulerLiquidSim::~EulerLiquidSim()
 {
 }
 
-void EulerLiquidSim::update()
+void EulerLiquidSim::_update()
 {
 	_force();
 

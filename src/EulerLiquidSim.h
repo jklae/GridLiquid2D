@@ -7,10 +7,8 @@ public:
 	EulerLiquidSim(float timeStep);
 	~EulerLiquidSim() override;
 
-	void update() override;
-
 private:
-
+	void _update() override;
 	void _force();
 	void _advect();
 	void _project();

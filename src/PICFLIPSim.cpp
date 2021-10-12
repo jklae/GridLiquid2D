@@ -28,7 +28,7 @@ void PICFLIPSim::initialize()
 	_pCount.assign(vSize, 0.0f);
 }
 
-void PICFLIPSim::update()
+void PICFLIPSim::_update()
 {
 	_advect();
 
