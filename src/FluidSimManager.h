@@ -62,6 +62,6 @@ private:
 	wchar_t wBuffer[5];
 	wchar_t* int2wchar(int value);
 
-	clock_t time = 0;
+	clock_t _simTime = 0;
 };
 

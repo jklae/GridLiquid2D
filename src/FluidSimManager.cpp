@@ -46,8 +46,8 @@ void FluidSimManager::iUpdate()
 	clock_t startTime = clock();
 	_sim[_simIndex]->iUpdate();
 	clock_t endTime = clock();
-
-	time = endTime - startTime; // ms
+	
+	_simTime = endTime - startTime; // ms
 }
 
 void FluidSimManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
@@ -132,12 +132,13 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
 		60, 440, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
-	CreateWindow(L"static", int2wchar(time), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
 		110, 440, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
 
 
 	CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
 	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::EULERIAN_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::FIXED_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::FIXED_RADIO));
 
 	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
 
@@ -158,7 +159,7 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 void FluidSimManager::iWMTimer(HWND hwnd)
 {
-	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), int2wchar(time));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), int2wchar(_simTime));
 }
 
 void FluidSimManager::iWMDestory(HWND hwnd)
