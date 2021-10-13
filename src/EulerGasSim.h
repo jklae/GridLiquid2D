@@ -8,10 +8,11 @@ public:
 	~EulerGasSim() override;
 
 private:
-
 	void _update() override;
 	void _force();
 	void _advect();
 	void _project();
+
+	void _updateParticlePos() override;
 };
 

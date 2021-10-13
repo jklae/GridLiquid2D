@@ -157,3 +157,13 @@ void EulerLiquidSim::_project()
 	_setBoundary(_gridVelocity);
 
 }
+
+void EulerLiquidSim::_updateParticlePos()
+{
+	for (int i = 0; i < _particlePosition.size(); i++)
+	{
+		// 2. 3.
+		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
+		_particlePosition[i] += _particleVelocity[i] * _timeStep;
+	}
+}

@@ -183,19 +183,6 @@ void GridFluidSim::_setBoundary(std::vector<float>& scalar)
 	scalar[_INDEX(N + 1, N + 1)] = (scalar[_INDEX(N + 1, N)] + scalar[_INDEX(N, N + 1)]) / 2.0f;
 }
 
-
-void GridFluidSim::_updateParticlePos()
-{
-	for (int i = 0; i < _particlePosition.size(); i++)
-	{
-		// 2. 3.
-		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-		_particlePosition[i] += _particleVelocity[i] * _timeStep;
-	}
-}
-
-
-
 void GridFluidSim::_paintGrid()
 {
 	int N = _gridCount - 2;
