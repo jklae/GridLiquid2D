@@ -17,6 +17,8 @@ FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 		sim->setGridDomain(x, y);
 		sim->initialize();
 	}
+
+	_timeInteg
 }
 
 FluidSimManager::~FluidSimManager()
