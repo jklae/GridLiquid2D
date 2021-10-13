@@ -1,9 +1,12 @@
 #pragma once
-#include "ITimeIntegration.h"
+#include "TimeIntegration.h"
 
-class FIxedIntegration : public ITimeIntegration
+class FixedIntegration : public TimeIntegration
 {
 public:
+	FixedIntegration(float timeStep);
+	~FixedIntegration();
+
 	float computeTimeStep() override;
 	void initialize(float timeStep) override;
 

@@ -8,11 +8,12 @@
 #include "EulerGasSim.h" 
 #include "EulerLiquidSim.h"
 #include "PICFLIPSim.h"
+#include "TimeIntegration.h"
 
 class FluidSimManager : public ISimulation
 {
 public:
-	FluidSimManager(std::vector<GridFluidSim*>& sim);
+	FluidSimManager(int x, int y, float timeStep);
 	~FluidSimManager() override;
 
 
@@ -40,7 +41,9 @@ public:
 
 private:
 	std::vector<GridFluidSim*> _sim;
+	std::vector<TimeIntegration*> _timeInteg;
 	int _simIndex = 0;
+	int _timeIntegIndex = 0;
 	int _scrollPos = 99;
 
 	enum class _COM
@@ -60,7 +63,7 @@ private:
 	bool _getDrawFlag(FLAG flagType);
 
 	wchar_t wBuffer[5];
-	wchar_t* int2wchar(int value);
+	wchar_t* _int2wchar(int value);
 
 	clock_t _simTime = 0;
 };

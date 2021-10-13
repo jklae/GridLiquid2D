@@ -6,9 +6,17 @@ using namespace std;
 
 
 
-FluidSimManager::FluidSimManager(vector<GridFluidSim*>& sim)
+FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 {
-	_sim = sim;
+	_sim.push_back(new EulerLiquidSim(timeStep));
+	_sim.push_back(new EulerGasSim(timeStep));
+	_sim.push_back(new PICFLIPSim(timeStep));
+
+	for (auto& sim : _sim)
+	{
+		sim->setGridDomain(x, y);
+		sim->initialize();
+	}
 }
 
 FluidSimManager::~FluidSimManager()
@@ -16,6 +24,11 @@ FluidSimManager::~FluidSimManager()
 	for (auto& sim : _sim)
 	{
 		delete sim;
+	}
+
+	for (auto& tInteg : _timeInteg)
+	{
+		delete tInteg;
 	}
 
 }
@@ -32,7 +45,7 @@ bool FluidSimManager::_getDrawFlag(FLAG flagType)
 	return _drawFlag[i];
 }
 
-wchar_t* FluidSimManager::int2wchar(int value)
+wchar_t* FluidSimManager::_int2wchar(int value)
 {
 	_itow(value, wBuffer, 10);
 	return wBuffer;
@@ -100,11 +113,11 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CreateWindow(L"static", L"PIC  :", WS_CHILD | WS_VISIBLE,
 		60, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_TEXT), hInstance, NULL);
-	CreateWindow(L"static", int2wchar(100 - _scrollPos), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", _int2wchar(100 - _scrollPos), WS_CHILD | WS_VISIBLE,
 		100, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_RATIO), hInstance, NULL);
 	CreateWindow(L"static", L"FLIP :", WS_CHILD | WS_VISIBLE,
 		155, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_TEXT), hInstance, NULL);
-	CreateWindow(L"static", int2wchar(_scrollPos), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", _int2wchar(_scrollPos), WS_CHILD | WS_VISIBLE,
 		195, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_RATIO), hInstance, NULL);
 	HWND scroll =
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
@@ -132,7 +145,7 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
 		60, 440, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
-	CreateWindow(L"static", int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", _int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
 		110, 440, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
 
 
@@ -159,7 +172,7 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 void FluidSimManager::iWMTimer(HWND hwnd)
 {
-	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), int2wchar(_simTime));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
 }
 
 void FluidSimManager::iWMDestory(HWND hwnd)
@@ -193,8 +206,8 @@ void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTA
 	}
 
 	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
-	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), int2wchar(100 - _scrollPos));
-	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), int2wchar(_scrollPos));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), _int2wchar(100 - _scrollPos));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), _int2wchar(_scrollPos));
 
 	dynamic_cast<PICFLIPSim*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
 	dxapp->resetSimulationState();

@@ -1,10 +1,18 @@
-#include "FIxedIntegration.h"
+#include "FixedIntegration.h"
 
-float FIxedIntegration::computeTimeStep()
+FixedIntegration::FixedIntegration(float timeStep)
+{
+}
+
+FixedIntegration::~FixedIntegration()
+{
+}
+
+float FixedIntegration::computeTimeStep()
 {
 	return 0.0f;
 }
 
-void FIxedIntegration::initialize(float timeStep)
+void FixedIntegration::initialize(float timeStep)
 {
 }
