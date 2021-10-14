@@ -1,5 +1,5 @@
 #pragma once
-#include "dx12header.h"
+#include "gridsimheader.h"
 
 class TimeIntegration
 {
