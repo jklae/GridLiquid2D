@@ -4,11 +4,11 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(int x, int y)
+GridFluidSim::GridFluidSim(int x, int y, GridIndex& index)
+	:_INDEX(index)
 {
-	// 2 are boundaries.
-	_gridCount = x + 2;
-
+	_gridCount = _INDEX.gridCount;
+	cout << "grid " << _INDEX(1, 1) << endl;
 	_initialize();
 }
 

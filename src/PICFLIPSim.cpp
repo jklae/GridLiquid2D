@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-PICFLIPSim::PICFLIPSim(int x, int y)
-	:GridFluidSim(x, y)
+PICFLIPSim::PICFLIPSim(int x, int y, GridIndex& index)
+	:GridFluidSim(x, y, index)
 {
 }
 

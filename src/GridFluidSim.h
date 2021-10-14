@@ -5,7 +5,7 @@
 class GridFluidSim
 {
 public:
-	GridFluidSim(int x, int y);
+	GridFluidSim(int x, int y, GridIndex& index);
 	virtual ~GridFluidSim();
 
 	void setTimeInteg(TimeIntegration* timeInteg);
@@ -30,7 +30,8 @@ protected:
 	enum class _STATE { FLUID, BOUNDARY, AIR, SURFACE };
 	enum class _VALUE { MIN, MAX };
 
-	inline int _INDEX(int i, int j) { return (i + _gridCount * j); };
+	//inline int _INDEX(int i, int j) { return (i + _gridCount * j); };
+	GridIndex& _INDEX;
 
 	// Grid
 	std::vector<_STATE> _gridState;

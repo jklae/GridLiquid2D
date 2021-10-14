@@ -70,5 +70,7 @@ private:
 	wchar_t* _int2wchar(int value);
 
 	clock_t _simTime = 0;
+
+	GridIndex _index;
 };
 

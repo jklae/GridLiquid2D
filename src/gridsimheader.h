@@ -8,7 +8,8 @@ enum class FLAG
 	VELOCITY
 };
 
-struct GridData
+struct GridIndex
 {
-
+	int gridCount = 0;
+	int operator()(int i, int j) { return (i + gridCount * j); };
 };
