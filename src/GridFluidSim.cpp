@@ -273,23 +273,20 @@ XMINT2 GridFluidSim::_computeFaceMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos
 // ------------------------------------------------------------------
 // _PaintGrid() uses the face as the transition point.
 // _updateParticlePosition() uses the center as the transition point.
-int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 particlePos)
+XMINT2 GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
 {
-	float pos = (axis == _AXIS::X) ? particlePos.x : particlePos.y;
 	// 2.
-	float value = pos;
-
 	switch (vState)
 	{
 	case _VALUE::MIN:
-		return static_cast<int>(floor(value));
+		return { static_cast<int>(floor(particlePos.x)), static_cast<int>(floor(particlePos.y)) };
 		break;
 	case _VALUE::MAX:
 		// 3.
-		return static_cast<int>(ceil(value));
+		return { static_cast<int>(ceil(particlePos.x)), static_cast<int>(ceil(particlePos.y)) };
 		break;
 	default:
-		return -1;
+		return { -1, -1 };
 		break;
 	}
 }
@@ -298,18 +295,16 @@ int GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 
 XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, const vector<XMFLOAT2>& oldvel)
 {
 	// 2. 3.
-	int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
-	int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::Y, pos);
-	int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::X, pos);
-	int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::Y, pos);
+	XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
+	XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
 
-	float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
-	float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);
+	float xRatio = (pos.x - _gridPosition[_INDEX(minIndex.x, minIndex.y)].x);
+	float yRatio = (pos.y - _gridPosition[_INDEX(minIndex.x, minIndex.y)].y);
 
-	XMFLOAT2 minMinVelocity = oldvel[_INDEX(minXIndex, minYIndex)];
-	XMFLOAT2 minMaxVelocity = oldvel[_INDEX(minXIndex, maxYIndex)];
-	XMFLOAT2 maxMinVelocity = oldvel[_INDEX(maxXIndex, minYIndex)];
-	XMFLOAT2 maxMaxVelocity = oldvel[_INDEX(maxXIndex, maxYIndex)];
+	XMFLOAT2 minMinVelocity = oldvel[_INDEX(minIndex.x, minIndex.y)];
+	XMFLOAT2 minMaxVelocity = oldvel[_INDEX(minIndex.x, maxIndex.y)];
+	XMFLOAT2 maxMinVelocity = oldvel[_INDEX(maxIndex.x, minIndex.y)];
+	XMFLOAT2 maxMaxVelocity = oldvel[_INDEX(maxIndex.x, maxIndex.y)];
 
 	// s0* (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
 	//	s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);

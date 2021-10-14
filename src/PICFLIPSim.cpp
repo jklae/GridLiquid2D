@@ -75,13 +75,11 @@ void PICFLIPSim::_advect()
 	{
 		XMFLOAT2 pos = _particlePosition[i];
 
-		int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
-		int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::Y, pos);
-		int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::X, pos);
-		int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::Y, pos);
+		XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
+		XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
 
-		float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
-		float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);
+		float xRatio = (pos.x - _gridPosition[_INDEX(minIndex.x, minIndex.y)].x);
+		float yRatio = (pos.y - _gridPosition[_INDEX(minIndex.x, minIndex.y)].y);
 
 		float minMin_minMax_X = _particleVelocity[i].x * (1.0f - xRatio);
 		float maxMin_maxMax_X = _particleVelocity[i].x * xRatio;
@@ -98,17 +96,17 @@ void PICFLIPSim::_advect()
 		float maxMaxY = maxMin_maxMax_Y * yRatio;
 
 
-		_tempVel[_INDEX(minXIndex, minYIndex)] += { minMinX, minMinY };
-		_pCount[_INDEX(minXIndex, minYIndex)] += (1.0f - xRatio) * (1.0f - yRatio);
+		_tempVel[_INDEX(minIndex.x, minIndex.y)] += { minMinX, minMinY };
+		_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - xRatio) * (1.0f - yRatio);
 
-		_tempVel[_INDEX(minXIndex, maxYIndex)] += { minMaxX, minMaxY };
-		_pCount[_INDEX(minXIndex, maxYIndex)] += (1.0f - xRatio) * yRatio;
+		_tempVel[_INDEX(minIndex.x, maxIndex.y)] += { minMaxX, minMaxY };
+		_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - xRatio) * yRatio;
 
-		_tempVel[_INDEX(maxXIndex, minYIndex)] += { maxMinX, maxMinY };
-		_pCount[_INDEX(maxXIndex, minYIndex)] += xRatio * (1.0f - yRatio);
+		_tempVel[_INDEX(maxIndex.x, minIndex.y)] += { maxMinX, maxMinY };
+		_pCount[_INDEX(maxIndex.x, minIndex.y)] += xRatio * (1.0f - yRatio);
 
-		_tempVel[_INDEX(maxXIndex, maxYIndex)] += { maxMaxX, maxMaxY };
-		_pCount[_INDEX(maxXIndex, maxYIndex)] += xRatio * yRatio;
+		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += { maxMaxX, maxMaxY };
+		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += xRatio * yRatio;
 
 	}
 
