@@ -195,16 +195,14 @@ void GridFluidSim::_paintGrid()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		int minXIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _AXIS::X, _particlePosition[i]);
-		int minYIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _AXIS::Y, _particlePosition[i]);
-		int maxXIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _AXIS::X, _particlePosition[i]);
-		int maxYIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _AXIS::Y, _particlePosition[i]);
+		XMINT2 minIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _particlePosition[i]);
+		XMINT2 maxIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _particlePosition[i]);
 
 		// Painting
-		_STATE& minMin = _gridState[_INDEX(minXIndex, minYIndex)];
-		_STATE& minMax = _gridState[_INDEX(minXIndex, maxYIndex)];
-		_STATE& maxMin = _gridState[_INDEX(maxXIndex, minYIndex)];
-		_STATE& maxMax = _gridState[_INDEX(maxXIndex, maxYIndex)];
+		_STATE& minMin = _gridState[_INDEX(minIndex.x, minIndex.y)];
+		_STATE& minMax = _gridState[_INDEX(minIndex.x, maxIndex.y)];
+		_STATE& maxMin = _gridState[_INDEX(maxIndex.x, minIndex.y)];
+		_STATE& maxMax = _gridState[_INDEX(maxIndex.x, maxIndex.y)];
 
 		// Boundary Checking
 		if (minMin != _STATE::BOUNDARY) minMin = _STATE::FLUID;
@@ -245,27 +243,26 @@ void GridFluidSim::_paintGrid()
 // For example, if the scale is 1.0f, the result is (index * 1.0f).
 // But if the scale is 0.5f, the result is (index * 0.5f).
 // The index value should of course be immutable.
-int GridFluidSim::_computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, XMFLOAT2 particlePos)
+XMINT2 GridFluidSim::_computeFaceMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
 {
-	float pos = (axis == _AXIS::X) ? particlePos.x : particlePos.y;
-	float value;
+	XMFLOAT2 value;
 
 	// Compute position by normalizing from (-N, N) to (0, N + 1)
 	switch (vState)
 	{
 	case _VALUE::MIN:
-		value = pos + 0.5f - 0.5f * _particleScale;
+		value = particlePos + 0.5f - 0.5f * _particleScale;
 		break;
 	case _VALUE::MAX:
-		value = pos + 0.5f + 0.5f * _particleScale;
+		value = particlePos + 0.5f + 0.5f * _particleScale;
 		break;
 	default:
-		value = 0.0f;
+		value = { 0.0f, 0.0f };
 		break;
 	}
 
 	// Compute Index
-	return static_cast<int>(floor(value));
+	return { static_cast<int>(floor(value.x)), static_cast<int>(floor(value.y)) };
 }
 
 
