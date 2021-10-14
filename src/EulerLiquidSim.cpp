@@ -40,7 +40,7 @@ void EulerLiquidSim::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
@@ -136,7 +136,7 @@ void EulerLiquidSim::_project()
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+				if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 				{
 					_gridPressure[_INDEX(i, j)] =
 						(

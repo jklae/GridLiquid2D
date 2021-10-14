@@ -8,6 +8,15 @@ enum class FLAG
 	VELOCITY
 };
 
+enum class STATE 
+{ 
+	FLUID, 
+	BOUNDARY, 
+	AIR, 
+	SURFACE 
+};
+
+// This structure is shared by GridFluidSim and TimeIntegration.
 struct GridIndex
 {
 	int gridCount = 0;

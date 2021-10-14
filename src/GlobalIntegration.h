@@ -4,7 +4,7 @@
 class GlobalIntegration : public TimeIntegration
 {
 public:
-	GlobalIntegration(float timeStep);
+	GlobalIntegration(float timeStep, GridIndex& index);
 	~GlobalIntegration() override;
 
 	float computeTimeStep() override;

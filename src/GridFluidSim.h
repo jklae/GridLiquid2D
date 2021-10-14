@@ -27,14 +27,12 @@ public:
 	// #######################################################################################
 
 protected:
-	enum class _STATE { FLUID, BOUNDARY, AIR, SURFACE };
 	enum class _VALUE { MIN, MAX };
 
-	//inline int _INDEX(int i, int j) { return (i + _gridCount * j); };
 	GridIndex& _INDEX;
 
 	// Grid
-	std::vector<_STATE> _gridState;
+	std::vector<STATE> _gridState;
 	std::vector<DirectX::XMFLOAT2> _gridPosition;
 	std::vector<DirectX::XMFLOAT2> _gridVelocity;
 	std::vector<float> _gridPressure;

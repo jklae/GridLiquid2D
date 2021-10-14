@@ -4,7 +4,7 @@
 class FixedIntegration : public TimeIntegration
 {
 public:
-	FixedIntegration(float timeStep);
+	FixedIntegration(float timeStep, GridIndex& index);
 	~FixedIntegration() override;
 
 	float computeTimeStep() override;

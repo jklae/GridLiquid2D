@@ -4,7 +4,7 @@
 class TimeIntegration
 {
 public:
-	TimeIntegration(float timeStep);
+	TimeIntegration(float timeStep, GridIndex& index);
 	virtual ~TimeIntegration();
 
 	virtual float computeTimeStep() = 0;
@@ -12,5 +12,6 @@ public:
 
 protected:
 	float _timeStep;
+	GridIndex& _INDEX;
 };
 

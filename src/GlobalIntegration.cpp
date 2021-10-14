@@ -3,8 +3,8 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GlobalIntegration::GlobalIntegration(float timeStep)
-	:TimeIntegration(timeStep)
+GlobalIntegration::GlobalIntegration(float timeStep, GridIndex& index)
+	:TimeIntegration(timeStep, index)
 {
 }
 

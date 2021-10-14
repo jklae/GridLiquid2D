@@ -8,7 +8,6 @@ GridFluidSim::GridFluidSim(int x, int y, GridIndex& index)
 	:_INDEX(index)
 {
 	_gridCount = _INDEX.gridCount;
-	cout << "grid " << _INDEX(1, 1) << endl;
 	_initialize();
 }
 
@@ -36,25 +35,25 @@ void GridFluidSim::_initialize()
 				|| i == N + 1
 				|| j == N + 1)
 			{
-				_gridState.push_back(_STATE::BOUNDARY);
+				_gridState.push_back(STATE::BOUNDARY);
 			}
 			else if ((N + 1) / 2 - offset < i //
 				&& (i < (N + 1) / 2 + offset + 1)
 				&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
 				&& (j < (N)))            //
 			{
-				_gridState.push_back(_STATE::FLUID);
+				_gridState.push_back(STATE::FLUID);
 			}
 			else if (i == (N + 1) / 2 - offset
 				|| j == (N + 1) / 2 - offset
 				|| i == (N + 1) / 2 + offset
 				|| j == (N + 1) / 2 + offset)
 			{
-				_gridState.push_back(_STATE::SURFACE);
+				_gridState.push_back(STATE::SURFACE);
 			}
 			else
 			{
-				_gridState.push_back(_STATE::AIR);
+				_gridState.push_back(STATE::AIR);
 			}
 
 			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.01f));
@@ -74,30 +73,30 @@ void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::SURFACE)
+			if (_gridState[_INDEX(i, j)] == STATE::SURFACE)
 			{
 				XMFLOAT2 temp = { 0.0f, 0.0f };
 				int count = 0;
 
-				if (_gridState[_INDEX(i + 1, j)] == _STATE::FLUID)
+				if (_gridState[_INDEX(i + 1, j)] == STATE::FLUID)
 				{
 					temp += vec[_INDEX(i + 1, j)];
 					count++;
 				}
 
-				if (_gridState[_INDEX(i - 1, j)] == _STATE::FLUID)
+				if (_gridState[_INDEX(i - 1, j)] == STATE::FLUID)
 				{
 					temp += vec[_INDEX(i - 1, j)];
 					count++;
 				}
 
-				if (_gridState[_INDEX(i, j + 1)] == _STATE::FLUID)
+				if (_gridState[_INDEX(i, j + 1)] == STATE::FLUID)
 				{
 					temp += vec[_INDEX(i, j + 1)];
 					count++;
 				}
 
-				if (_gridState[_INDEX(i, j - 1)] == _STATE::FLUID)
+				if (_gridState[_INDEX(i, j - 1)] == STATE::FLUID)
 				{
 					temp += vec[_INDEX(i, j - 1)];
 					count++;
@@ -188,7 +187,7 @@ void GridFluidSim::_paintGrid()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			_gridState[_INDEX(i, j)] = _STATE::AIR;
+			_gridState[_INDEX(i, j)] = STATE::AIR;
 		}
 	}
 
@@ -199,16 +198,16 @@ void GridFluidSim::_paintGrid()
 		XMINT2 maxIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _particlePosition[i]);
 
 		// Painting
-		_STATE& minMin = _gridState[_INDEX(minIndex.x, minIndex.y)];
-		_STATE& minMax = _gridState[_INDEX(minIndex.x, maxIndex.y)];
-		_STATE& maxMin = _gridState[_INDEX(maxIndex.x, minIndex.y)];
-		_STATE& maxMax = _gridState[_INDEX(maxIndex.x, maxIndex.y)];
+		STATE& minMin = _gridState[_INDEX(minIndex.x, minIndex.y)];
+		STATE& minMax = _gridState[_INDEX(minIndex.x, maxIndex.y)];
+		STATE& maxMin = _gridState[_INDEX(maxIndex.x, minIndex.y)];
+		STATE& maxMax = _gridState[_INDEX(maxIndex.x, maxIndex.y)];
 
 		// Boundary Checking
-		if (minMin != _STATE::BOUNDARY) minMin = _STATE::FLUID;
-		if (minMax != _STATE::BOUNDARY) minMax = _STATE::FLUID;
-		if (maxMin != _STATE::BOUNDARY) maxMin = _STATE::FLUID;
-		if (maxMax != _STATE::BOUNDARY) maxMax = _STATE::FLUID;
+		if (minMin != STATE::BOUNDARY) minMin = STATE::FLUID;
+		if (minMax != STATE::BOUNDARY) minMax = STATE::FLUID;
+		if (maxMin != STATE::BOUNDARY) maxMin = STATE::FLUID;
+		if (maxMax != STATE::BOUNDARY) maxMax = STATE::FLUID;
 	}
 
 
@@ -218,19 +217,19 @@ void GridFluidSim::_paintGrid()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
-				if (_gridState[_INDEX(i + 1, j)] == _STATE::AIR) 
-					_gridState[_INDEX(i + 1, j)] = _STATE::SURFACE;
+				if (_gridState[_INDEX(i + 1, j)] == STATE::AIR) 
+					_gridState[_INDEX(i + 1, j)] = STATE::SURFACE;
 
-				if (_gridState[_INDEX(i - 1, j)] == _STATE::AIR) 
-					_gridState[_INDEX(i - 1, j)] = _STATE::SURFACE;
+				if (_gridState[_INDEX(i - 1, j)] == STATE::AIR) 
+					_gridState[_INDEX(i - 1, j)] = STATE::SURFACE;
 
-				if (_gridState[_INDEX(i, j + 1)] == _STATE::AIR)
-					_gridState[_INDEX(i, j + 1)] = _STATE::SURFACE;
+				if (_gridState[_INDEX(i, j + 1)] == STATE::AIR)
+					_gridState[_INDEX(i, j + 1)] = STATE::SURFACE;
 
-				if (_gridState[_INDEX(i, j - 1)] == _STATE::AIR) 
-					_gridState[_INDEX(i, j - 1)] = _STATE::SURFACE;
+				if (_gridState[_INDEX(i, j - 1)] == STATE::AIR) 
+					_gridState[_INDEX(i, j - 1)] = STATE::SURFACE;
 			}
 		}
 	} 
@@ -325,7 +324,7 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 	float magnitude;
 	switch (_gridState[i])
 	{
-	case _STATE::FLUID:
+	case STATE::FLUID:
 		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
 
 		/*if (magnitude > 0.5f && magnitude < 1.0f)
@@ -338,15 +337,15 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;
 
-	case _STATE::BOUNDARY:
+	case STATE::BOUNDARY:
 		return XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
 		break;
 
-	case _STATE::AIR:
+	case STATE::AIR:
 		return XMFLOAT4(0.9f, 0.9f, 0.9f, 1.0f);
 		break;
 
-	case _STATE::SURFACE:
+	case STATE::SURFACE:
 		return XMFLOAT4(0.5f, 0.5f, 0.5f, 1.0f);
 		break;
 
@@ -467,7 +466,7 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 				(float)j,    // "j"
 				(float)i);   // "i"
 
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
 				for (int k = 0; k < _particleCount; k++)
 				{

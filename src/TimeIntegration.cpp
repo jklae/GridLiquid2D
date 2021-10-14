@@ -1,7 +1,7 @@
 #include "TimeIntegration.h"
 
-TimeIntegration::TimeIntegration(float timeStep)
-	:_timeStep(timeStep)
+TimeIntegration::TimeIntegration(float timeStep, GridIndex& index)
+	:_timeStep(timeStep), _INDEX(index)
 {
 }
 
