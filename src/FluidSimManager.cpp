@@ -18,7 +18,8 @@ FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 		sim->initialize();
 	}
 
-	_timeInteg
+	_timeInteg.push_back(new FixedIntegration(timeStep));
+	_timeInteg.push_back(new GlobalIntegration(timeStep));
 }
 
 FluidSimManager::~FluidSimManager()

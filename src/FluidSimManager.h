@@ -10,6 +10,8 @@
 #include "PICFLIPSim.h"
 
 #include "TimeIntegration.h"
+#include "FixedIntegration.h"
+#include "GlobalIntegration.h"
 
 class FluidSimManager : public ISimulation
 {
