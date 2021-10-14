@@ -4,8 +4,7 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(int x, int y, float timeStep)
-	:_timeStep(timeStep)
+GridFluidSim::GridFluidSim(int x, int y)
 {
 	// 2 are boundaries.
 	_gridCount = x + 2;
@@ -16,6 +15,11 @@ GridFluidSim::GridFluidSim(int x, int y, float timeStep)
 GridFluidSim::~GridFluidSim()
 {
 	
+}
+
+void GridFluidSim::setTimeInteg(TimeIntegration* timeInteg)
+{
+	_timeInteg = timeInteg;
 }
 
 void GridFluidSim::_initialize()

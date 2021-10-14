@@ -11,9 +11,11 @@ FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 	_timeInteg.push_back(new FixedIntegration(timeStep));
 	_timeInteg.push_back(new GlobalIntegration(timeStep));
 
-	_sim.push_back(new EulerLiquidSim(x, y, timeStep));
-	_sim.push_back(new EulerGasSim(x, y, timeStep));
-	_sim.push_back(new PICFLIPSim(x, y, timeStep));
+	_sim.push_back(new EulerLiquidSim(x, y));
+	_sim.push_back(new EulerGasSim(x, y));
+	_sim.push_back(new PICFLIPSim(x, y));
+
+	_setSimTimeInteg(0);
 }
 
 FluidSimManager::~FluidSimManager()
@@ -40,6 +42,14 @@ bool FluidSimManager::_getDrawFlag(FLAG flagType)
 {
 	int i = static_cast<int>(flagType);
 	return _drawFlag[i];
+}
+
+void FluidSimManager::_setSimTimeInteg(int timeIntegIndex)
+{
+	for (auto& sim : _sim)
+	{
+		sim->setTimeInteg(_timeInteg[timeIntegIndex]);
+	}
 }
 
 wchar_t* FluidSimManager::_int2wchar(int value)

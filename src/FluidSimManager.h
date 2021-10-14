@@ -46,7 +46,6 @@ private:
 	std::vector<GridFluidSim*> _sim;
 	std::vector<TimeIntegration*> _timeInteg;
 	int _simIndex = 0;
-	int _timeIntegIndex = 0;
 	int _scrollPos = 99;
 
 	enum class _COM
@@ -64,6 +63,8 @@ private:
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
+
+	void _setSimTimeInteg(int timeIntegIndex);
 
 	wchar_t wBuffer[5];
 	wchar_t* _int2wchar(int value);

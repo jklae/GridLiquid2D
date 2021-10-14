@@ -5,8 +5,10 @@
 class GridFluidSim
 {
 public:
-	GridFluidSim(int x, int y, float timeStep);
+	GridFluidSim(int x, int y);
 	virtual ~GridFluidSim();
+
+	void setTimeInteg(TimeIntegration* timeInteg);
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
@@ -45,8 +47,7 @@ protected:
 	float _particleScale = 0.2f;
 	int _particleCount = 4;
 
-	float _timeStep = 0.0f;
-	TimeIntegration* timeInteg;
+	TimeIntegration* _timeInteg = nullptr;
 
 	DirectX::XMFLOAT4 _getColor(int i);
 

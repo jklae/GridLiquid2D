@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerGasSim::EulerGasSim(int x, int y, float timeStep)
-	:GridFluidSim(x, y, timeStep)
+EulerGasSim::EulerGasSim(int x, int y)
+	:GridFluidSim(x, y)
 {
 }
 
@@ -34,8 +34,10 @@ void EulerGasSim::_force()
 
 void EulerGasSim::_advect()
 {
+	float dt = 0.1f;
+
 	int N = _gridCount - 2;
-	float t0step = _timeStep * N;
+	float t0step = dt * N;
 
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
@@ -115,10 +117,12 @@ void EulerGasSim::_project()
 
 void EulerGasSim::_updateParticlePos()
 {
+	float dt = 0.1f;
+
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-		_particlePosition[i] += _particleVelocity[i] * _timeStep;
+		_particlePosition[i] += _particleVelocity[i] * dt;
 	}
 }
