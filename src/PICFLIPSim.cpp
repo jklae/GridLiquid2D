@@ -30,8 +30,6 @@ void PICFLIPSim::_initialize()
 
 void PICFLIPSim::_update()
 {
-	_timeInteg->initialize(_gridVelocity, _gridState);
-
 	_advect();
 
 	_force();
@@ -110,12 +108,11 @@ void PICFLIPSim::_advect()
 
 	}
 
-	float eps = 0.000001f;
 	for (int i = 0; i < _gridCount; i++)
 	{
 		for (int j = 0; j < _gridCount; j++)
 		{
-			if (_pCount[_INDEX(i, j)] > eps)
+			if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
 			{
 				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / _pCount[_INDEX(i, j)];
 			}

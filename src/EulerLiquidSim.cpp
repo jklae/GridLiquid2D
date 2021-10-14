@@ -14,6 +14,8 @@ EulerLiquidSim::~EulerLiquidSim()
 
 void EulerLiquidSim::_update()
 {
+	_timeInteg->initialize(_gridVelocity, _gridState);
+
 	_force();
 
 	//_project();
@@ -22,11 +24,6 @@ void EulerLiquidSim::_update()
 	_project();
 	_updateParticlePos();
 	_paintGrid();
-
-	float magnitude = sqrtf(powf(_gridVelocity[_INDEX(10, 2)].x, 2.0f) + powf(_gridVelocity[_INDEX(10, 2)].y, 2.0f));
-	float timestep = magnitude ? (1 / magnitude) * 0.25f : 0.0f;
-	//cout << timestep << endl;
-	//cout << _gridVelocity[_INDEX(10, 2)].x << ", " << _gridVelocity[_INDEX(10, 2)].y << endl;
 
 }
 

@@ -56,7 +56,7 @@ void GridFluidSim::_initialize()
 				_gridState.push_back(STATE::AIR);
 			}
 
-			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.01f));
+			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
 			_gridDivergence.push_back(0.0f);
 			_gridPressure.push_back(0.0f);
 		}
