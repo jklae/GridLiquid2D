@@ -8,7 +8,7 @@ public:
 	~GlobalIntegration() override;
 
 	float computeTimeStep() override;
-	void initialize(std::vector<DirectX::XMFLOAT2>& vel) override;
+	void initialize(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state) override;
 
 private:
 

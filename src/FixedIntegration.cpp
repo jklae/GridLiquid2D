@@ -17,6 +17,6 @@ float FixedIntegration::computeTimeStep()
 	return _timeStep;
 }
 
-void FixedIntegration::initialize(vector<XMFLOAT2>& vel)
+void FixedIntegration::initialize(vector<XMFLOAT2>& vel, vector<STATE>& state)
 {
 }

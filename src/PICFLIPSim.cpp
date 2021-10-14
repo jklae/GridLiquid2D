@@ -30,7 +30,7 @@ void PICFLIPSim::_initialize()
 
 void PICFLIPSim::_update()
 {
-	_timeInteg->initialize(_gridVelocity);
+	_timeInteg->initialize(_gridVelocity, _gridState);
 
 	_advect();
 

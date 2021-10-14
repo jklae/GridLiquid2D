@@ -17,15 +17,16 @@ float GlobalIntegration::computeTimeStep()
 	return _timeStep;
 }
 
-void GlobalIntegration::initialize(vector<XMFLOAT2>& vel)
+void GlobalIntegration::initialize(vector<XMFLOAT2>& vel, std::vector<STATE>& state)
 {
-	//for (int i = 1; i <= N; i++)
-	//{
-	//	for (int j = 1; j <= N; j++)
-	//	{
-	//		if (vel[_INDEX(i, j)] == _STATE::FLUID)
-	//		{
-	//		}
-	//	}
-	//}
+	int N = _INDEX.gridCount - 2;
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			if (state[_INDEX(i, j)] == STATE::FLUID)
+			{
+			}
+		}
+	}
 }
