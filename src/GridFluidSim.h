@@ -4,11 +4,8 @@
 class GridFluidSim
 {
 public:
-	GridFluidSim(float timeStep);
+	GridFluidSim(int x, int y, float timeStep);
 	virtual ~GridFluidSim();
-
-	void setGridDomain(int xCount, int yCount);
-	virtual void initialize();
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
@@ -59,6 +56,8 @@ protected:
 	void _paintGrid();
 
 	virtual void _update() = 0;
+
+	virtual void _initialize();
 
 	// ---
 

@@ -4,12 +4,10 @@
 class PICFLIPSim : public GridFluidSim
 {
 public:
-	PICFLIPSim(float timeStep);
+	PICFLIPSim(int x, int y, float timeStep);
 	~PICFLIPSim() override;
 
 	void setFlipRatio(int value);
-
-	void initialize() override;
 
 private:
 
@@ -18,6 +16,8 @@ private:
 	std::vector<float> _pCount;
 
 	float _flipRatio = 0.99f;
+
+	void _initialize() override;
 
 	void _update() override;
 	void _advect();

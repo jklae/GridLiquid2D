@@ -4,9 +4,13 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(float timeStep)
+GridFluidSim::GridFluidSim(int x, int y, float timeStep)
 	:_timeStep(timeStep)
 {
+	// 2 are boundaries.
+	_gridCount = x + 2;
+
+	_initialize();
 }
 
 GridFluidSim::~GridFluidSim()
@@ -14,20 +18,8 @@ GridFluidSim::~GridFluidSim()
 	
 }
 
-
-
-void GridFluidSim::setGridDomain(int xCount, int yCount)
+void GridFluidSim::_initialize()
 {
-	// 2 are boundaries.
-	_gridCount = xCount + 2;
-}
-
-
-void GridFluidSim::initialize()
-{
-	// 0 is not allowed.
-	assert(_gridCount != 0);
-
 	int offset = _gridCount / 4;
 
 	// Set _fluid
@@ -44,7 +36,7 @@ void GridFluidSim::initialize()
 			}
 			else if ((N + 1) / 2 - offset < i //
 				&& (i < (N + 1) / 2 + offset + 1)
-				&& ((N + 1) / 2  < j)  //((N + 1) / 2 - offset < j)     
+				&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
 				&& (j < (N)))            //
 			{
 				_gridState.push_back(_STATE::FLUID);
@@ -68,6 +60,7 @@ void GridFluidSim::initialize()
 	}
 
 }
+
 void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 {
 	int N = _gridCount - 2;
@@ -395,7 +388,7 @@ void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
 	_particlePosition.clear();
 	_particleVelocity.clear();
 
-	initialize();
+	_initialize();
 	iCreateObjectParticle(constantBuffer);
 }
 

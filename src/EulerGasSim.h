@@ -4,7 +4,7 @@
 class EulerGasSim : public GridFluidSim
 {
 public:
-	EulerGasSim(float timeStep);
+	EulerGasSim(int x, int y, float timeStep);
 	~EulerGasSim() override;
 
 private:

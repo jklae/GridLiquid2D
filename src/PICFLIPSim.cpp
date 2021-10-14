@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-PICFLIPSim::PICFLIPSim(float timeStep)
-	:GridFluidSim::GridFluidSim(timeStep)
+PICFLIPSim::PICFLIPSim(int x, int y, float timeStep)
+	:GridFluidSim::GridFluidSim(x, y, timeStep)
 {
 }
 
@@ -17,9 +17,9 @@ void PICFLIPSim::setFlipRatio(int value)
 	_flipRatio = static_cast<float>(value) / 100.0f;
 }
 
-void PICFLIPSim::initialize()
+void PICFLIPSim::_initialize()
 {
-	GridFluidSim::initialize();
+	GridFluidSim::_initialize();
 
 	size_t vSize = static_cast<size_t>(_gridCount) * static_cast<size_t>(_gridCount);
 

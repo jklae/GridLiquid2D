@@ -8,15 +8,9 @@ using namespace std;
 
 FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 {
-	_sim.push_back(new EulerLiquidSim(timeStep));
-	_sim.push_back(new EulerGasSim(timeStep));
-	_sim.push_back(new PICFLIPSim(timeStep));
-
-	for (auto& sim : _sim)
-	{
-		sim->setGridDomain(x, y);
-		sim->initialize();
-	}
+	_sim.push_back(new EulerLiquidSim(x, y, timeStep));
+	_sim.push_back(new EulerGasSim(x, y, timeStep));
+	_sim.push_back(new PICFLIPSim(x, y, timeStep));
 
 	_timeInteg.push_back(new FixedIntegration(timeStep));
 	_timeInteg.push_back(new GlobalIntegration(timeStep));
