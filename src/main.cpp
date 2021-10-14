@@ -24,7 +24,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     // Window init
     Win32App winApp(800, 800);
     winApp.initialize(hInstance, dxapp, fluidsim);
-    //winApp.initDirectX(dxapp, fluidsim);
 
     return winApp.run();
 }

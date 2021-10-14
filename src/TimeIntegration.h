@@ -4,10 +4,13 @@
 class TimeIntegration
 {
 public:
+	TimeIntegration(float timeStep);
+	virtual ~TimeIntegration();
+
 	virtual float computeTimeStep() = 0;
 	virtual void initialize(float timeStep) = 0;
 
-private:
+protected:
 	float _timeStep;
 };
 

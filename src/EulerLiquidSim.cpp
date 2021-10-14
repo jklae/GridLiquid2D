@@ -4,7 +4,7 @@ using namespace DirectX;
 using namespace std;
 
 EulerLiquidSim::EulerLiquidSim(int x, int y, float timeStep)
-	:GridFluidSim::GridFluidSim(x, y, timeStep)
+	:GridFluidSim(x, y, timeStep)
 {
 }
 

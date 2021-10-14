@@ -1,6 +1,7 @@
 #include "GlobalIntegration.h"
 
 GlobalIntegration::GlobalIntegration(float timeStep)
+	:TimeIntegration(timeStep)
 {
 }
 
@@ -10,7 +11,7 @@ GlobalIntegration::~GlobalIntegration()
 
 float GlobalIntegration::computeTimeStep()
 {
-	return 0.0f;
+	return _timeStep;
 }
 
 void GlobalIntegration::initialize(float timeStep)

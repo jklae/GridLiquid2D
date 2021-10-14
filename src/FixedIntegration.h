@@ -5,7 +5,7 @@ class FixedIntegration : public TimeIntegration
 {
 public:
 	FixedIntegration(float timeStep);
-	~FixedIntegration();
+	~FixedIntegration() override;
 
 	float computeTimeStep() override;
 	void initialize(float timeStep) override;

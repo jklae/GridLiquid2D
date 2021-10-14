@@ -4,12 +4,12 @@
 #include "Win32App.h" // This includes ISimulation.h.
 					  // Win32App is required in main().
 
-#include "GridFluidSim.h"
+// These include GridFluidSim.h.
 #include "EulerGasSim.h" 
 #include "EulerLiquidSim.h"
 #include "PICFLIPSim.h"
 
-#include "TimeIntegration.h"
+// These include TimeIntegration.h.
 #include "FixedIntegration.h"
 #include "GlobalIntegration.h"
 

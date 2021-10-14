@@ -1,5 +1,6 @@
 #pragma once
 #include "dx12header.h"
+#include "TimeIntegration.h"
 
 class GridFluidSim
 {
@@ -45,6 +46,7 @@ protected:
 	int _particleCount = 4;
 
 	float _timeStep = 0.0f;
+	TimeIntegration* timeInteg;
 
 	DirectX::XMFLOAT4 _getColor(int i);
 
