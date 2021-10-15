@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-PICFLIPSim::PICFLIPSim(int x, int y, GridIndex& index)
-	:GridFluidSim(x, y, index)
+PICFLIPSim::PICFLIPSim(GridIndex& index)
+	:GridFluidSim(index)
 {
 	_initialize();
 }
@@ -113,7 +113,7 @@ void PICFLIPSim::_advect()
 void PICFLIPSim::_force()
 {
 	assert(_timeInteg != nullptr);
-	float dt = _timeInteg->computeTimeStep();
+	float dt;
 
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -122,6 +122,7 @@ void PICFLIPSim::_force()
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
+				dt = _timeInteg->computeTimeStep(_gridVelocity[_INDEX(i, j)]);
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
 		}
@@ -182,7 +183,7 @@ void PICFLIPSim::_project()
 void PICFLIPSim::_updateParticlePos()
 {
 	assert(_timeInteg != nullptr);
-	float dt = _timeInteg->computeTimeStep();
+	float dt;
 
 	int N = _gridCount - 2;
 	for (int i = 0; i < _oldVel.size(); i++)
@@ -199,6 +200,8 @@ void PICFLIPSim::_updateParticlePos()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
+		dt = 0.01f;//_timeInteg->computeTimeStep();
+
 		XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 		XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
 

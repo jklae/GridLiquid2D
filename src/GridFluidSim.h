@@ -5,7 +5,7 @@
 class GridFluidSim
 {
 public:
-	GridFluidSim(int x, int y, GridIndex& index);
+	GridFluidSim(GridIndex& index);
 	virtual ~GridFluidSim();
 
 	void setTimeInteg(TimeIntegration* timeInteg);

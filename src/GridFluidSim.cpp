@@ -4,7 +4,7 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(int x, int y, GridIndex& index)
+GridFluidSim::GridFluidSim(GridIndex& index)
 	:_INDEX(index)
 {
 	_gridCount = _INDEX.gridCount;

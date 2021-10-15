@@ -3,8 +3,8 @@
 using namespace DirectX;
 using namespace std;
 
-EulerLiquidSim::EulerLiquidSim(int x, int y, GridIndex& index)
-	:GridFluidSim(x, y, index)
+EulerLiquidSim::EulerLiquidSim(GridIndex& index)
+	:GridFluidSim(index)
 {
 	_initialize();
 }
@@ -31,7 +31,7 @@ void EulerLiquidSim::_update()
 void EulerLiquidSim::_force()
 {
 	assert(_timeInteg != nullptr);
-	float dt = _timeInteg->computeTimeStep();
+	float dt = 0.01f;
 
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -55,7 +55,7 @@ void EulerLiquidSim::_force()
 void EulerLiquidSim::_advect()
 {
 	assert(_timeInteg != nullptr);
-	float dt = _timeInteg->computeTimeStep();
+	float dt = 0.01f;
 
 	int N = _gridCount - 2;
 
@@ -163,7 +163,7 @@ void EulerLiquidSim::_project()
 void EulerLiquidSim::_updateParticlePos()
 {
 	assert(_timeInteg != nullptr);
-	float dt = _timeInteg->computeTimeStep();
+	float dt = 0.01f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{

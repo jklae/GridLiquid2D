@@ -4,7 +4,7 @@
 class PICFLIPSim : public GridFluidSim
 {
 public:
-	PICFLIPSim(int x, int y, GridIndex& index);
+	PICFLIPSim(GridIndex& index);
 	~PICFLIPSim() override;
 
 	void setFlipRatio(int value);

@@ -5,18 +5,18 @@ using namespace DirectX;
 using namespace std;
 
 
-
 FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 {
 	// 2 are boundaries.
 	_index.gridCount = x + 2;
 
-	_sim.push_back(new EulerLiquidSim(x, y, _index));
-	_sim.push_back(new EulerGasSim(x, y, _index));
-	_sim.push_back(new PICFLIPSim(x, y, _index));
+	_sim.push_back(new EulerLiquidSim(_index));
+	_sim.push_back(new EulerGasSim(_index));
+	_sim.push_back(new PICFLIPSim(_index));
 
-	_timeInteg.push_back(new FixedIntegration(0.004f, _index));
-	_timeInteg.push_back(new GlobalIntegration(0.01f, _index));
+	_timeInteg.push_back(new FixedIntegration(0.02f, _index));
+	_timeInteg.push_back(new GlobalIntegration(0.02f, _index));
+	_timeInteg.push_back(new OursIntegration(0.02f, _index));
 
 	_setSimTimeInteg(0);
 }
@@ -405,6 +405,11 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 		case static_cast<int>(_COM::OURS_RADIO) :
 		{
+			_setSimTimeInteg(2);
+			dxapp->resetSimulationState();
+			dxapp->update();
+			dxapp->draw();
+			_simTime = 0;
 		}
 		break;
 		// #####################

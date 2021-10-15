@@ -1,5 +1,5 @@
 #include "FixedIntegration.h"
-using Microsoft::WRL::ComPtr;
+
 using namespace DirectX;
 using namespace std;
 
@@ -12,7 +12,7 @@ FixedIntegration::~FixedIntegration()
 {
 }
 
-float FixedIntegration::computeTimeStep()
+float FixedIntegration::computeTimeStep(DirectX::XMFLOAT2 vel)
 {
 	return _timeStep;
 }

@@ -12,6 +12,7 @@
 // These include TimeIntegration.h.
 #include "FixedIntegration.h"
 #include "GlobalIntegration.h"
+#include "OursIntegration.h"
 
 class FluidSimManager : public ISimulation
 {
@@ -45,7 +46,7 @@ public:
 private:
 	std::vector<GridFluidSim*> _sim;
 	std::vector<TimeIntegration*> _timeInteg;
-	int _simIndex = 0;
+	int _simIndex = 2;
 	int _scrollPos = 99;
 
 	enum class _COM
