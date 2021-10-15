@@ -35,7 +35,8 @@ void GlobalIntegration::initialize(vector<XMFLOAT2>& vel, std::vector<STATE>& st
 		}
 	}
 
-	float timestep = (maxMag > EPS_FLOAT) ? min((1 / maxMag) * 0.25f, 0.01f) : 0.01f;
+	float cflConstant = 0.25f;
+	float timestep = (maxMag > EPS_FLOAT) ? min((1 / maxMag) * cflConstant, 0.01f) : 0.01f;
 	cout << "TimeStep : "  << timestep << ", Mag : " << maxMag << endl;
 
 	_timeStep = timestep;

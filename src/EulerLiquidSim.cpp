@@ -6,6 +6,7 @@ using namespace std;
 EulerLiquidSim::EulerLiquidSim(int x, int y, GridIndex& index)
 	:GridFluidSim(x, y, index)
 {
+	_initialize();
 }
 
 EulerLiquidSim::~EulerLiquidSim()
@@ -69,8 +70,6 @@ void EulerLiquidSim::_advect()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			float magnitude = sqrtf(powf(_gridVelocity[_INDEX(i, j)].x, 2.0f) + powf(_gridVelocity[_INDEX(i, j)].y, 2.0f));
-
 			/*if (magnitude > 0.5f && magnitude < 1.0f)
 				dt = 0.02f;
 			else if (magnitude >= 1.0f)

@@ -8,7 +8,6 @@ GridFluidSim::GridFluidSim(int x, int y, GridIndex& index)
 	:_INDEX(index)
 {
 	_gridCount = _INDEX.gridCount;
-	_initialize();
 }
 
 GridFluidSim::~GridFluidSim()

@@ -6,6 +6,7 @@ using namespace std;
 PICFLIPSim::PICFLIPSim(int x, int y, GridIndex& index)
 	:GridFluidSim(x, y, index)
 {
+	_initialize();
 }
 
 PICFLIPSim::~PICFLIPSim()
@@ -30,6 +31,8 @@ void PICFLIPSim::_initialize()
 
 void PICFLIPSim::_update()
 {
+	_timeInteg->initialize(_gridVelocity, _gridState);
+
 	_advect();
 
 	_force();
@@ -45,30 +48,9 @@ void PICFLIPSim::_update()
 	_paintGrid();
 }
 
-void PICFLIPSim::_force()
-{
-	assert(_timeInteg != nullptr);
-	float dt = _timeInteg->computeTimeStep();
-
-	int N = _gridCount - 2;
-	for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
-			{
-				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
-			}
-		}
-	}
-}
-
 void PICFLIPSim::_advect()
 {
 	int N = _gridCount - 2;
-
-
-
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		XMFLOAT2 pos = _particlePosition[i];
@@ -127,6 +109,25 @@ void PICFLIPSim::_advect()
 		}
 	}
 }
+
+void PICFLIPSim::_force()
+{
+	assert(_timeInteg != nullptr);
+	float dt = _timeInteg->computeTimeStep();
+
+	int N = _gridCount - 2;
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+			{
+				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
+			}
+		}
+	}
+}
+
 
 void PICFLIPSim::_project()
 {

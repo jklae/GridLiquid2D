@@ -6,6 +6,7 @@ using namespace std;
 EulerGasSim::EulerGasSim(int x, int y, GridIndex& index)
 	:GridFluidSim(x, y, index)
 {
+	_initialize();
 }
 
 EulerGasSim::~EulerGasSim()
