@@ -17,8 +17,9 @@ enum class STATE
 };
 
 // This structure is shared by GridFluidSim and TimeIntegration.
-struct GridIndex
+struct GridData
 {
 	int gridCount = 0;
+	int particleCount = 0;
 	int operator()(int i, int j) { return (i + gridCount * j); };
 };

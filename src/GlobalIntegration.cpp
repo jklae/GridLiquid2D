@@ -3,7 +3,7 @@
 using namespace DirectX;
 using namespace std;
 
-GlobalIntegration::GlobalIntegration(float timeStep, GridIndex& index)
+GlobalIntegration::GlobalIntegration(float timeStep, GridData& index)
 	:TimeIntegration(timeStep, index)
 {
 }
@@ -12,12 +12,17 @@ GlobalIntegration::~GlobalIntegration()
 {
 }
 
-float GlobalIntegration::computeTimeStep(DirectX::XMFLOAT2 vel)
+float GlobalIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel)
 {
 	return _timeStep;
 }
 
-void GlobalIntegration::initialize(vector<XMFLOAT2>& vel, std::vector<STATE>& state)
+float GlobalIntegration::computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i)
+{
+	return _timeStep;
+}
+
+void GlobalIntegration::computeGlobalTimeStep(vector<XMFLOAT2>& vel, std::vector<STATE>& state)
 {
 	float maxMag = 0.0f;
 

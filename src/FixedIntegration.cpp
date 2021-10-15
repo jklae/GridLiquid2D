@@ -3,7 +3,7 @@
 using namespace DirectX;
 using namespace std;
 
-FixedIntegration::FixedIntegration(float timeStep, GridIndex& index)
+FixedIntegration::FixedIntegration(float timeStep, GridData& index)
 	:TimeIntegration(timeStep, index)
 {
 }
@@ -12,11 +12,16 @@ FixedIntegration::~FixedIntegration()
 {
 }
 
-float FixedIntegration::computeTimeStep(DirectX::XMFLOAT2 vel)
+float FixedIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel)
 {
 	return _timeStep;
 }
 
-void FixedIntegration::initialize(vector<XMFLOAT2>& vel, vector<STATE>& state)
+float FixedIntegration::computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i)
+{
+	return _timeStep;
+}
+
+void FixedIntegration::computeGlobalTimeStep(vector<XMFLOAT2>& vel, vector<STATE>& state)
 {
 }

@@ -3,7 +3,7 @@
 using namespace DirectX;
 using namespace std;
 
-EulerLiquidSim::EulerLiquidSim(GridIndex& index)
+EulerLiquidSim::EulerLiquidSim(GridData& index)
 	:GridFluidSim(index)
 {
 	_initialize();
@@ -15,7 +15,7 @@ EulerLiquidSim::~EulerLiquidSim()
 
 void EulerLiquidSim::_update()
 {
-	_timeInteg->initialize(_gridVelocity, _gridState);
+	//_timeInteg->initialize(_gridVelocity, _gridState);
 
 	_force();
 

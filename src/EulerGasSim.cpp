@@ -3,7 +3,7 @@
 using namespace DirectX;
 using namespace std;
 
-EulerGasSim::EulerGasSim(GridIndex& index)
+EulerGasSim::EulerGasSim(GridData& index)
 	:GridFluidSim(index)
 {
 	_initialize();

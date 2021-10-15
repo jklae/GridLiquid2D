@@ -3,7 +3,7 @@
 using namespace DirectX;
 using namespace std;
 
-PICFLIPSim::PICFLIPSim(GridIndex& index)
+PICFLIPSim::PICFLIPSim(GridData& index)
 	:GridFluidSim(index)
 {
 	_initialize();
@@ -31,7 +31,7 @@ void PICFLIPSim::_initialize()
 
 void PICFLIPSim::_update()
 {
-	_timeInteg->initialize(_gridVelocity, _gridState);
+	_timeInteg->computeGlobalTimeStep(_gridVelocity, _gridState);
 
 	_advect();
 
@@ -58,35 +58,27 @@ void PICFLIPSim::_advect()
 		XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
 		XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
 
-		float xRatio = (pos.x - _gridPosition[_INDEX(minIndex.x, minIndex.y)].x);
-		float yRatio = (pos.y - _gridPosition[_INDEX(minIndex.x, minIndex.y)].y);
+		XMFLOAT2 ratio = pos - _gridPosition[_INDEX(minIndex.x, minIndex.y)];
 
-		float minMin_minMax_X = _particleVelocity[i].x * (1.0f - xRatio);
-		float maxMin_maxMax_X = _particleVelocity[i].x * xRatio;
-		float minMinX = minMin_minMax_X * (1.0f - yRatio);
-		float minMaxX = minMin_minMax_X * yRatio;
-		float maxMinX = maxMin_maxMax_X * (1.0f - yRatio);
-		float maxMaxX = maxMin_maxMax_X * yRatio;
-
-		float minMin_minMax_Y = _particleVelocity[i].y * (1.0f - xRatio);
-		float maxMin_maxMax_Y = _particleVelocity[i].y * xRatio;
-		float minMinY = minMin_minMax_Y * (1.0f - yRatio);
-		float minMaxY = minMin_minMax_Y * yRatio;
-		float maxMinY = maxMin_maxMax_Y * (1.0f - yRatio);
-		float maxMaxY = maxMin_maxMax_Y * yRatio;
+		XMFLOAT2 minMin_minMax = _particleVelocity[i] * (1.0f - ratio.x);
+		XMFLOAT2 maxMin_maxMax = _particleVelocity[i] * ratio.x;
+		XMFLOAT2 minMin = minMin_minMax * (1.0f - ratio.y);
+		XMFLOAT2 minMax = minMin_minMax * ratio.y;
+		XMFLOAT2 maxMin = maxMin_maxMax * (1.0f - ratio.y);
+		XMFLOAT2 maxMax = maxMin_maxMax * ratio.y;
 
 
-		_tempVel[_INDEX(minIndex.x, minIndex.y)] += { minMinX, minMinY };
-		_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - xRatio) * (1.0f - yRatio);
+		_tempVel[_INDEX(minIndex.x, minIndex.y)] += minMin;
+		_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - ratio.x) * (1.0f - ratio.y);
 
-		_tempVel[_INDEX(minIndex.x, maxIndex.y)] += { minMaxX, minMaxY };
-		_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - xRatio) * yRatio;
+		_tempVel[_INDEX(minIndex.x, maxIndex.y)] += minMax;
+		_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - ratio.x) * ratio.y;
 
-		_tempVel[_INDEX(maxIndex.x, minIndex.y)] += { maxMinX, maxMinY };
-		_pCount[_INDEX(maxIndex.x, minIndex.y)] += xRatio * (1.0f - yRatio);
+		_tempVel[_INDEX(maxIndex.x, minIndex.y)] += maxMin;
+		_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);
 
-		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += { maxMaxX, maxMaxY };
-		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += xRatio * yRatio;
+		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += maxMax;
+		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
 
 	}
 
@@ -122,7 +114,7 @@ void PICFLIPSim::_force()
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
-				dt = _timeInteg->computeTimeStep(_gridVelocity[_INDEX(i, j)]);
+				dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)]);
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
 		}
@@ -200,7 +192,7 @@ void PICFLIPSim::_updateParticlePos()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		dt = 0.01f;//_timeInteg->computeTimeStep();
+		dt = _timeInteg->computeParticleTimeStep(_particleVelocity[i], i);
 
 		XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 		XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);

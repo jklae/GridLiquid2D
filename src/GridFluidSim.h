@@ -5,7 +5,7 @@
 class GridFluidSim
 {
 public:
-	GridFluidSim(GridIndex& index);
+	GridFluidSim(GridData& index);
 	virtual ~GridFluidSim();
 
 	void setTimeInteg(TimeIntegration* timeInteg);
@@ -29,7 +29,7 @@ public:
 protected:
 	enum class _VALUE { MIN, MAX };
 
-	GridIndex& _INDEX;
+	GridData& _INDEX;
 
 	// Grid
 	std::vector<STATE> _gridState;
@@ -43,7 +43,7 @@ protected:
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
 	float _particleScale = 0.2f;
-	int _particleCount = 4;
+	int _particleCount = 0;
 
 	TimeIntegration* _timeInteg = nullptr;
 

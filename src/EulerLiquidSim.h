@@ -4,7 +4,7 @@
 class EulerLiquidSim : public GridFluidSim
 {
 public:
-	EulerLiquidSim(GridIndex& index);
+	EulerLiquidSim(GridData& index);
 	~EulerLiquidSim() override;
 
 private:

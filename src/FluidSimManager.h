@@ -72,6 +72,6 @@ private:
 
 	clock_t _simTime = 0;
 
-	GridIndex _index;
+	GridData _index;
 };
 

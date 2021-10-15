@@ -9,12 +9,13 @@ FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 {
 	// 2 are boundaries.
 	_index.gridCount = x + 2;
+	_index.particleCount = 4;
 
 	_sim.push_back(new EulerLiquidSim(_index));
 	_sim.push_back(new EulerGasSim(_index));
 	_sim.push_back(new PICFLIPSim(_index));
 
-	_timeInteg.push_back(new FixedIntegration(0.02f, _index));
+	_timeInteg.push_back(new FixedIntegration(0.008f, _index));
 	_timeInteg.push_back(new GlobalIntegration(0.02f, _index));
 	_timeInteg.push_back(new OursIntegration(0.02f, _index));
 
