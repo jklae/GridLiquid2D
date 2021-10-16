@@ -6,11 +6,13 @@ using namespace std;
 OursIntegration::OursIntegration(float timeStep, GridData& index)
 	:TimeIntegration(timeStep, index)
 {
-	int gcount = index.gridCount;
-	int pcount = index.particleCount;
-	int size = gcount * gcount * pcount * pcount;
+	int gCount = index.gridCount;
+	int pCount = index.particleCount;
+	int gSize = gCount * gCount;
+	int pSsize = gSize * pCount * pCount;
 
-	_particleTimeStep.assign(size, _maxTimeStep);
+	_gridTimeStep.assign(gSize, _maxTimeStep);
+	_particleTimeStep.assign(pSsize, _maxTimeStep);
 }
 
 OursIntegration::~OursIntegration()
@@ -25,9 +27,9 @@ float OursIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel)
 float OursIntegration::computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i)
 {
 	float magnitude = sqrtf(powf(vel.x, 2.0f) + powf(vel.y, 2.0f));
-	_particleTimeStep[i] = _cflCondition(magnitude);
+	float timeStep = _cflCondition(magnitude);
 
-	return _particleTimeStep[i];
+	return timeStep;
 }
 
 void OursIntegration::computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state)

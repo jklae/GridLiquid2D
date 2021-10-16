@@ -50,6 +50,7 @@ void PICFLIPSim::_update()
 
 void PICFLIPSim::_advect()
 {
+	Advect advect;
 	int N = _gridCount - 2;
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -59,27 +60,13 @@ void PICFLIPSim::_advect()
 		XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
 
 		XMFLOAT2 ratio = pos - _gridPosition[_INDEX(minIndex.x, minIndex.y)];
-
-		XMFLOAT2 minMin_minMax = _particleVelocity[i] * (1.0f - ratio.x);
-		XMFLOAT2 maxMin_maxMax = _particleVelocity[i] * ratio.x;
-		XMFLOAT2 minMin = minMin_minMax * (1.0f - ratio.y);
-		XMFLOAT2 minMax = minMin_minMax * ratio.y;
-		XMFLOAT2 maxMin = maxMin_maxMax * (1.0f - ratio.y);
-		XMFLOAT2 maxMax = maxMin_maxMax * ratio.y;
-
-
-		_tempVel[_INDEX(minIndex.x, minIndex.y)] += minMin;
 		_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - ratio.x) * (1.0f - ratio.y);
-
-		_tempVel[_INDEX(minIndex.x, maxIndex.y)] += minMax;
 		_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - ratio.x) * ratio.y;
-
-		_tempVel[_INDEX(maxIndex.x, minIndex.y)] += maxMin;
 		_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);
-
-		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += maxMax;
 		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
 
+		//_inverseInterpolation(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex);
+		advect(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex, _INDEX);
 	}
 
 	for (int i = 0; i < _gridCount; i++)
@@ -101,6 +88,22 @@ void PICFLIPSim::_advect()
 		}
 	}
 }
+
+void PICFLIPSim::_inverseInterpolation(XMFLOAT2 data, vector<XMFLOAT2>& temp, XMFLOAT2 ratio, XMINT2 minIndex, XMINT2 maxIndex)
+{
+	XMFLOAT2 minMin_minMax = data * (1.0f - ratio.x);
+	XMFLOAT2 maxMin_maxMax = data * ratio.x;
+	XMFLOAT2 minMin = minMin_minMax * (1.0f - ratio.y);
+	XMFLOAT2 minMax = minMin_minMax * ratio.y;
+	XMFLOAT2 maxMin = maxMin_maxMax * (1.0f - ratio.y);
+	XMFLOAT2 maxMax = maxMin_maxMax * ratio.y;
+
+	temp[_INDEX(minIndex.x, minIndex.y)] += minMin;
+	temp[_INDEX(minIndex.x, maxIndex.y)] += minMax;
+	temp[_INDEX(maxIndex.x, minIndex.y)] += maxMin;
+	temp[_INDEX(maxIndex.x, maxIndex.y)] += maxMax;
+}
+
 
 void PICFLIPSim::_force()
 {

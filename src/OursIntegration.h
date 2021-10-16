@@ -12,6 +12,7 @@ public:
 	void computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state) override;
 
 private:
+	std::vector<float> _gridTimeStep;
 	std::vector<float> _particleTimeStep;
 };
 
