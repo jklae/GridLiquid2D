@@ -66,7 +66,7 @@ void PICFLIPSim::_advect()
 		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
 
 		reInterp(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex, _INDEX);
-		_timeInteg->reInterpTimeStep(i, ratio, minIndex, maxIndex);
+		_timeInteg->reInterpTimeStep(ratio, minIndex, maxIndex, i);
 	}
 
 	for (int i = 0; i < _gridCount; i++)
@@ -82,11 +82,12 @@ void PICFLIPSim::_advect()
 				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
 			}
 
+			_timeInteg->computeAdvectTimeStep(_pCount, i, j);
+
 			// Reset
 			_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
 			_pCount[_INDEX(i, j)] = 0.0f;
 
-			_timeInteg->computeAdvectTimeStep(i, j, _pCount);
 		}
 	}
 }
@@ -119,7 +120,7 @@ void PICFLIPSim::_force()
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
-				dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)]);
+				dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)], i, j);
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
 		}

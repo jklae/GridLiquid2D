@@ -20,24 +20,24 @@ OursIntegration::~OursIntegration()
 {
 }
 
-float OursIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel)
+float OursIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
-	return 0.02f;
+	return _gridTimeStep[_INDEX(i, j)];
 }
 
 float OursIntegration::computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i)
 {
 	float magnitude = sqrtf(powf(vel.x, 2.0f) + powf(vel.y, 2.0f));
-	float timeStep = _cflCondition(magnitude);
+	_particleTimeStep[i] = _cflCondition(magnitude);
 
-	return timeStep;
+	return _particleTimeStep[i];
 }
 
 void OursIntegration::computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state)
 {
 }
 
-void OursIntegration::computeAdvectTimeStep(int i, int j, std::vector<float>& pCount)
+void OursIntegration::computeAdvectTimeStep(std::vector<float>& pCount, int i, int j)
 {
 	if (pCount[_INDEX(i, j)] > EPS_FLOAT)
 	{
@@ -47,12 +47,12 @@ void OursIntegration::computeAdvectTimeStep(int i, int j, std::vector<float>& pC
 	{
 		_gridTimeStep[_INDEX(i, j)] = 0.0f;
 	}
-
+	
 	// Reset
 	_tempStep[_INDEX(i, j)] = 0.0f;
 }
 
-void OursIntegration::reInterpTimeStep(int i, DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex)
+void OursIntegration::reInterpTimeStep(DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i)
 {
 	ReverseInterpolation reInterp;
 	reInterp(_particleTimeStep[i], _tempStep, ratio, minIndex, maxIndex, _INDEX);

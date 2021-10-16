@@ -12,7 +12,7 @@ GlobalIntegration::~GlobalIntegration()
 {
 }
 
-float GlobalIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel)
+float GlobalIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
 	return _timeStep;
 }
@@ -46,10 +46,10 @@ void GlobalIntegration::computeGlobalTimeStep(vector<XMFLOAT2>& vel, std::vector
 	_timeStep = timestep;
 }
 
-void GlobalIntegration::computeAdvectTimeStep(int i, int j, std::vector<float>& pCount)
+void GlobalIntegration::computeAdvectTimeStep(std::vector<float>& pCount, int i, int j)
 {
 }
 
-void GlobalIntegration::reInterpTimeStep(int i, DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex)
+void GlobalIntegration::reInterpTimeStep(DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i)
 {
 }
