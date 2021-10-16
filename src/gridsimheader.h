@@ -27,16 +27,17 @@ struct GridData
 	int operator()(int i, int j) { return (i + gridCount * j); };
 };
 
-struct Advect
+struct ReverseInterpolation
 {
-	void operator()(DirectX::XMFLOAT2 data, std::vector<DirectX::XMFLOAT2>& temp, DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, GridData& _INDEX)
+	template <typename T>
+	void operator()(T data, std::vector<T>& temp, DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, GridData& _INDEX)
 	{
-		DirectX::XMFLOAT2 minMin_minMax = data * (1.0f - ratio.x);
-		DirectX::XMFLOAT2 maxMin_maxMax = data * ratio.x;
-		DirectX::XMFLOAT2 minMin = minMin_minMax * (1.0f - ratio.y);
-		DirectX::XMFLOAT2 minMax = minMin_minMax * ratio.y;
-		DirectX::XMFLOAT2 maxMin = maxMin_maxMax * (1.0f - ratio.y);
-		DirectX::XMFLOAT2 maxMax = maxMin_maxMax * ratio.y;
+		T minMin_minMax = data * (1.0f - ratio.x);
+		T maxMin_maxMax = data * ratio.x;
+		T minMin = minMin_minMax * (1.0f - ratio.y);
+		T minMax = minMin_minMax * ratio.y;
+		T maxMin = maxMin_maxMax * (1.0f - ratio.y);
+		T maxMax = maxMin_maxMax * ratio.y;
 
 		temp[_INDEX(minIndex.x, minIndex.y)] += minMin;
 		temp[_INDEX(minIndex.x, maxIndex.y)] += minMax;

@@ -50,7 +50,7 @@ void PICFLIPSim::_update()
 
 void PICFLIPSim::_advect()
 {
-	Advect advect;
+	ReverseInterpolation reInterp;
 	int N = _gridCount - 2;
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -65,8 +65,8 @@ void PICFLIPSim::_advect()
 		_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);
 		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
 
-		//_inverseInterpolation(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex);
-		advect(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex, _INDEX);
+		reInterp(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex, _INDEX);
+		_timeInteg->reInterpTimeStep(i, ratio, minIndex, maxIndex);
 	}
 
 	for (int i = 0; i < _gridCount; i++)
@@ -85,6 +85,8 @@ void PICFLIPSim::_advect()
 			// Reset
 			_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
 			_pCount[_INDEX(i, j)] = 0.0f;
+
+			_timeInteg->computeAdvectTimeStep(i, j, _pCount);
 		}
 	}
 }

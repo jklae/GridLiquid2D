@@ -25,3 +25,11 @@ float FixedIntegration::computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i)
 void FixedIntegration::computeGlobalTimeStep(vector<XMFLOAT2>& vel, vector<STATE>& state)
 {
 }
+
+void FixedIntegration::computeAdvectTimeStep(int i, int j, std::vector<float>& pCount)
+{
+}
+
+void FixedIntegration::reInterpTimeStep(int i, DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex)
+{
+}
