@@ -15,6 +15,8 @@ public:
 	void reInterpTimeStep(DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i) override;
 
 private:
+	ReverseInterpolation reInterp;
+
 	std::vector<float> _tempStep;
 	std::vector<float> _gridTimeStep;
 	std::vector<float> _particleTimeStep;

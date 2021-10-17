@@ -10,6 +10,7 @@ public:
 	void setFlipRatio(int value);
 
 private:
+	ReverseInterpolation reInterp;
 
 	std::vector<DirectX::XMFLOAT2> _oldVel;
 	std::vector<DirectX::XMFLOAT2> _tempVel;
@@ -26,7 +27,5 @@ private:
 	void _project();
 
 	void _updateParticlePos() override;
-
-	void _inverseInterpolation(DirectX::XMFLOAT2 data, std::vector<DirectX::XMFLOAT2>& temp, DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex);
 };
 

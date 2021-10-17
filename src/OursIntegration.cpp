@@ -54,6 +54,5 @@ void OursIntegration::computeAdvectTimeStep(std::vector<float>& pCount, int i, i
 
 void OursIntegration::reInterpTimeStep(DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i)
 {
-	ReverseInterpolation reInterp;
 	reInterp(_particleTimeStep[i], _tempStep, ratio, minIndex, maxIndex, _INDEX);
 }
