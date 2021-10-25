@@ -40,7 +40,11 @@ void GridFluidSim::_initialize()
 			else if ((N + 1) / 2 - offset < i //
 				&& (i < (N + 1) / 2 + offset + 1)
 				&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
-				&& (j < (N)))            //
+				&& (j < (N)))
+			//else if ((N + 1) / 3 - offset < i //
+			//	&& (i < (N + 1) / 2 + 1)
+			//	&& (2 < j)  //((N + 1) / 2 - offset < j)     
+			//	&& (j < (N) - offset))            //
 			{
 				_gridState.push_back(STATE::FLUID);
 			}
@@ -328,7 +332,6 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 	switch (_gridState[i])
 	{
 	case STATE::FLUID:
-		
 		switch (_timeInteg->getGroup(_gridVelocity[i]))
 		{
 		default:
@@ -347,14 +350,6 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 			break;
 		}
-
-		/*if (magnitude > 0.5f && magnitude < 1.0f)
-			return XMFLOAT4(0.8f, 1.0f, 0.0f, 1.0f);
-		else if (magnitude >= 1.0f)
-			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-		else
-			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);*/
-
 		break;
 
 	case STATE::BOUNDARY:

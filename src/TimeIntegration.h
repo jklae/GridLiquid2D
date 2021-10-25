@@ -24,6 +24,6 @@ protected:
 	float _cflCondition(float magnitude);
 
 private:
-	static constexpr float _cflConstant = 0.5f;
+	static constexpr float _cflConstant = 0.2f;
 };
 
