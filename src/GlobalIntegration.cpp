@@ -12,6 +12,11 @@ GlobalIntegration::~GlobalIntegration()
 {
 }
 
+int GlobalIntegration::getGroup()
+{
+	return 0;
+}
+
 float GlobalIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
 	return _timeStep;

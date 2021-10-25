@@ -9,6 +9,11 @@ KoikeIntegration::~KoikeIntegration()
 {
 }
 
+int KoikeIntegration::getGroup()
+{
+	return 1;
+}
+
 float KoikeIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
 	return 0.0f;

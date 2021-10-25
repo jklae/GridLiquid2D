@@ -12,6 +12,11 @@ FixedIntegration::~FixedIntegration()
 {
 }
 
+int FixedIntegration::getGroup()
+{
+	return 0;
+}
+
 float FixedIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
 	return _timeStep;

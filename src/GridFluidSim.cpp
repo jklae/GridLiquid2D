@@ -323,11 +323,24 @@ float GridFluidSim::_interpolation(float value1, float value2, float ratio)
 
 XMFLOAT4 GridFluidSim::_getColor(int i)
 {
+	assert(_timeInteg != nullptr);
+
 	float magnitude;
 	switch (_gridState[i])
 	{
 	case STATE::FLUID:
 		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
+
+		switch (_timeInteg->getGroup())
+		{
+		default:
+			return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
+			break;
+
+		case 1:
+			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+			break;
+		}
 
 		/*if (magnitude > 0.5f && magnitude < 1.0f)
 			return XMFLOAT4(0.8f, 1.0f, 0.0f, 1.0f);
@@ -336,7 +349,6 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 		else
 			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);*/
 
-		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;
 
 	case STATE::BOUNDARY:

@@ -20,6 +20,11 @@ OursIntegration::~OursIntegration()
 {
 }
 
+int OursIntegration::getGroup()
+{
+	return 0;
+}
+
 float OursIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
 	return _gridTimeStep[_INDEX(i, j)];
