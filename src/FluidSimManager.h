@@ -12,6 +12,7 @@
 // These include TimeIntegration.h.
 #include "FixedIntegration.h"
 #include "GlobalIntegration.h"
+#include "KoikeIntegration.h"
 #include "OursIntegration.h"
 
 class FluidSimManager : public ISimulation

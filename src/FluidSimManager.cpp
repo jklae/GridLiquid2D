@@ -17,6 +17,7 @@ FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 
 	_timeInteg.push_back(new FixedIntegration(0.01f, _index));
 	_timeInteg.push_back(new GlobalIntegration(0.02f, _index));
+	_timeInteg.push_back(new KoikeIntegration(0.02f, _index));
 	_timeInteg.push_back(new OursIntegration(0.02f, _index));
 
 	_setSimTimeInteg(0);
@@ -402,11 +403,16 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 		case static_cast<int>(_COM::KOIKE_RADIO) :
 		{
+			_setSimTimeInteg(2);
+			dxapp->resetSimulationState();
+			dxapp->update();
+			dxapp->draw();
+			_simTime = 0;
 		}
 		break;
 		case static_cast<int>(_COM::OURS_RADIO) :
 		{
-			_setSimTimeInteg(2);
+			_setSimTimeInteg(3);
 			dxapp->resetSimulationState();
 			dxapp->update();
 			dxapp->draw();
