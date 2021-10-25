@@ -15,7 +15,8 @@ EulerLiquidSim::~EulerLiquidSim()
 
 void EulerLiquidSim::_update()
 {
-	//_timeInteg->initialize(_gridVelocity, _gridState);
+	assert(_timeInteg != nullptr);
+	_timeInteg->computeGlobalTimeStep(_gridVelocity, _gridState);
 
 	_force();
 
@@ -31,7 +32,7 @@ void EulerLiquidSim::_update()
 void EulerLiquidSim::_force()
 {
 	assert(_timeInteg != nullptr);
-	float dt = 0.01f;
+	float dt;
 
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -40,6 +41,7 @@ void EulerLiquidSim::_force()
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
+				dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)], i, j);
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
 			else
@@ -48,14 +50,13 @@ void EulerLiquidSim::_force()
 			}
 		}
 	}
-	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
 }
 
 void EulerLiquidSim::_advect()
 {
 	assert(_timeInteg != nullptr);
-	float dt = 0.01f;
+	float dt;
 
 	int N = _gridCount - 2;
 
@@ -86,6 +87,7 @@ void EulerLiquidSim::_advect()
 			if (magnitude > eps)
 				dt = 0.01f / magnitude;*/
 
+			dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)], i, j);
 
 			XMFLOAT2 backPos =
 				XMFLOAT2(
@@ -102,7 +104,6 @@ void EulerLiquidSim::_advect()
 			_gridVelocity[_INDEX(i, j)] = _velocityInterpolation(backPos, oldVelocity);
 		}
 	}
-	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
 }
 
@@ -155,7 +156,6 @@ void EulerLiquidSim::_project()
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
 	}
-	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
 
 }
@@ -163,10 +163,12 @@ void EulerLiquidSim::_project()
 void EulerLiquidSim::_updateParticlePos()
 {
 	assert(_timeInteg != nullptr);
-	float dt = 0.01f;
+	float dt;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
+		dt = _timeInteg->computeParticleTimeStep(_particleVelocity[i], i);
+
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 		_particlePosition[i] += _particleVelocity[i] * dt;

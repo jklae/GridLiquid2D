@@ -14,6 +14,8 @@ public:
 	void computeAdvectTimeStep(std::vector<float>& pCount, int i, int j) override;
 	void reInterpTimeStep(DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i) override;
 
+	//DirectX::XMFLOAT2 synchronize(std::vector<DirectX::XMFLOAT2>& vel, int standard, );
+
 private:
 	ReverseInterpolation reInterp;
 

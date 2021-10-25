@@ -115,6 +115,8 @@ void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 
 void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
+	_setFreeSurface(vec);
+
 	int N = _gridCount - 2;
 
 	// (x, 0) (x, yMax+1)
