@@ -12,7 +12,7 @@ FixedIntegration::~FixedIntegration()
 {
 }
 
-int FixedIntegration::getGroup()
+int FixedIntegration::getGroup(XMFLOAT2 vel)
 {
 	return 0;
 }

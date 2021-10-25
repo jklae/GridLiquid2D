@@ -17,7 +17,7 @@ FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 
 	_timeInteg.push_back(new FixedIntegration(0.01f, _index));
 	_timeInteg.push_back(new GlobalIntegration(0.02f, _index));
-	_timeInteg.push_back(new KoikeIntegration(0.02f, _index));
+	_timeInteg.push_back(new KoikeIntegration(0.01f, _index));
 	_timeInteg.push_back(new OursIntegration(0.02f, _index));
 
 	_setSimTimeInteg(0);

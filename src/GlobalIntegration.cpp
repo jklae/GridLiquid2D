@@ -12,7 +12,7 @@ GlobalIntegration::~GlobalIntegration()
 {
 }
 
-int GlobalIntegration::getGroup()
+int GlobalIntegration::getGroup(XMFLOAT2 vel)
 {
 	return 0;
 }

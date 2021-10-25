@@ -71,22 +71,6 @@ void EulerLiquidSim::_advect()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			/*if (magnitude > 0.5f && magnitude < 1.0f)
-				dt = 0.02f;
-			else if (magnitude >= 1.0f)
-				dt = 0.01f;
-			else
-				dt = 0.04f;*/
-
-			/*if (magnitude >= 0.5f)
-				dt = 0.01f;
-			else
-				dt = 0.01f;*/
-
-			/*float eps = 0.000001f;
-			if (magnitude > eps)
-				dt = 0.01f / magnitude;*/
-
 			dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)], i, j);
 
 			XMFLOAT2 backPos =

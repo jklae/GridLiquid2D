@@ -7,7 +7,7 @@ public:
 	FixedIntegration(float timeStep, GridData& index);
 	~FixedIntegration() override;
 
-	int getGroup() override;
+	int getGroup(DirectX::XMFLOAT2 vel) override;
 	float computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j) override;
 	float computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i) override;
 	void computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state) override;

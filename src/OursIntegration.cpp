@@ -20,7 +20,7 @@ OursIntegration::~OursIntegration()
 {
 }
 
-int OursIntegration::getGroup()
+int OursIntegration::getGroup(XMFLOAT2 vel)
 {
 	return 0;
 }

@@ -325,13 +325,11 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 {
 	assert(_timeInteg != nullptr);
 
-	float magnitude;
 	switch (_gridState[i])
 	{
 	case STATE::FLUID:
-		magnitude = sqrtf(powf(_gridVelocity[i].x, 2.0f) + powf(_gridVelocity[i].y, 2.0f));
-
-		switch (_timeInteg->getGroup())
+		
+		switch (_timeInteg->getGroup(_gridVelocity[i]))
 		{
 		default:
 			return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
@@ -339,6 +337,14 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 
 		case 1:
 			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+			break;
+
+		case 2:
+			return XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+			break;
+
+		case 3:
+			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
 			break;
 		}
 
