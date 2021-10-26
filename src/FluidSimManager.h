@@ -63,11 +63,6 @@ private:
 
 	bool _drawFlag[3] = { true, true, false };
 
-	void _setDrawFlag(FLAG flagType, bool flag);
-	bool _getDrawFlag(FLAG flagType);
-
-	void _setSimTimeInteg(int timeIntegIndex);
-
 	wchar_t wBuffer[5];
 	wchar_t* _int2wchar(int value);
 
@@ -75,5 +70,13 @@ private:
 	int _simFrame = 0;
 
 	GridData _index;
+
+
+	void _setDrawFlag(FLAG flagType, bool flag);
+	bool _getDrawFlag(FLAG flagType);
+
+	void _setSimTimeInteg(int timeIntegIndex);
+
+	void _resetSim(DX12App* dxapp);
 };
 

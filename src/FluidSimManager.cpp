@@ -37,6 +37,12 @@ FluidSimManager::~FluidSimManager()
 
 }
 
+wchar_t* FluidSimManager::_int2wchar(int value)
+{
+	_itow(value, wBuffer, 10);
+	return wBuffer;
+}
+
 void FluidSimManager::_setDrawFlag(FLAG flagType, bool flag)
 {
 	int i = static_cast<int>(flagType);
@@ -57,12 +63,14 @@ void FluidSimManager::_setSimTimeInteg(int timeIntegIndex)
 	}
 }
 
-wchar_t* FluidSimManager::_int2wchar(int value)
+void FluidSimManager::_resetSim(DX12App* dxapp)
 {
-	_itow(value, wBuffer, 10);
-	return wBuffer;
+	dxapp->resetSimulationState();
+	dxapp->update();
+	dxapp->draw();
+	_simTime = 0;
+	_simFrame = 0;
 }
-
 
 #pragma region Implementation
 // ################################## Implementation ####################################
@@ -231,11 +239,7 @@ void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTA
 	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), _int2wchar(_scrollPos));
 
 	dynamic_cast<PICFLIPSim*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
-	dxapp->resetSimulationState();
-	dxapp->update();
-	dxapp->draw();
-	_simTime = 0;
-	_simFrame = 0;
+	_resetSim(dxapp);
 }
 
 void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
@@ -284,11 +288,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 		case static_cast<int>(_COM::STOP) :
 		{
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
-			_simFrame = 0;
+			_resetSim(dxapp);
 		}
 		break;
 		case static_cast<int>(_COM::NEXTSTEP) :
@@ -306,11 +306,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		case static_cast<int>(_COM::LIQUID_RADIO) :
 		{
 			_simIndex = 0;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
-			_simFrame = 0;
+			_resetSim(dxapp);
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::INTEG_GROUP)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FIXED_RADIO)), true);
@@ -323,11 +319,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		case static_cast<int>(_COM::GAS_RADIO) :
 		{
 			_simIndex = 1;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
-			_simFrame = 0;
+			_resetSim(dxapp);
 
 			CheckRadioButton(hwnd, static_cast<int>(_COM::FIXED_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::FIXED_RADIO));
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::INTEG_GROUP)), false);
@@ -346,11 +338,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		case static_cast<int>(_COM::EULERIAN_RADIO) :
 		{
 			if (_simIndex > 1) _simIndex = 0;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
-			_simFrame = 0;
+			_resetSim(dxapp);
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STATE_GROUP)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), true);
@@ -366,11 +354,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		case static_cast<int>(_COM::PICFLIP_RADIO) :
 		{
 			_simIndex = 2;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
-			_simFrame = 0;
+			_resetSim(dxapp);
 
 			CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STATE_GROUP)), false);
@@ -397,19 +381,13 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		case static_cast<int>(_COM::FIXED_RADIO) :
 		{
 			_setSimTimeInteg(0);
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
+			_resetSim(dxapp);
 		}
 		break;
 		case static_cast<int>(_COM::GLOBAL_RADIO) :
 		{
 			_setSimTimeInteg(1);
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
+			_resetSim(dxapp);
 		}
 		break;
 		case static_cast<int>(_COM::REINHARDT_RADIO) :
@@ -419,19 +397,13 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		case static_cast<int>(_COM::KOIKE_RADIO) :
 		{
 			_setSimTimeInteg(2);
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
+			_resetSim(dxapp);
 		}
 		break;
 		case static_cast<int>(_COM::OURS_RADIO) :
 		{
 			_setSimTimeInteg(3);
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-			_simTime = 0;
+			_resetSim(dxapp);
 		}
 		break;
 		// #####################
