@@ -376,12 +376,12 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 // ################################## Implementation ####################################
 void GridFluidSim::iUpdate()
 {
-	//float standardTimeStep = 0.01f;
-	//int maxSize = static_cast<int>(standardTimeStep / _timeStep);
-	//for (int i = 0; i < maxSize; i++)
-	//{
+	float timeStep;
+	for (float i = 0; i <= FPS_60; i += timeStep)
+	{
 		_update();
-	//}
+		timeStep = _timeInteg->getTimeStep();
+	}
 
 	//Sleep(_delayTime);
 }

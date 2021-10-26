@@ -31,7 +31,6 @@ void EulerLiquidSim::_update()
 
 void EulerLiquidSim::_force()
 {
-	assert(_timeInteg != nullptr);
 	float dt;
 
 	int N = _gridCount - 2;
@@ -55,7 +54,6 @@ void EulerLiquidSim::_force()
 
 void EulerLiquidSim::_advect()
 {
-	assert(_timeInteg != nullptr);
 	float dt;
 
 	int N = _gridCount - 2;
@@ -146,7 +144,6 @@ void EulerLiquidSim::_project()
 
 void EulerLiquidSim::_updateParticlePos()
 {
-	assert(_timeInteg != nullptr);
 	float dt;
 
 	for (int i = 0; i < _particlePosition.size(); i++)

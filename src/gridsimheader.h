@@ -4,6 +4,8 @@
 
 #include "dx12header.h"
 
+constexpr float FPS_60 = 0.0167f;
+
 enum class FLAG
 {
 	GRID,

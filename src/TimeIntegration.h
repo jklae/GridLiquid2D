@@ -14,8 +14,10 @@ public:
 	virtual void computeAdvectTimeStep(std::vector<float>& pCount, int i, int j) = 0;
 	virtual void reInterpTimeStep( DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i) = 0;
 
+	float getTimeStep();
+
 protected:
-	float _maxTimeStep = 1.0f / 60.0f;
+	float _maxTimeStep = FPS_60;
 	float _maxVelocity = _cflConstant * 60.0f;
 
 	float _timeStep;

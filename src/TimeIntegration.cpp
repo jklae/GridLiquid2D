@@ -6,12 +6,19 @@ using namespace std;
 TimeIntegration::TimeIntegration(float timeStep, GridData& index)
 	:_timeStep(timeStep), _INDEX(index)
 {
-	cout << "maxTimeStep : " << _maxTimeStep << "\nmaxVelocity : " << _maxVelocity << "\n";
+	assert(timeStep <= _maxTimeStep);
+	//cout << "maxTimeStep : " << _maxTimeStep << "\nmaxVelocity : " << _maxVelocity << "\n";
 }
 
 TimeIntegration::~TimeIntegration()
 {
 }
+
+float TimeIntegration::getTimeStep()
+{
+	return _timeStep;
+}
+
 
 float TimeIntegration::_cflCondition(float magnitude)
 {
