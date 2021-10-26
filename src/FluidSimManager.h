@@ -58,7 +58,7 @@ private:
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
 		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO,
 		INTEG_GROUP, FIXED_RADIO, GLOBAL_RADIO, REINHARDT_RADIO, KOIKE_RADIO, OURS_RADIO,
-		TIME_TEXT
+		TIME_TEXT, FRAME_TEXT
 	};
 
 	bool _drawFlag[3] = { true, true, false };
@@ -72,6 +72,7 @@ private:
 	wchar_t* _int2wchar(int value);
 
 	clock_t _simTime = 0;
+	int _simFrame = 0;
 
 	GridData _index;
 };

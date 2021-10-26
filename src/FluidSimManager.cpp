@@ -73,6 +73,7 @@ void FluidSimManager::iUpdate()
 	clock_t endTime = clock();
 	
 	_simTime += endTime - startTime; // ms
+	_simFrame++;
 }
 
 void FluidSimManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
@@ -162,6 +163,10 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		60, 480, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", _int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
 		110, 480, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
+	CreateWindow(L"static", L"frame :", WS_CHILD | WS_VISIBLE,
+		60, 500, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", _int2wchar(_simFrame), WS_CHILD | WS_VISIBLE,
+		110, 500, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
 
 	CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
@@ -188,6 +193,7 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 void FluidSimManager::iWMTimer(HWND hwnd)
 {
 	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), _int2wchar(_simFrame));
 }
 
 void FluidSimManager::iWMDestory(HWND hwnd)
@@ -229,6 +235,7 @@ void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTA
 	dxapp->update();
 	dxapp->draw();
 	_simTime = 0;
+	_simFrame = 0;
 }
 
 void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
@@ -281,6 +288,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->update();
 			dxapp->draw();
 			_simTime = 0;
+			_simFrame = 0;
 		}
 		break;
 		case static_cast<int>(_COM::NEXTSTEP) :
@@ -302,6 +310,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->update();
 			dxapp->draw();
 			_simTime = 0;
+			_simFrame = 0;
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::INTEG_GROUP)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FIXED_RADIO)), true);
@@ -318,6 +327,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->update();
 			dxapp->draw();
 			_simTime = 0;
+			_simFrame = 0;
 
 			CheckRadioButton(hwnd, static_cast<int>(_COM::FIXED_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::FIXED_RADIO));
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::INTEG_GROUP)), false);
@@ -340,6 +350,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->update();
 			dxapp->draw();
 			_simTime = 0;
+			_simFrame = 0;
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STATE_GROUP)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), true);
@@ -359,6 +370,7 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->update();
 			dxapp->draw();
 			_simTime = 0;
+			_simFrame = 0;
 
 			CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STATE_GROUP)), false);
