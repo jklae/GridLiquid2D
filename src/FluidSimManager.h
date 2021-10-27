@@ -5,7 +5,6 @@
 					  // Win32App is required in main().
 
 // These include GridFluidSim.h.
-#include "EulerGasSim.h" 
 #include "EulerLiquidSim.h"
 #include "PICFLIPSim.h"
 
@@ -47,7 +46,7 @@ public:
 private:
 	std::vector<GridFluidSim*> _sim;
 	std::vector<TimeIntegration*> _timeInteg;
-	int _simIndex = 2;
+	int _simIndex = 1;
 	int _scrollPos = 99;
 
 	enum class _COM
