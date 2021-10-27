@@ -16,9 +16,14 @@ int KoikeIntegration::getGroup(XMFLOAT2 vel)
 {
 	float magnitude = sqrtf(powf(vel.x, 2.0f) + powf(vel.y, 2.0f));
 
-	if (magnitude >= 24.0f)
+	/*if (magnitude >= 24.0f)
 		return 1;
 	else if (magnitude > 12.0f && magnitude < 24.0f)
+		return 2;
+	else
+		return 3;*/
+
+	if (magnitude >= 12.0f)
 		return 2;
 	else
 		return 3;
