@@ -3,10 +3,10 @@
 using namespace DirectX;
 using namespace std;
 
-EulerLiquidSim::EulerLiquidSim(GridData& index)
+EulerLiquidSim::EulerLiquidSim(GridData& index, EX ex)
 	:GridFluidSim(index)
 {
-	_initialize();
+	_initialize(ex);
 }
 
 EulerLiquidSim::~EulerLiquidSim()

@@ -21,27 +21,20 @@ void GridFluidSim::setTimeInteg(TimeIntegration* timeInteg)
 	_timeInteg = timeInteg;
 }
 
-void GridFluidSim::_initialize()
+void GridFluidSim::_initialize(EX ex)
 {
-
 	// Set _fluid
 	for (int i = 0; i < _gridCount; i++)
 	{
 		for (int j = 0; j < _gridCount; j++)
 		{
-			_computeGridState(EX::DAM, i, j);
+			_computeGridState(ex, i, j);
 
 			_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
 			_gridDivergence.push_back(0.0f);
 			_gridPressure.push_back(0.0f);
-
-
-			
 		}
-
-
 	}
-
 }
 
 void GridFluidSim::_computeGridState(EX ex, int i, int j)
@@ -49,71 +42,80 @@ void GridFluidSim::_computeGridState(EX ex, int i, int j)
 	int N = _gridCount - 2;
 	int offset = _gridCount / 4;
 
-	if (i == 0 || j == 0
-		|| i == N + 1
-		|| j == N + 1)
+	switch (ex)
 	{
-		_gridState.push_back(STATE::BOUNDARY);
-	}
-	/*else if
-		(
+	case EX::DAM:
+		if (i == 0 || j == 0 
+		|| i == N + 1 || j == N + 1) 
+		{ 
+			_gridState.push_back(STATE::BOUNDARY); 
+		}
+		else if ((N + 1) / 3 - offset < i 
+			&& (i < (N + 1) / 2 + 1)
+			&& (2 < j)  //((N + 1) / 2 - offset < j)     
+			&& (j < (N) - offset))            
+		{
+			_gridState.push_back(STATE::FLUID);
+		}
+		else 
+		{ 
+			_gridState.push_back(STATE::AIR); 
+		}
+		break;
+
+	case EX::DROP1:
+		if (i == 0 || j == 0 
+		|| i == N + 1 || j == N + 1) 
+		{ 
+			_gridState.push_back(STATE::BOUNDARY); 
+		}
+		else if ((N + 1) / 2 - offset < i 
+			&& (i < (N + 1) / 2 + offset + 1)
+			&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
+			&& (j < (N)))
+		{
+			_gridState.push_back(STATE::FLUID);
+		}
+		else
+		{
+			_gridState.push_back(STATE::AIR);
+		}
+		break;
+
+	case EX::DROP2:
+		if (i == 0 || j == 0 
+		|| i == N + 1 || j == N + 1)
+		{
+			_gridState.push_back(STATE::BOUNDARY);
+		}
+		else if
 			(
-				(8 > i)
-				&& (i > 0)
+				(
+					((N + 1) / 2 - offset > i)
+					&& (i > 0)
 
-				||
+					||
 
-				(i > N - 8)
-				&&
-				(i < N)
+					(i > (N + 1) / 2 + offset + 1)
+					&&
+					(i < N + 1)
+					)
+
+				&& ((N + 1) / 2 < j)
+				&& (j < N)
+
 				)
-			&& (N - 2 - 14 < j)
-			&& (j < (N - 2))
-			)*/
-	else if
-		(
-			(
-				((N + 1) / 2 - offset > i)
-				&& (i > 0)
+		{
+			_gridState.push_back(STATE::FLUID);
+		}
+		else
+		{
+			_gridState.push_back(STATE::AIR);
+		}
+		break;
 
-				||
-
-				(i > (N + 1) / 2 + offset + 1)
-				&&
-				(i < N + 1)
-				)
-
-			&& ((N + 1) / 2 < j)
-			&& (j < N)
-
-			)
-	{
-		_gridState.push_back(STATE::FLUID);
 	}
-
-	// drop liquid
-	//else if ((N + 1) / 2 - offset < i //
-	//	&& (i < (N + 1) / 2 + offset + 1)
-	//	&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
-	//	&& (j < (N)))
-
-	// dam break
-	//else if ((N + 1) / 3 - offset < i //
-	//	&& (i < (N + 1) / 2 + 1)
-	//	&& (2 < j)  //((N + 1) / 2 - offset < j)     
-	//	&& (j < (N) - offset))            //
-
-	/*else if (i == (N + 1) / 2 - offset
-		|| j == (N + 1) / 2 - offset
-		|| i == (N + 1) / 2 + offset
-		|| j == (N + 1) / 2 + offset)
-	{
-		_gridState.push_back(STATE::SURFACE);
-	}*/
-	else
-	{
-		_gridState.push_back(STATE::AIR);
-	}
+	
 }
 
 void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
@@ -432,7 +434,7 @@ void GridFluidSim::iUpdate()
 	//Sleep(_delayTime);
 }
 
-void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
+void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer, EX ex)
 {
 	_gridState.clear();
 	_gridPressure.clear();
@@ -444,7 +446,7 @@ void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
 	_particlePosition.clear();
 	_particleVelocity.clear();
 
-	_initialize();
+	_initialize(ex);
 	iCreateObjectParticle(constantBuffer);
 }
 

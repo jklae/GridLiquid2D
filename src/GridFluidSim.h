@@ -13,7 +13,7 @@ public:
 #pragma region Implementation
 	// ################################## Implementation ####################################
 	void iUpdate();
-	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer);
+	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer, EX ex);
 
 	std::vector<Vertex> iGetVertice();
 	std::vector<unsigned int> iGetIndice();
@@ -28,7 +28,6 @@ public:
 
 protected:
 	enum class _VALUE { MIN, MAX };
-
 	GridData& _INDEX;
 
 	// Grid
@@ -58,7 +57,7 @@ protected:
 
 	virtual void _update() = 0;
 
-	virtual void _initialize();
+	virtual void _initialize(EX ex);
 	void _computeGridState(EX ex, int i, int j);
 
 	// ---
