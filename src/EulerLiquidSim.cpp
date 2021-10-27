@@ -146,7 +146,16 @@ void EulerLiquidSim::_project()
 
 void EulerLiquidSim::_updateParticlePos()
 {
+	int N = _gridCount - 2;
 	float dt;
+
+	// 0.5f is the correct value.
+	// But we assign a value of 1.0f to minmax for boundary conditions.
+	// By doing this, the velocity of the boundary is not affected by the interpolation of the particle velocity.
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 1.1f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 1.1f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 1.1f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 1.1f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -155,5 +164,11 @@ void EulerLiquidSim::_updateParticlePos()
 		// 2. 3.
 		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
 		_particlePosition[i] += _particleVelocity[i] * dt;
+
+		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
+		else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
+
+		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
+		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
 	}
 }

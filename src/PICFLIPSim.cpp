@@ -164,7 +164,6 @@ void PICFLIPSim::_project()
 
 void PICFLIPSim::_updateParticlePos()
 {
-	assert(_timeInteg != nullptr);
 	float dt;
 
 	int N = _gridCount - 2;
@@ -174,11 +173,12 @@ void PICFLIPSim::_updateParticlePos()
 	}
 
 	// 0.5f is the correct value.
-	// However, 0.5f is too 'correct', which causes particles to stick at the edges. (velocity is zero)
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;//1.3f;
-	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f; //1.3f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f; //1.3f;
-	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f; //1.3f;
+	// But we assign a value of 1.0f to minmax for boundary conditions.
+	// By doing this, the velocity of the boundary is not affected by the interpolation of the particle velocity.
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 1.1f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 1.1f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 1.1f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 1.1f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
