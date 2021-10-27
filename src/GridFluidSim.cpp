@@ -37,10 +37,45 @@ void GridFluidSim::_initialize()
 			{
 				_gridState.push_back(STATE::BOUNDARY);
 			}
-			else if ((N + 1) / 2 - offset < i //
-				&& (i < (N + 1) / 2 + offset + 1)
-				&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
-				&& (j < (N)))
+			/*else if
+				(
+					(
+						(8 > i)
+						&& (i > 0)
+
+						||
+
+						(i > N - 8)
+						&&
+						(i < N)
+						)
+					&& (N - 2 - 14 < j)
+					&& (j < (N - 2))
+					)*/
+
+			else if 
+				(
+					(
+						((N + 1) / 2 - offset > i)
+						&& (i > 0)
+
+						||
+					
+						(i > (N + 1) / 2 + offset + 1)
+						&&
+						(i < N + 1 )
+					)
+					&& ((N + 1) / 2 < j)
+					&& (j < N)
+				)
+
+			// drop liquid
+			//else if ((N + 1) / 2 - offset < i //
+			//	&& (i < (N + 1) / 2 + offset + 1)
+			//	&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
+			//	&& (j < (N)))
+
+			// dam break
 			//else if ((N + 1) / 3 - offset < i //
 			//	&& (i < (N + 1) / 2 + 1)
 			//	&& (2 < j)  //((N + 1) / 2 - offset < j)     
@@ -48,13 +83,13 @@ void GridFluidSim::_initialize()
 			{
 				_gridState.push_back(STATE::FLUID);
 			}
-			else if (i == (N + 1) / 2 - offset
+			/*else if (i == (N + 1) / 2 - offset
 				|| j == (N + 1) / 2 - offset
 				|| i == (N + 1) / 2 + offset
 				|| j == (N + 1) / 2 + offset)
 			{
 				_gridState.push_back(STATE::SURFACE);
-			}
+			}*/
 			else
 			{
 				_gridState.push_back(STATE::AIR);
@@ -119,8 +154,6 @@ void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 
 void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
-	_setFreeSurface(vec);
-
 	int N = _gridCount - 2;
 
 	// (x, 0) (x, yMax+1)
@@ -412,12 +445,12 @@ vector<Vertex> GridFluidSim::iGetVertice()
 	vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) }));
 
 	int N = _gridCount - 2;
-	for (int i = 1; i <= N; i++)
+	for (int i = 0; i < _gridCount; i++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int j = 0; j < _gridCount; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 1.0f , x.y + _gridVelocity[_INDEX(i, j)].y * 1.0f };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 0.5f , x.y + _gridVelocity[_INDEX(i, j)].y * 0.5f };
 			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -2.0f) }));
 			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -2.0f) }));
 		}
@@ -433,7 +466,8 @@ vector<unsigned int> GridFluidSim::iGetIndice()
 	indices.push_back(0); indices.push_back(2); indices.push_back(3);
 
 	int N = _gridCount - 2;
-	for (int i = 0; i <= N * N * 2; i++)
+									// The number of lines needs to be doubled because it needs "position" and "direction".
+	for (int i = 0; i <= _gridCount * _gridCount * 2; i++)
 	{
 		indices.push_back(i);
 	}
