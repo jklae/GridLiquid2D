@@ -117,12 +117,14 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"button", L"Velcoity : OFF ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		150, 60, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::VELOCITY_BTN), hInstance, NULL);
 
-	CreateWindow(L"button", L"State", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-		30, 100, 220, 50, hwnd, reinterpret_cast<HMENU>(_COM::STATE_GROUP), hInstance, NULL);
-	/*CreateWindow(L"button", L"Liquid", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
-		60, 117, 70, 25, hwnd, reinterpret_cast<HMENU>(_COM::LIQUID_RADIO), hInstance, NULL);
-	CreateWindow(L"button", L"Gas", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		140, 117, 70, 25, hwnd, reinterpret_cast<HMENU>(_COM::GAS_RADIO), hInstance, NULL);*/
+	CreateWindow(L"button", L"Example", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+		30, 100, 220, 50, hwnd, reinterpret_cast<HMENU>(_COM::EX_GROUP), hInstance, NULL);
+	CreateWindow(L"button", L"Dam", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+		50, 117, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::DAM_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Drop1", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		105, 117, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::DROP1_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Drop2", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		170, 117, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::DROP2_RADIO), hInstance, NULL);
 	
 	CreateWindow(L"button", L"Solver", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 		30, 160, 220, 50, hwnd, reinterpret_cast<HMENU>(_COM::SOLVER_GROUP), hInstance, NULL);
@@ -176,7 +178,7 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		110, 500, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
 
-	CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::DAM_RADIO), static_cast<int>(_COM::DROP2_RADIO), static_cast<int>(_COM::DROP1_RADIO));
 	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::PICFLIP_RADIO));
 	CheckRadioButton(hwnd, static_cast<int>(_COM::FIXED_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::FIXED_RADIO));
 
@@ -187,9 +189,6 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), false);
 	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), false);
 	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), false);
-
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), false);
 
 	SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 	SetScrollPos(scroll, SB_CTL, _scrollPos, TRUE);
@@ -302,14 +301,22 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		// #####################
 
 		// ### State radio buttons ###
-		case static_cast<int>(_COM::LIQUID_RADIO) :
+		case static_cast<int>(_COM::DAM_RADIO) :
 		{
-			
+			_ex = EX::DAM;
+			_resetSim(dxapp);
 		}
 		break;
-		case static_cast<int>(_COM::GAS_RADIO) :
+		case static_cast<int>(_COM::DROP1_RADIO) :
 		{
-			
+			_ex = EX::DROP1;
+			_resetSim(dxapp);
+		}
+		break; 
+		case static_cast<int>(_COM::DROP2_RADIO) :
+		{
+			_ex = EX::DROP2;
+			_resetSim(dxapp);
 		}
 		break;
 		// #####################
