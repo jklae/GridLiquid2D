@@ -170,39 +170,59 @@ void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
 	int N = _gridCount - 2;
-
-	// (x, 0) (x, yMax+1)
 	for (int i = 1; i <= N; i++)
 	{
-		vec[_INDEX(i, 0)].x = +vec[_INDEX(i, 1)].x;
-		vec[_INDEX(i, 0)].y = -vec[_INDEX(i, 1)].y;
+		for (int j = 1; j <= N; j++)
+		{
+			if ( ((_gridState[_INDEX(i - 1, j)] == STATE::BOUNDARY) && (vec[_INDEX(i, j)].x < EPS_FLOAT))
+				||
+				((_gridState[_INDEX(i + 1, j)] == STATE::BOUNDARY) && (vec[_INDEX(i, j)].x > EPS_FLOAT)) )
+			{
+				vec[_INDEX(i, j)].x = 0.0f;
+			}
 
-		vec[_INDEX(i, N + 1)].x = +vec[_INDEX(i, N)].x;
-		vec[_INDEX(i, N + 1)].y = -vec[_INDEX(i, N)].y;
+			if (((_gridState[_INDEX(i, j - 1)] == STATE::BOUNDARY) && (vec[_INDEX(i, j)].y < EPS_FLOAT))
+				||
+				((_gridState[_INDEX(i, j + 1)] == STATE::BOUNDARY) && (vec[_INDEX(i, j)].y > EPS_FLOAT)))
+			{
+				vec[_INDEX(i, j)].y = 0.0f;
+			}
+		}
 	}
 
-	// (0, y) (xMax+1, y)
-	for (int j = 1; j <= N; j++)
-	{
-		vec[_INDEX(0, j)].x = -vec[_INDEX(1, j)].x;
-		vec[_INDEX(0, j)].y = +vec[_INDEX(1, j)].y;
 
-		vec[_INDEX(N + 1, j)].x = -vec[_INDEX(N, j)].x;
-		vec[_INDEX(N + 1, j)].y = +vec[_INDEX(N, j)].y;
-	}
+	//// (x, 0) (x, yMax+1)
+	//for (int i = 1; i <= N; i++)
+	//{
+	//	vec[_INDEX(i, 0)].x = +vec[_INDEX(i, 1)].x;
+	//	vec[_INDEX(i, 0)].y = -vec[_INDEX(i, 1)].y;
 
-	// (0, 0)
-	vec[_INDEX(0, 0)].x = vec[_INDEX(0, 1)].x;
-	vec[_INDEX(0, 0)].y = vec[_INDEX(1, 0)].y;
-	// (0, yCount)
-	vec[_INDEX(0, N + 1)].x = vec[_INDEX(0, N)].x;
-	vec[_INDEX(0, N + 1)].y = vec[_INDEX(1, N + 1)].y ;
-	// (xCount, 0)
-	vec[_INDEX(N + 1, 0)].x = vec[_INDEX(N + 1, 1)].x;
-	vec[_INDEX(N + 1, 0)].y = vec[_INDEX(N, 0)].y;
-	// (xCount, yCount)
-	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
-	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
+	//	vec[_INDEX(i, N + 1)].x = +vec[_INDEX(i, N)].x;
+	//	vec[_INDEX(i, N + 1)].y = -vec[_INDEX(i, N)].y;
+	//}
+
+	//// (0, y) (xMax+1, y)
+	//for (int j = 1; j <= N; j++)
+	//{
+	//	vec[_INDEX(0, j)].x = -vec[_INDEX(1, j)].x;
+	//	vec[_INDEX(0, j)].y = +vec[_INDEX(1, j)].y;
+
+	//	vec[_INDEX(N + 1, j)].x = -vec[_INDEX(N, j)].x;
+	//	vec[_INDEX(N + 1, j)].y = +vec[_INDEX(N, j)].y;
+	//}
+
+	//// (0, 0)
+	//vec[_INDEX(0, 0)].x = vec[_INDEX(0, 1)].x;
+	//vec[_INDEX(0, 0)].y = vec[_INDEX(1, 0)].y;
+	//// (0, yCount)
+	//vec[_INDEX(0, N + 1)].x = vec[_INDEX(0, N)].x;
+	//vec[_INDEX(0, N + 1)].y = vec[_INDEX(1, N + 1)].y ;
+	//// (xCount, 0)
+	//vec[_INDEX(N + 1, 0)].x = vec[_INDEX(N + 1, 1)].x;
+	//vec[_INDEX(N + 1, 0)].y = vec[_INDEX(N, 0)].y;
+	//// (xCount, yCount)
+	//vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
+	//vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
 }
 
 void GridFluidSim::_setBoundary(std::vector<float>& scalar)
