@@ -59,6 +59,7 @@ protected:
 	virtual void _update() = 0;
 
 	virtual void _initialize();
+	void _computeGridState(EX ex, int i, int j);
 
 	// ---
 
