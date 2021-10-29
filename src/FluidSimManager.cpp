@@ -14,9 +14,9 @@ FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 	_sim.push_back(new EulerLiquidSim(_index, _ex));
 	_sim.push_back(new PICFLIPSim(_index, _ex));
 
-	_timeInteg.push_back(new FixedIntegration(0.003f, _index));
+	_timeInteg.push_back(new FixedIntegration(0.005f, _index));
 	_timeInteg.push_back(new GlobalIntegration(0.0167f, _index));
-	_timeInteg.push_back(new KoikeIntegration(0.01f, _index));
+	_timeInteg.push_back(new KoikeIntegration(0.0167f, _index));
 	_timeInteg.push_back(new OursIntegration(0.0167f, _index));
 
 	_setSimTimeInteg(0);

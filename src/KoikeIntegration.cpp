@@ -32,12 +32,18 @@ int KoikeIntegration::getGroup(XMFLOAT2 vel)
 
 float KoikeIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
-	return _timeStep;
+	if (getGroup(vel) == 2)
+		return _timeStep / 2.0f;
+	else
+		return _timeStep;
 }
 
 float KoikeIntegration::computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i)
 {
-	return _timeStep;
+	if (getGroup(vel) == 2)
+		return _timeStep / 2.0f;
+	else
+		return _timeStep;
 }
 
 void KoikeIntegration::computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state)
