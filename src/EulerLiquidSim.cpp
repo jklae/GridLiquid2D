@@ -132,17 +132,6 @@ void EulerLiquidSim::_project()
 		_setBoundary(_gridPressure);
 	}
 
-	/*for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			cout << _gridPressure[_INDEX(i, j)] << ", ";
-		}
-		cout << endl;
-	}
-	cout << endl;
-	cout << endl;*/
-
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)

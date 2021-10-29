@@ -35,6 +35,14 @@ void GridFluidSim::_initialize(EX ex)
 			_gridPressure.push_back(0.0f);
 		}
 	}
+
+	/*for (int i = 0; i < _gridCount; i++)
+	{
+		for (int j = 0; j < _gridCount; j++)
+		{
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y = 30.0f;
+		}
+	}*/
 }
 
 void GridFluidSim::_computeGridState(EX ex, int i, int j)
@@ -73,6 +81,10 @@ void GridFluidSim::_computeGridState(EX ex, int i, int j)
 			&& (i < (N + 1) / 2 + offset + 1)
 			&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
 			&& (j < (N)))
+		//else if ((N + 1) / 2 - offset < i 
+		//	&& (i < (N))
+		//	&& ((N + 1) / 2 - offset < j)  //((N + 1) / 2 - offset < j)     
+		//	&& (j < (N + 1) / 2 + offset))
 		{
 			_gridState.push_back(STATE::FLUID);
 		}

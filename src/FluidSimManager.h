@@ -69,7 +69,7 @@ private:
 	int _simFrame = 0;
 
 	GridData _index;
-	EX _ex = EX::DROP1;
+	EX _ex = EX::DROP2;
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
