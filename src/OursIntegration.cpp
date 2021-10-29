@@ -20,9 +20,18 @@ OursIntegration::~OursIntegration()
 {
 }
 
+int OursIntegration::getIterNum()
+{
+	return 1;
+}
+
 int OursIntegration::getGroup(XMFLOAT2 vel)
 {
 	return 0;
+}
+
+void OursIntegration::setGroup(DirectX::XMFLOAT2 vel)
+{
 }
 
 float OursIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)

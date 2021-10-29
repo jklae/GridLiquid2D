@@ -7,7 +7,10 @@ public:
 	KoikeIntegration(float timeStep, GridData& index);
 	~KoikeIntegration() override;
 
+	int getIterNum() override;
 	int getGroup(DirectX::XMFLOAT2 vel) override;
+	void setGroup(DirectX::XMFLOAT2 vel) override;
+
 	float computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j) override;
 	float computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i) override;
 	void computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state) override;
@@ -16,6 +19,7 @@ public:
 	void reInterpTimeStep(DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i) override;
 
 private:
+	std::vector<int> _groupNum;
 
 };
 

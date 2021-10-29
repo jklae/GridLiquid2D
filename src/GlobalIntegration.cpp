@@ -12,6 +12,11 @@ GlobalIntegration::~GlobalIntegration()
 {
 }
 
+int GlobalIntegration::getIterNum()
+{
+	return 1;
+}
+
 int GlobalIntegration::getGroup(XMFLOAT2 vel)
 {
 	return 0;
@@ -49,12 +54,4 @@ void GlobalIntegration::computeGlobalTimeStep(vector<XMFLOAT2>& vel, std::vector
 	cout << "TimeStep : "  << timestep << ", Mag : " << maxMag << endl;
 
 	_timeStep = timestep;
-}
-
-void GlobalIntegration::computeAdvectTimeStep(std::vector<float>& pCount, int i, int j)
-{
-}
-
-void GlobalIntegration::reInterpTimeStep(DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i)
-{
 }

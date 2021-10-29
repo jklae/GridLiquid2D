@@ -46,7 +46,7 @@ public:
 private:
 	std::vector<GridFluidSim*> _sim;
 	std::vector<TimeIntegration*> _timeInteg;
-	int _simIndex = 0;
+	int _simIndex = 1;
 	int _scrollPos = 99;
 
 	enum class _COM

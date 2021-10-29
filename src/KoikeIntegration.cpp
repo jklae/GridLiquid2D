@@ -6,10 +6,19 @@ using namespace std;
 KoikeIntegration::KoikeIntegration(float timeStep, GridData& index)
 	:TimeIntegration(timeStep, index)
 {
+	int gCount = index.gridCount;
+	int gSize = gCount * gCount;
+
+	_groupNum.assign(gSize, -1);
 }
 
 KoikeIntegration::~KoikeIntegration()
 {
+}
+
+int KoikeIntegration::getIterNum()
+{
+	return 1;
 }
 
 int KoikeIntegration::getGroup(XMFLOAT2 vel)
@@ -30,20 +39,21 @@ int KoikeIntegration::getGroup(XMFLOAT2 vel)
 	
 }
 
+void KoikeIntegration::setGroup(DirectX::XMFLOAT2 vel)
+{
+}
+
 float KoikeIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
-	if (getGroup(vel) == 2)
-		return _timeStep / 2.0f;
-	else
+	//if (getGroup(vel) == 2)
+	//	return _timeStep / 2.0f;
+	//else
 		return _timeStep;
 }
 
 float KoikeIntegration::computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i)
 {
-	if (getGroup(vel) == 2)
-		return _timeStep / 2.0f;
-	else
-		return _timeStep;
+	return _timeStep;
 }
 
 void KoikeIntegration::computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state)

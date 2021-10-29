@@ -7,7 +7,10 @@ public:
 	OursIntegration(float timeStep, GridData& index);
 	~OursIntegration() override;
 
+	int getIterNum() override;
 	int getGroup(DirectX::XMFLOAT2 vel) override;
+	void setGroup(DirectX::XMFLOAT2 vel) override;
+
 	float computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j) override;
 	float computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i) override;
 	void computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state) override;
