@@ -17,6 +17,8 @@ public:
 	virtual void computeAdvectTimeStep(std::vector<float>& pCount, int i, int j) = 0;
 	virtual void reInterpTimeStep( DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i) = 0;
 
+	virtual bool isValidGroup(int iter, int i, int j) = 0;
+
 	float getTimeStep();
 
 protected:

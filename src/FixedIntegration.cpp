@@ -12,11 +12,6 @@ FixedIntegration::~FixedIntegration()
 {
 }
 
-int FixedIntegration::getIterNum()
-{
-	return 1;
-}
-
 int FixedIntegration::getGroup(int i)
 {
 	return 0;

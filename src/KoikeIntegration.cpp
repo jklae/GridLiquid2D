@@ -100,3 +100,15 @@ void KoikeIntegration::computeAdvectTimeStep(std::vector<float>& pCount, int i, 
 void KoikeIntegration::reInterpTimeStep(DirectX::XMFLOAT2 ratio, DirectX::XMINT2 minIndex, DirectX::XMINT2 maxIndex, int i)
 {
 }
+
+bool KoikeIntegration::isValidGroup(int iter, int i, int j)
+{
+	int gNum = (j != -1) ? getGroup(_INDEX(i, j)) : getGroup(i);
+
+	return 
+		(
+			iter >= pow(2, gNum - 1) 
+		&& 
+			iter < pow(2, gNum)
+		);
+}
