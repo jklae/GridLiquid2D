@@ -8,8 +8,9 @@ public:
 	~KoikeIntegration() override;
 
 	int getIterNum() override;
-	int getGroup(DirectX::XMFLOAT2 vel) override;
-	void setGroup(DirectX::XMFLOAT2 vel) override;
+	int _computeGroup(DirectX::XMFLOAT2 vel);
+	int getGroup(int i) override;
+	void setGroup(std::vector<DirectX::XMFLOAT2>& vel) override;
 
 	float computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j) override;
 	float computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i) override;

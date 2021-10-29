@@ -17,7 +17,7 @@ int FixedIntegration::getIterNum()
 	return 1;
 }
 
-int FixedIntegration::getGroup(XMFLOAT2 vel)
+int FixedIntegration::getGroup(int i)
 {
 	return 0;
 }

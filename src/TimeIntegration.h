@@ -8,8 +8,8 @@ public:
 	virtual ~TimeIntegration();
 
 	virtual int getIterNum() = 0;
-	virtual int getGroup(DirectX::XMFLOAT2 vel) = 0;
-	virtual void setGroup(DirectX::XMFLOAT2 vel) = 0;
+	virtual int getGroup(int i) = 0;
+	virtual void setGroup(std::vector<DirectX::XMFLOAT2>& vel) = 0;
 
 	virtual float computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j) = 0;
 	virtual float computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i) = 0;

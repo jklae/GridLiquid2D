@@ -18,10 +18,10 @@ KoikeIntegration::~KoikeIntegration()
 
 int KoikeIntegration::getIterNum()
 {
-	return 1;
+	return 3;
 }
 
-int KoikeIntegration::getGroup(XMFLOAT2 vel)
+int KoikeIntegration::_computeGroup(DirectX::XMFLOAT2 vel)
 {
 	float magnitude = sqrtf(powf(vel.x, 2.0f) + powf(vel.y, 2.0f));
 
@@ -35,25 +35,40 @@ int KoikeIntegration::getGroup(XMFLOAT2 vel)
 	if (magnitude >= 12.0f)
 		return 2;
 	else
-		return 3;
-	
+		return 1;
 }
 
-void KoikeIntegration::setGroup(DirectX::XMFLOAT2 vel)
+int KoikeIntegration::getGroup(int i)
 {
+	return _groupNum[i];
+}
+
+void KoikeIntegration::setGroup(std::vector<DirectX::XMFLOAT2>& vel)
+{
+	int N = _INDEX.gridCount - 2;
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			_groupNum[_INDEX(i, j)] = _computeGroup(vel[_INDEX(i, j)]);
+		}
+	}
 }
 
 float KoikeIntegration::computeGridTimeStep(DirectX::XMFLOAT2 vel, int i, int j)
 {
-	//if (getGroup(vel) == 2)
-	//	return _timeStep / 2.0f;
-	//else
+	if (getGroup(_INDEX(i, j)) == 2)
+		return _timeStep / 2.0f;
+	else
 		return _timeStep;
 }
 
 float KoikeIntegration::computeParticleTimeStep(DirectX::XMFLOAT2 vel, int i)
 {
-	return _timeStep;
+	if (_computeGroup(vel) == 2)
+		return _timeStep / 2.0f;
+	else
+		return _timeStep;
 }
 
 void KoikeIntegration::computeGlobalTimeStep(std::vector<DirectX::XMFLOAT2>& vel, std::vector<STATE>& state)

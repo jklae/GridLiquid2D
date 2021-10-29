@@ -26,6 +26,6 @@ private:
 	void _force();
 	void _project();
 
-	void _updateParticlePos() override;
+	void _updateParticlePos();
 };
 

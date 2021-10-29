@@ -17,7 +17,7 @@ int GlobalIntegration::getIterNum()
 	return 1;
 }
 
-int GlobalIntegration::getGroup(XMFLOAT2 vel)
+int GlobalIntegration::getGroup(int i)
 {
 	return 0;
 }

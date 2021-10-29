@@ -7,6 +7,21 @@ PICFLIPSim::PICFLIPSim(GridData& index, EX ex)
 	:GridFluidSim(index)
 {
 	_initialize(ex);
+
+	int arr[5] = { 1, 2, 2, 1, 3 };
+
+	for (int i = 1; i < 8; i++)
+	{
+		cout << i << "th : ";
+		for (int j = 0; j < 5; j++)
+		{
+			if (i < pow(2, arr[j])) // (i >= pow(2, arr[j] - 1) && i < pow(2, arr[j]))
+				cout << arr[j] << ", ";
+			else
+				cout << "., ";
+		}
+		cout << endl;
+	}
 }
 
 PICFLIPSim::~PICFLIPSim()
@@ -35,17 +50,22 @@ void PICFLIPSim::_update()
 {
 	assert(_timeInteg != nullptr);
 	_timeInteg->computeGlobalTimeStep(_gridVelocity, _gridState);
+	_timeInteg->setGroup(_gridVelocity);
 
-	_advect();
+	int iterNum = _timeInteg->getIterNum();
+	for (int i = 0; i < iterNum; i++)
+	{
+		_advect();
 
-	_force();
-	_setBoundary(_gridVelocity);
-	_setFreeSurface(_gridVelocity);
+		_force();
+		_setBoundary(_gridVelocity);
+		_setFreeSurface(_gridVelocity);
 
-	_project();
-	// Solve boundary condition again due to numerical errors in previous step
-	_setBoundary(_gridVelocity);
-	_updateParticlePos();
+		_project();
+		// Solve boundary condition again due to numerical errors in previous step
+		_setBoundary(_gridVelocity);
+		_updateParticlePos();
+	}
 
 	_paintGrid();
 }
