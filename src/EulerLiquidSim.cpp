@@ -3,37 +3,44 @@
 using namespace DirectX;
 using namespace std;
 
-EulerLiquidSim::EulerLiquidSim(float timeStep)
-	:GridFluidSim::GridFluidSim(timeStep)
+EulerLiquidSim::EulerLiquidSim(GridData& index, EX ex)
+	:GridFluidSim(index)
 {
+	_initialize(ex);
 }
 
 EulerLiquidSim::~EulerLiquidSim()
 {
 }
 
-void EulerLiquidSim::update()
+void EulerLiquidSim::_update()
 {
-	_force(_timeStep);
+	assert(_timeInteg != nullptr);
+	_timeInteg->computeGlobalTimeStep(_gridVelocity, _gridState);
+
+	_force();
 
 	//_project();
-	_advect(_timeStep);
+	_advect();
 
 	_project();
-	_updateParticlePos(_timeStep);
+	_updateParticlePos();
 	_paintGrid();
 
 }
 
-void EulerLiquidSim::_force(float dt)
+void EulerLiquidSim::_force()
 {
+	float dt;
+
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
+				dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)], i, j);
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
 			else
@@ -42,12 +49,14 @@ void EulerLiquidSim::_force(float dt)
 			}
 		}
 	}
-	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 }
 
-void EulerLiquidSim::_advect(float dt)
+void EulerLiquidSim::_advect()
 {
+	float dt;
+
 	int N = _gridCount - 2;
 
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
@@ -61,24 +70,7 @@ void EulerLiquidSim::_advect(float dt)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			float magnitude = sqrtf(powf(_gridVelocity[_INDEX(i, j)].x, 2.0f) + powf(_gridVelocity[_INDEX(i, j)].y, 2.0f));
-
-			/*if (magnitude > 0.5f && magnitude < 1.0f)
-				dt = 0.02f;
-			else if (magnitude >= 1.0f)
-				dt = 0.01f;
-			else
-				dt = 0.04f;*/
-
-			/*if (magnitude >= 0.5f)
-				dt = 0.01f;
-			else
-				dt = 0.01f;*/
-
-			/*float eps = 0.000001f;
-			if (magnitude > eps)
-				dt = 0.01f / magnitude;*/
-
+			dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)], i, j);
 
 			XMFLOAT2 backPos =
 				XMFLOAT2(
@@ -95,8 +87,8 @@ void EulerLiquidSim::_advect(float dt)
 			_gridVelocity[_INDEX(i, j)] = _velocityInterpolation(backPos, oldVelocity);
 		}
 	}
-	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 }
 
 void EulerLiquidSim::_project()
@@ -125,7 +117,7 @@ void EulerLiquidSim::_project()
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+				if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 				{
 					_gridPressure[_INDEX(i, j)] =
 						(
@@ -148,7 +140,35 @@ void EulerLiquidSim::_project()
 			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
 	}
-	_setFreeSurface(_gridVelocity);
 	_setBoundary(_gridVelocity);
 
+}
+
+void EulerLiquidSim::_updateParticlePos()
+{
+	int N = _gridCount - 2;
+	float dt;
+
+	// 0.5f is the correct value.
+	// But we assign a value of 1.0f to minmax for boundary conditions.
+	// By doing this, the velocity of the boundary is not affected by the interpolation of the particle velocity.
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
+
+	for (int i = 0; i < _particlePosition.size(); i++)
+	{
+		dt = _timeInteg->computeParticleTimeStep(_particleVelocity[i], i);
+
+		// 2. 3.
+		_particleVelocity[i] = _velocityInterpolation(_particlePosition[i], _gridVelocity);
+		_particlePosition[i] += _particleVelocity[i] * dt;
+
+		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
+		else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
+
+		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
+		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
+	}
 }

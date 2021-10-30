@@ -4,15 +4,15 @@
 class EulerLiquidSim : public GridFluidSim
 {
 public:
-	EulerLiquidSim(float timeStep);
+	EulerLiquidSim(GridData& index, EX ex);
 	~EulerLiquidSim() override;
 
-	void update() override;
-
 private:
-
-	void _force(float dt);
-	void _advect(float dt);
+	void _update() override;
+	void _force();
+	void _advect();
 	void _project();
+
+	void _updateParticlePos();
 };
 

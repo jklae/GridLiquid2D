@@ -5,10 +5,21 @@ using namespace DirectX;
 using namespace std;
 
 
-
-FluidSimManager::FluidSimManager(vector<GridFluidSim*>& sim)
+FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 {
-	_sim = sim;
+	// 2 are boundaries.
+	_index.gridCount = x + 2;
+	_index.particleCount = 4;
+
+	_sim.push_back(new EulerLiquidSim(_index, _ex));
+	_sim.push_back(new PICFLIPSim(_index, _ex));
+
+	_timeInteg.push_back(new FixedIntegration(0.005f, _index));
+	_timeInteg.push_back(new GlobalIntegration(0.0167f, _index));
+	_timeInteg.push_back(new KoikeIntegration(0.0167f, _index));
+	_timeInteg.push_back(new OursIntegration(0.0167f, _index));
+
+	_setSimTimeInteg(0);
 }
 
 FluidSimManager::~FluidSimManager()
@@ -18,6 +29,17 @@ FluidSimManager::~FluidSimManager()
 		delete sim;
 	}
 
+	for (auto& tInteg : _timeInteg)
+	{
+		delete tInteg;
+	}
+
+}
+
+wchar_t* FluidSimManager::_int2wchar(int value)
+{
+	_itow(value, wBuffer, 10);
+	return wBuffer;
 }
 
 void FluidSimManager::_setDrawFlag(FLAG flagType, bool flag)
@@ -32,12 +54,22 @@ bool FluidSimManager::_getDrawFlag(FLAG flagType)
 	return _drawFlag[i];
 }
 
-wchar_t* FluidSimManager::int2wchar(int value)
+void FluidSimManager::_setSimTimeInteg(int timeIntegIndex)
 {
-	_itow(value, wBuffer, 10);
-	return wBuffer;
+	for (auto& sim : _sim)
+	{
+		sim->setTimeInteg(_timeInteg[timeIntegIndex]);
+	}
 }
 
+void FluidSimManager::_resetSim(DX12App* dxapp)
+{
+	dxapp->resetSimulationState();
+	dxapp->update();
+	dxapp->draw();
+	_simTime = 0;
+	_simFrame = 0;
+}
 
 #pragma region Implementation
 // ################################## Implementation ####################################
@@ -46,13 +78,14 @@ void FluidSimManager::iUpdate()
 	clock_t startTime = clock();
 	_sim[_simIndex]->iUpdate();
 	clock_t endTime = clock();
-
-	time = endTime - startTime; // ms
+	
+	_simTime += endTime - startTime; // ms
+	_simFrame++;
 }
 
 void FluidSimManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
 {
-	_sim[_simIndex]->iResetSimulationState(constantBuffer);
+	_sim[_simIndex]->iResetSimulationState(constantBuffer, _ex);
 }
 
 vector<Vertex> FluidSimManager::iGetVertice()
@@ -84,12 +117,14 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"button", L"Velcoity : OFF ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		150, 60, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::VELOCITY_BTN), hInstance, NULL);
 
-	CreateWindow(L"button", L"State", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-		30, 100, 220, 50, hwnd, reinterpret_cast<HMENU>(_COM::STATE_GROUP), hInstance, NULL);
-	CreateWindow(L"button", L"Liquid", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
-		60, 117, 70, 25, hwnd, reinterpret_cast<HMENU>(_COM::LIQUID_RADIO), hInstance, NULL);
-	CreateWindow(L"button", L"Gas", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		140, 117, 70, 25, hwnd, reinterpret_cast<HMENU>(_COM::GAS_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Example", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+		30, 100, 220, 50, hwnd, reinterpret_cast<HMENU>(_COM::EX_GROUP), hInstance, NULL);
+	CreateWindow(L"button", L"Dam", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+		50, 117, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::DAM_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Drop1", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		105, 117, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::DROP1_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Drop2", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		170, 117, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::DROP2_RADIO), hInstance, NULL);
 	
 	CreateWindow(L"button", L"Solver", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 		30, 160, 220, 50, hwnd, reinterpret_cast<HMENU>(_COM::SOLVER_GROUP), hInstance, NULL);
@@ -100,42 +135,60 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CreateWindow(L"static", L"PIC  :", WS_CHILD | WS_VISIBLE,
 		60, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_TEXT), hInstance, NULL);
-	CreateWindow(L"static", int2wchar(100 - _scrollPos), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", _int2wchar(100 - _scrollPos), WS_CHILD | WS_VISIBLE,
 		100, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_RATIO), hInstance, NULL);
 	CreateWindow(L"static", L"FLIP :", WS_CHILD | WS_VISIBLE,
-		150, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_TEXT), hInstance, NULL);
-	CreateWindow(L"static", int2wchar(_scrollPos), WS_CHILD | WS_VISIBLE,
-		190, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_RATIO), hInstance, NULL);
+		155, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_TEXT), hInstance, NULL);
+	CreateWindow(L"static", _int2wchar(_scrollPos), WS_CHILD | WS_VISIBLE,
+		195, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_RATIO), hInstance, NULL);
 	HWND scroll =
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
 			40, 250, 200, 20, hwnd, reinterpret_cast<HMENU>(_COM::RATIO_BAR), hInstance, NULL);
 
+	CreateWindow(L"button", L"Time Integration", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+		30, 290, 220, 79, hwnd, reinterpret_cast<HMENU>(_COM::INTEG_GROUP), hInstance, NULL);
+	CreateWindow(L"button", L"Fixed", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+		42, 309, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::FIXED_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Global", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		107, 309, 65, 25, hwnd, reinterpret_cast<HMENU>(_COM::GLOBAL_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Koike", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		177, 309, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::KOIKE_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Reinhardt", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		42, 335, 90, 25, hwnd, reinterpret_cast<HMENU>(_COM::REINHARDT_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Ours", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		140, 335, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::OURS_RADIO), hInstance, NULL);
+
 	CreateWindow(L"button", L"¡«", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		65, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::PLAY), hInstance, NULL);
+		65, 385, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::PLAY), hInstance, NULL);
 	CreateWindow(L"button", L"¡á", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		115, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::STOP), hInstance, NULL);
+		115, 385, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::STOP), hInstance, NULL);
 	CreateWindow(L"button", L"¢ºl", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		175, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::NEXTSTEP), hInstance, NULL);
+		165, 385, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::NEXTSTEP), hInstance, NULL);
+
+	CreateWindow(L"button", L"¢Ã Record", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+		88, 430, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::RECORD), hInstance, NULL);
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
-		60, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
-	CreateWindow(L"static", int2wchar(time), WS_CHILD | WS_VISIBLE,
-		110, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
+		60, 480, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", _int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
+		110, 480, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
+	CreateWindow(L"static", L"frame :", WS_CHILD | WS_VISIBLE,
+		60, 500, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+	CreateWindow(L"static", _int2wchar(_simFrame), WS_CHILD | WS_VISIBLE,
+		110, 500, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
 
-	CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
-	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::EULERIAN_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::DAM_RADIO), static_cast<int>(_COM::DROP2_RADIO), static_cast<int>(_COM::DROP2_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::PICFLIP_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::FIXED_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::FIXED_RADIO));
 
 	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
 
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), false);
-
-	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
-	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), false);
+	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), false);
+	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), false);
+	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), false);
+	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), false);
+	//EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), false);
 
 	SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 	SetScrollPos(scroll, SB_CTL, _scrollPos, TRUE);
@@ -145,7 +198,8 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 void FluidSimManager::iWMTimer(HWND hwnd)
 {
-	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), int2wchar(time));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), _int2wchar(_simFrame));
 }
 
 void FluidSimManager::iWMDestory(HWND hwnd)
@@ -179,19 +233,18 @@ void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTA
 	}
 
 	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
-	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), int2wchar(100 - _scrollPos));
-	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), int2wchar(_scrollPos));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), _int2wchar(100 - _scrollPos));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), _int2wchar(_scrollPos));
 
 	dynamic_cast<PICFLIPSim*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
-	dxapp->resetSimulationState();
-	dxapp->update();
-	dxapp->draw();
+	_resetSim(dxapp);
 }
 
 void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
 {
 	switch (LOWORD(wParam))
 	{
+		// ### Top 3 buttons ###
 		case static_cast<int>(_COM::GRID_BTN) :
 		{
 			bool flag = !_getDrawFlag(FLAG::GRID);
@@ -219,7 +272,9 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			dxapp->draw();
 		}
 		break;
+		// #####################
 
+		// ### Execution buttons ###
 		case static_cast<int>(_COM::PLAY) :
 		{
 			updateFlag = !updateFlag;
@@ -229,15 +284,11 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), !updateFlag);
 		}
 		break;
-
 		case static_cast<int>(_COM::STOP) :
 		{
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
+			_resetSim(dxapp);
 		}
 		break;
-
 		case static_cast<int>(_COM::NEXTSTEP) :
 		{
 			if (!updateFlag)
@@ -247,32 +298,34 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 			}
 		}
 		break;
+		// #####################
 
-		case static_cast<int>(_COM::LIQUID_RADIO) :
+		// ### State radio buttons ###
+		case static_cast<int>(_COM::DAM_RADIO) :
 		{
-			_simIndex = 0;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
+			_ex = EX::DAM;
+			_resetSim(dxapp);
 		}
 		break;
-		case static_cast<int>(_COM::GAS_RADIO) :
+		case static_cast<int>(_COM::DROP1_RADIO) :
 		{
-			_simIndex = 1;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
+			_ex = EX::DROP1;
+			_resetSim(dxapp);
+		}
+		break; 
+		case static_cast<int>(_COM::DROP2_RADIO) :
+		{
+			_ex = EX::DROP2;
+			_resetSim(dxapp);
 		}
 		break;
+		// #####################
+
+		// ### Solver radio buttons ###
 		case static_cast<int>(_COM::EULERIAN_RADIO) :
 		{
-			if (_simIndex > 1) _simIndex = 0;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), true);
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), true);
+			_simIndex = 0;
+			_resetSim(dxapp);
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), false);
@@ -283,23 +336,48 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 		case static_cast<int>(_COM::PICFLIP_RADIO) :
 		{
-			_simIndex = 2;
-			dxapp->resetSimulationState();
-			dxapp->update();
-			dxapp->draw();
-
-			CheckRadioButton(hwnd, static_cast<int>(_COM::LIQUID_RADIO), static_cast<int>(_COM::GAS_RADIO), static_cast<int>(_COM::LIQUID_RADIO));
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::GAS_RADIO)), false);
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::LIQUID_RADIO)), false);
+			_simIndex = 1;
+			_resetSim(dxapp);
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), true);
-			
 		}
 		break;
+		// #####################
+
+		// ### Time integration radio buttons ###
+		case static_cast<int>(_COM::FIXED_RADIO) :
+		{
+			_setSimTimeInteg(0);
+			_resetSim(dxapp);
+		}
+		break;
+		case static_cast<int>(_COM::GLOBAL_RADIO) :
+		{
+			_setSimTimeInteg(1);
+			_resetSim(dxapp);
+		}
+		break;
+		case static_cast<int>(_COM::REINHARDT_RADIO) :
+		{
+		}
+		break;
+		case static_cast<int>(_COM::KOIKE_RADIO) :
+		{
+			_setSimTimeInteg(2);
+			_resetSim(dxapp);
+		}
+		break;
+		case static_cast<int>(_COM::OURS_RADIO) :
+		{
+			_setSimTimeInteg(3);
+			_resetSim(dxapp);
+		}
+		break;
+		// #####################
 	}
 }
 

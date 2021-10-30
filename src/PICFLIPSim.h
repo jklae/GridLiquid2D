@@ -4,25 +4,28 @@
 class PICFLIPSim : public GridFluidSim
 {
 public:
-	PICFLIPSim(float timeStep);
+	PICFLIPSim(GridData& index, EX ex);
 	~PICFLIPSim() override;
 
 	void setFlipRatio(int value);
 
-	void update() override;
-	void initialize() override;
-
 private:
+	ReverseInterpolation reInterp;
 
 	std::vector<DirectX::XMFLOAT2> _oldVel;
 	std::vector<DirectX::XMFLOAT2> _tempVel;
+	std::vector<float> _tempStep;
 	std::vector<float> _pCount;
 
 	float _flipRatio = 0.99f;
 
-	void _advect();
-	void _force();
-	void _project();
-	void _updateParticlePos(float dt) override;
+	void _initialize(EX ex) override;
+
+	void _update() override;
+	void _advect(int iter);
+	void _force(int iter);
+	void _project(int iter);
+
+	void _updateParticlePos(int iter);
 };
 

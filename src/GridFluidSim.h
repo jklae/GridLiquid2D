@@ -1,21 +1,19 @@
 #pragma once
-#include "dx12header.h"
+#include "gridsimheader.h"
+#include "TimeIntegration.h"
 
 class GridFluidSim
 {
 public:
-	GridFluidSim(float timeStep);
+	GridFluidSim(GridData& index);
 	virtual ~GridFluidSim();
 
-	void setGridDomain(int xCount, int yCount);
-	virtual void initialize();
-
-	virtual void update() = 0;
+	void setTimeInteg(TimeIntegration* timeInteg);
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
 	void iUpdate();
-	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer);
+	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer, EX ex);
 
 	std::vector<Vertex> iGetVertice();
 	std::vector<unsigned int> iGetIndice();
@@ -29,14 +27,11 @@ public:
 	// #######################################################################################
 
 protected:
-	enum class _STATE { FLUID, BOUNDARY, AIR, SURFACE };
 	enum class _VALUE { MIN, MAX };
-	enum class _AXIS { X, Y };
-
-	inline int _INDEX(int i, int j) { return (i + _gridCount * j); };
+	GridData& _INDEX;
 
 	// Grid
-	std::vector<_STATE> _gridState;
+	std::vector<STATE> _gridState;
 	std::vector<DirectX::XMFLOAT2> _gridPosition;
 	std::vector<DirectX::XMFLOAT2> _gridVelocity;
 	std::vector<float> _gridPressure;
@@ -46,10 +41,10 @@ protected:
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
-	float _particleScale = 0.2;
-	int _particleCount = 4;
+	float _particleScale = 0.2f;
+	int _particleCount = 0;
 
-	float _timeStep = 0.0f;
+	TimeIntegration* _timeInteg = nullptr;
 
 	DirectX::XMFLOAT4 _getColor(int i);
 
@@ -57,14 +52,18 @@ protected:
 	void _setBoundary(std::vector<float>& scalar);
 	void _setFreeSurface(std::vector<DirectX::XMFLOAT2>& vec);
 
-	virtual void _updateParticlePos(float dt);
 	void _paintGrid();
+
+	virtual void _update() = 0;
+
+	virtual void _initialize(EX ex);
+	void _computeGridState(EX ex, int i, int j);
 
 	// ---
 
-	int _computeFaceMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
-	int _computeCenterMinMaxIndex(_VALUE vState, _AXIS axis, DirectX::XMFLOAT2 particlePos);
-	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, std::vector<DirectX::XMFLOAT2>& oldvel);
+	DirectX::XMINT2 _computeFaceMinMaxIndex(_VALUE vState, DirectX::XMFLOAT2 particlePos);
+	DirectX::XMINT2 _computeCenterMinMaxIndex(_VALUE vState, DirectX::XMFLOAT2 particlePos);
+	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, const std::vector<DirectX::XMFLOAT2>& oldvel);
 	float _interpolation(float value1, float value2, float ratio);
 };
 

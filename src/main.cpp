@@ -11,18 +11,11 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Simulation init
-    std::vector<GridFluidSim*> sims;
-    sims.push_back(new EulerLiquidSim(0.01f));
-    sims.push_back(new EulerGasSim(0.1f));
-    sims.push_back(new PICFLIPSim(0.01f));
+    int x = 60;
+    int y = 60;
+    float timeStep = 0.01f;
 
-    for (auto& sim : sims)
-    {
-        sim->setGridDomain(60, 20);
-        sim->initialize();
-    }
-
-    FluidSimManager* fluidsim = new FluidSimManager(sims);
+    FluidSimManager* fluidsim = new FluidSimManager(x, y, timeStep);
 
     // DirectX init
     DX12App* dxapp = new DX12App();
@@ -31,7 +24,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     // Window init
     Win32App winApp(800, 800);
     winApp.initialize(hInstance, dxapp, fluidsim);
-    //winApp.initDirectX(dxapp, fluidsim);
 
     return winApp.run();
 }

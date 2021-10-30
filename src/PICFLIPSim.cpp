@@ -3,9 +3,25 @@
 using namespace DirectX;
 using namespace std;
 
-PICFLIPSim::PICFLIPSim(float timeStep)
-	:GridFluidSim::GridFluidSim(timeStep)
+PICFLIPSim::PICFLIPSim(GridData& index, EX ex)
+	:GridFluidSim(index)
 {
+	_initialize(ex);
+
+	int arr[5] = { 1, 2, 2, 1, 3 };
+
+	for (int i = 1; i < 8; i++)
+	{
+		cout << i << "th : ";
+		for (int j = 0; j < 5; j++)
+		{
+			if (i < pow(2, arr[j])) // (i >= pow(2, arr[j] - 1) && i < pow(2, arr[j]))
+				cout << arr[j] << ", ";
+			else
+				cout << "., ";
+		}
+		cout << endl;
+	}
 }
 
 PICFLIPSim::~PICFLIPSim()
@@ -17,9 +33,9 @@ void PICFLIPSim::setFlipRatio(int value)
 	_flipRatio = static_cast<float>(value) / 100.0f;
 }
 
-void PICFLIPSim::initialize()
+void PICFLIPSim::_initialize(EX ex)
 {
-	GridFluidSim::initialize();
+	GridFluidSim::_initialize(ex);
 
 	size_t vSize = static_cast<size_t>(_gridCount) * static_cast<size_t>(_gridCount);
 
@@ -28,107 +44,105 @@ void PICFLIPSim::initialize()
 	_pCount.assign(vSize, 0.0f);
 }
 
-void PICFLIPSim::update()
+
+
+void PICFLIPSim::_update()
 {
-	_advect();
+	assert(_timeInteg != nullptr);
+	_timeInteg->computeGlobalTimeStep(_gridVelocity, _gridState);
+	_timeInteg->setGroup(_gridVelocity);
 
-	_force();
-	_setFreeSurface(_gridVelocity);
-	_setBoundary(_gridVelocity);
+	int iterNum = _timeInteg->getIterNum();
+	for (int i = 1; i <= iterNum; i++)
+	{
+		_advect(i);
 
-	_project();
-	// Solve boundary condition again due to numerical errors in previous step
-	_setFreeSurface(_gridVelocity);
-	_setBoundary(_gridVelocity);
-	_updateParticlePos(0.0f);
+		_force(i);
+		_setBoundary(_gridVelocity);
+		_setFreeSurface(_gridVelocity);
+
+		_project(i);
+		// Solve boundary condition again due to numerical errors in previous step
+		_setBoundary(_gridVelocity);
+		_updateParticlePos(i);
+	}
 
 	_paintGrid();
 }
 
-void PICFLIPSim::_force()
+void PICFLIPSim::_advect(int iter)
 {
+	int N = _gridCount - 2;
+	for (int i = 0; i < _particlePosition.size(); i++)
+	{
+		XMFLOAT2 pos = _particlePosition[i];
+
+		XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
+		XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
+
+		XMFLOAT2 ratio = pos - _gridPosition[_INDEX(minIndex.x, minIndex.y)];
+		_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - ratio.x) * (1.0f - ratio.y);
+		_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - ratio.x) * ratio.y;
+		_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);
+		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
+
+		reInterp(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex, _INDEX);
+		_timeInteg->reInterpTimeStep(ratio, minIndex, maxIndex, i);
+	}
+
+	for (int i = 0; i < _gridCount; i++)
+	{
+		for (int j = 0; j < _gridCount; j++)
+		{
+
+				if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
+				{
+					_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / _pCount[_INDEX(i, j)];
+				}
+				else
+				{
+					_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+				}
+
+				_timeInteg->computeAdvectTimeStep(_pCount, i, j);
+
+				// Reset
+				_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+				_pCount[_INDEX(i, j)] = 0.0f;
+
+		
+
+		}
+	}
+}
+
+void PICFLIPSim::_force(int iter)
+{
+	assert(_timeInteg != nullptr);
+	float dt;
+
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+
+			if (_timeInteg->isValidGroup(iter, i, j))
 			{
-				_gridVelocity[_INDEX(i, j)].y -= 9.8f * _timeStep;
+
+				if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+				{
+					dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)], i, j);
+					_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
+				}
+
 			}
 		}
 	}
 }
 
-void PICFLIPSim::_advect()
-{
-	int N = _gridCount - 2;
 
-
-
-	for (int i = 0; i < _particlePosition.size(); i++)
-	{
-		XMFLOAT2 pos = _particlePosition[i];
-
-		int minXIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::X, pos);
-		int minYIndex = _computeCenterMinMaxIndex(_VALUE::MIN, _AXIS::Y, pos);
-		int maxXIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::X, pos);
-		int maxYIndex = _computeCenterMinMaxIndex(_VALUE::MAX, _AXIS::Y, pos);
-
-		float xRatio = (pos.x - _gridPosition[_INDEX(minXIndex, minYIndex)].x);
-		float yRatio = (pos.y - _gridPosition[_INDEX(minXIndex, minYIndex)].y);
-
-		float minMin_minMax_X = _particleVelocity[i].x * (1.0f - xRatio);
-		float maxMin_maxMax_X = _particleVelocity[i].x * xRatio;
-		float minMinX = minMin_minMax_X * (1.0f - yRatio);
-		float minMaxX = minMin_minMax_X * yRatio;
-		float maxMinX = maxMin_maxMax_X * (1.0f - yRatio);
-		float maxMaxX = maxMin_maxMax_X * yRatio;
-
-		float minMin_minMax_Y = _particleVelocity[i].y * (1.0f - xRatio);
-		float maxMin_maxMax_Y = _particleVelocity[i].y * xRatio;
-		float minMinY = minMin_minMax_Y * (1.0f - yRatio);
-		float minMaxY = minMin_minMax_Y * yRatio;
-		float maxMinY = maxMin_maxMax_Y * (1.0f - yRatio);
-		float maxMaxY = maxMin_maxMax_Y * yRatio;
-
-
-		_tempVel[_INDEX(minXIndex, minYIndex)] += { minMinX, minMinY };
-		_pCount[_INDEX(minXIndex, minYIndex)] += (1.0f - xRatio) * (1.0f - yRatio);
-
-		_tempVel[_INDEX(minXIndex, maxYIndex)] += { minMaxX, minMaxY };
-		_pCount[_INDEX(minXIndex, maxYIndex)] += (1.0f - xRatio) * yRatio;
-
-		_tempVel[_INDEX(maxXIndex, minYIndex)] += { maxMinX, maxMinY };
-		_pCount[_INDEX(maxXIndex, minYIndex)] += xRatio * (1.0f - yRatio);
-
-		_tempVel[_INDEX(maxXIndex, maxYIndex)] += { maxMaxX, maxMaxY };
-		_pCount[_INDEX(maxXIndex, maxYIndex)] += xRatio * yRatio;
-
-	}
-
-	float eps = 0.000001f;
-	for (int i = 0; i < _gridCount; i++)
-	{
-		for (int j = 0; j < _gridCount; j++)
-		{
-			if (_pCount[_INDEX(i, j)] > eps)
-			{
-				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / _pCount[_INDEX(i, j)];
-			}
-			else
-			{
-				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
-			}
-
-			// Reset
-			_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
-			_pCount[_INDEX(i, j)] = 0.0f;
-		}
-	}
-}
-
-void PICFLIPSim::_project()
+void PICFLIPSim::_project(int iter)
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -138,6 +152,7 @@ void PICFLIPSim::_project()
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x
 					+ _gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y);
+
 			_gridPressure[_INDEX(i, j)] = 0.0f;
 		}
 	}
@@ -151,7 +166,8 @@ void PICFLIPSim::_project()
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				if (_gridState[_INDEX(i, j)] == _STATE::FLUID)
+
+				if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 				{
 					_gridPressure[_INDEX(i, j)] =
 						(
@@ -171,15 +187,21 @@ void PICFLIPSim::_project()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
-			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
+
+			if (_timeInteg->isValidGroup(iter, i, j))
+			{
+				_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
+				_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
+			}
 		}
 	}
 
 }
 
-void PICFLIPSim::_updateParticlePos(float dt)
+void PICFLIPSim::_updateParticlePos(int iter)
 {
+	float dt;
+
 	int N = _gridCount - 2;
 	for (int i = 0; i < _oldVel.size(); i++)
 	{
@@ -187,24 +209,30 @@ void PICFLIPSim::_updateParticlePos(float dt)
 	}
 
 	// 0.5f is the correct value.
-	// However, 0.5f is too 'correct', which causes particles to stick at the edges. (velocity is zero)
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 1.3f;
-	float yMin = _gridPosition[_INDEX(0, 0)].y + 1.3f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 1.3f;
-	float xMin = _gridPosition[_INDEX(0, 0)].x + 1.3f;
+	// But we assign a value of 1.0f to minmax for boundary conditions.
+	// By doing this, the velocity of the boundary is not affected by the interpolation of the particle velocity.
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-		XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
+		if (_timeInteg->isValidGroup(iter, i, -1))
+		{
+			dt = _timeInteg->computeParticleTimeStep(_particleVelocity[i], i);
 
-		_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
-		_particlePosition[i] += _particleVelocity[i] * _timeStep;
+			XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
+			XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
 
-		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
-		else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
+			_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
+			_particlePosition[i] += _particleVelocity[i] * dt;
 
-		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
-		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
+			if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
+			else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
+
+			if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
+			else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
+		}
 	}
 }

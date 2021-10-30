@@ -4,15 +4,20 @@
 #include "Win32App.h" // This includes ISimulation.h.
 					  // Win32App is required in main().
 
-#include "GridFluidSim.h"
-#include "EulerGasSim.h" 
+// These include GridFluidSim.h.
 #include "EulerLiquidSim.h"
 #include "PICFLIPSim.h"
+
+// These include TimeIntegration.h.
+#include "FixedIntegration.h"
+#include "GlobalIntegration.h"
+#include "KoikeIntegration.h"
+#include "OursIntegration.h"
 
 class FluidSimManager : public ISimulation
 {
 public:
-	FluidSimManager(std::vector<GridFluidSim*>& sim);
+	FluidSimManager(int x, int y, float timeStep);
 	~FluidSimManager() override;
 
 
@@ -40,27 +45,37 @@ public:
 
 private:
 	std::vector<GridFluidSim*> _sim;
-	int _simIndex = 0;
+	std::vector<TimeIntegration*> _timeInteg;
+	int _simIndex = 1;
 	int _scrollPos = 99;
 
 	enum class _COM
 	{
 		GRID_BTN, PARTICLE_BTN, VELOCITY_BTN,
-		PLAY, STOP, NEXTSTEP,
-		STATE_GROUP, LIQUID_RADIO, GAS_RADIO,
+		PLAY, STOP, NEXTSTEP, RECORD,
+		EX_GROUP, DAM_RADIO, DROP1_RADIO, DROP2_RADIO,
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
 		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO,
-		TIME_TEXT
+		INTEG_GROUP, FIXED_RADIO, GLOBAL_RADIO, REINHARDT_RADIO, KOIKE_RADIO, OURS_RADIO,
+		TIME_TEXT, FRAME_TEXT
 	};
 
 	bool _drawFlag[3] = { true, true, false };
 
+	wchar_t wBuffer[5];
+	wchar_t* _int2wchar(int value);
+
+	clock_t _simTime = 0;
+	int _simFrame = 0;
+
+	GridData _index;
+	EX _ex = EX::DROP2;
+
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
 
-	wchar_t wBuffer[5];
-	wchar_t* int2wchar(int value);
+	void _setSimTimeInteg(int timeIntegIndex);
 
-	clock_t time = 0;
+	void _resetSim(DX12App* dxapp);
 };
 
