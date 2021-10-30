@@ -63,7 +63,17 @@ void PICFLIP::_advect(int iter)
 		_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);
 		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
 
-		reInterp(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex, _INDEX);
+		XMFLOAT2 minMin_minMax = _particleVelocity[i] * (1.0f - ratio.x);
+		XMFLOAT2 maxMin_maxMax = _particleVelocity[i] * ratio.x;
+		XMFLOAT2 minMin = minMin_minMax * (1.0f - ratio.y);
+		XMFLOAT2 minMax = minMin_minMax * ratio.y;
+		XMFLOAT2 maxMin = maxMin_maxMax * (1.0f - ratio.y);
+		XMFLOAT2 maxMax = maxMin_maxMax * ratio.y;
+
+		_tempVel[_INDEX(minIndex.x, minIndex.y)] += minMin;
+		_tempVel[_INDEX(minIndex.x, maxIndex.y)] += minMax;
+		_tempVel[_INDEX(maxIndex.x, minIndex.y)] += maxMin;
+		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += maxMax;
 	}
 
 	for (int i = 0; i < _gridCount; i++)

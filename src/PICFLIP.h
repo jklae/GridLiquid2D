@@ -10,8 +10,6 @@ public:
 	void setFlipRatio(int value);
 
 private:
-	ReverseInterpolation reInterp;
-
 	std::vector<DirectX::XMFLOAT2> _oldVel;
 	std::vector<DirectX::XMFLOAT2> _tempVel;
 	std::vector<float> _tempStep;
