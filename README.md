@@ -1,7 +1,7 @@
-# EulerianFluids
+# GridLiquids
 ## Overview
 <img src="docs/images/demo.gif" width="80%" height="80%">
-EulerianFluids is a fluid simulation for Eulerian and PIC/FLIP. This simulation is rendered using DXViewer. For more details about DXViewer, see <A href="https://github.com/frostsim/DXViewer">here</A>.
+GridLiquids is a liquid simulation for Eulerian and PIC/FLIP. This simulation is rendered using DXViewer. For more details about DXViewer, see <A href="https://github.com/frostsim/DXViewer">here</A>.
 
 ## Build
 This repo was developed in the following environment:
