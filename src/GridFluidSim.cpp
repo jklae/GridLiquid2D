@@ -36,13 +36,6 @@ void GridFluidSim::_initialize(EX ex)
 		}
 	}
 
-	/*for (int i = 0; i < _gridCount; i++)
-	{
-		for (int j = 0; j < _gridCount; j++)
-		{
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridVelocity[_INDEX(i, j)].y = 30.0f;
-		}
-	}*/
 }
 
 void GridFluidSim::_computeGridState(EX ex, int i, int j)

@@ -112,3 +112,9 @@ bool KoikeIntegration::isValidGroup(int iter, int i, int j)
 			iter < pow(2, gNum)
 		);
 }
+
+
+DirectX::XMINT2 KoikeIntegration::_computeParticleIndex(DirectX::XMFLOAT2 pos)
+{
+	return { static_cast<int>(floor(pos.x - 0.5f)), static_cast<int>(floor(pos.y - 0.5f)) };
+}

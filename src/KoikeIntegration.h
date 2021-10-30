@@ -8,7 +8,6 @@ public:
 	~KoikeIntegration() override;
 
 	int getIterNum() override;
-	int _computeGroup(DirectX::XMFLOAT2 vel);
 	int getGroup(int i) override;
 	void setGroup(std::vector<DirectX::XMFLOAT2>& vel) override;
 
@@ -24,5 +23,7 @@ public:
 private:
 	std::vector<int> _groupNum;
 
+	int _computeGroup(DirectX::XMFLOAT2 vel);
+	DirectX::XMINT2 _computeParticleIndex(DirectX::XMFLOAT2 pos);
 };
 

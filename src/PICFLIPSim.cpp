@@ -218,7 +218,8 @@ void PICFLIPSim::_updateParticlePos(int iter)
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-	
+		if (_timeInteg->isValidGroup(iter, i, -1))
+		{
 			dt = _timeInteg->computeParticleTimeStep(_particleVelocity[i], i);
 
 			XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
@@ -232,6 +233,6 @@ void PICFLIPSim::_updateParticlePos(int iter)
 
 			if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
 			else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
-		
+		}
 	}
 }
