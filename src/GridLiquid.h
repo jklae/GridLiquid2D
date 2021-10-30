@@ -1,11 +1,11 @@
 #pragma once
 #include "gridsimheader.h"
 
-class GridFluidSim
+class GridLiquid
 {
 public:
-	GridFluidSim(GridData& index, float timeStep);
-	virtual ~GridFluidSim();
+	GridLiquid(GridData& index, float timeStep);
+	virtual ~GridLiquid();
 
 #pragma region Implementation
 	// ################################## Implementation ####################################

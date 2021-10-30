@@ -1,10 +1,10 @@
-﻿#include "GridFluidSim.h"
+﻿#include "GridLiquid.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(GridData& index, float timeStep)
+GridLiquid::GridLiquid(GridData& index, float timeStep)
 	:_INDEX(index)
 {
 	_gridCount = _INDEX.gridCount;
@@ -12,12 +12,12 @@ GridFluidSim::GridFluidSim(GridData& index, float timeStep)
 	_timeStep = timeStep;
 }
 
-GridFluidSim::~GridFluidSim()
+GridLiquid::~GridLiquid()
 {
 	
 }
 
-void GridFluidSim::_initialize(EX ex)
+void GridLiquid::_initialize(EX ex)
 {
 	// Set _fluid
 	for (int i = 0; i < _gridCount; i++)
@@ -34,7 +34,7 @@ void GridFluidSim::_initialize(EX ex)
 
 }
 
-void GridFluidSim::_computeGridState(EX ex, int i, int j)
+void GridLiquid::_computeGridState(EX ex, int i, int j)
 {
 	int N = _gridCount - 2;
 	int offset = _gridCount / 4;
@@ -119,7 +119,7 @@ void GridFluidSim::_computeGridState(EX ex, int i, int j)
 	
 }
 
-void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
+void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 {
 	int N = _gridCount - 2;
 
@@ -168,7 +168,7 @@ void GridFluidSim::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 	}
 }
 
-void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
+void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -226,7 +226,7 @@ void GridFluidSim::_setBoundary(std::vector<XMFLOAT2>& vec)
 	//vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
 }
 
-void GridFluidSim::_setBoundary(std::vector<float>& scalar)
+void GridLiquid::_setBoundary(std::vector<float>& scalar)
 {
 	int N = _gridCount - 2;
 
@@ -254,7 +254,7 @@ void GridFluidSim::_setBoundary(std::vector<float>& scalar)
 	scalar[_INDEX(N + 1, N + 1)] = (scalar[_INDEX(N + 1, N)] + scalar[_INDEX(N, N + 1)]) / 2.0f;
 }
 
-void GridFluidSim::_paintGrid()
+void GridLiquid::_paintGrid()
 {
 	int N = _gridCount - 2;
 	// Reset _grid
@@ -317,7 +317,7 @@ void GridFluidSim::_paintGrid()
 // For example, if the scale is 1.0f, the result is (index * 1.0f).
 // But if the scale is 0.5f, the result is (index * 0.5f).
 // The index value should of course be immutable.
-XMINT2 GridFluidSim::_computeFaceMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
+XMINT2 GridLiquid::_computeFaceMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
 {
 	XMFLOAT2 value;
 
@@ -347,7 +347,7 @@ XMINT2 GridFluidSim::_computeFaceMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos
 // ------------------------------------------------------------------
 // _PaintGrid() uses the face as the transition point.
 // _updateParticlePosition() uses the center as the transition point.
-XMINT2 GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
+XMINT2 GridLiquid::_computeCenterMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
 {
 	// 2.
 	switch (vState)
@@ -366,7 +366,7 @@ XMINT2 GridFluidSim::_computeCenterMinMaxIndex(_VALUE vState, XMFLOAT2 particleP
 }
 
 															// For semi-Lagrangian and FLIP
-XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, const vector<XMFLOAT2>& oldvel)
+XMFLOAT2 GridLiquid::_velocityInterpolation(XMFLOAT2 pos, const vector<XMFLOAT2>& oldvel)
 {
 	// 2. 3.
 	XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
@@ -389,12 +389,12 @@ XMFLOAT2 GridFluidSim::_velocityInterpolation(XMFLOAT2 pos, const vector<XMFLOAT
 	);
 }
 
-float GridFluidSim::_interpolation(float value1, float value2, float ratio)
+float GridLiquid::_interpolation(float value1, float value2, float ratio)
 {
 	return value1 * (1.0f - ratio) + value2 * ratio;
 }
 
-XMFLOAT4 GridFluidSim::_getColor(int i)
+XMFLOAT4 GridLiquid::_getColor(int i)
 {
 
 	switch (_gridState[i])
@@ -425,7 +425,7 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 
 #pragma region Implementation
 // ################################## Implementation ####################################
-void GridFluidSim::iUpdate()
+void GridLiquid::iUpdate()
 {
 	//float timeStep;
 	//for (float i = 0; i <= FPS_60; i += timeStep)
@@ -436,7 +436,7 @@ void GridFluidSim::iUpdate()
 	//Sleep(_delayTime);
 }
 
-void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer, EX ex)
+void GridLiquid::iResetSimulationState(vector<ConstantBuffer>& constantBuffer, EX ex)
 {
 	_gridState.clear();
 	_gridPressure.clear();
@@ -452,7 +452,7 @@ void GridFluidSim::iResetSimulationState(vector<ConstantBuffer>& constantBuffer,
 	iCreateObjectParticle(constantBuffer);
 }
 
-vector<Vertex> GridFluidSim::iGetVertice()
+vector<Vertex> GridLiquid::iGetVertice()
 {
 	vector<Vertex> vertices;
 
@@ -476,7 +476,7 @@ vector<Vertex> GridFluidSim::iGetVertice()
 	return vertices;
 }
 
-vector<unsigned int> GridFluidSim::iGetIndice()
+vector<unsigned int> GridLiquid::iGetIndice()
 {
 	std::vector<unsigned int> indices;
 	indices.push_back(0); indices.push_back(1); indices.push_back(2);
@@ -492,12 +492,12 @@ vector<unsigned int> GridFluidSim::iGetIndice()
 	return indices;
 }
 
-int GridFluidSim::iGetObjectCount()
+int GridLiquid::iGetObjectCount()
 {
 	return _gridCount;
 }
 
-void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
+void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	// ###### Create Object ######
 	for (int i = 0; i < _gridCount; i++)
@@ -569,7 +569,7 @@ void GridFluidSim::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 	// ###### ###### ###### ######
 }
 
-void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
+void GridLiquid::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
 {
 	int objectEndIndex = _gridCount * _gridCount;
 	int size = constantBuffer.size();
@@ -595,7 +595,7 @@ void GridFluidSim::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBu
 	}
 }
 
-void GridFluidSim::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i)
+void GridLiquid::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i)
 {
 	int objectEndIndex = _gridCount * _gridCount;
 

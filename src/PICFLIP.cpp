@@ -1,26 +1,26 @@
-#include "PICFLIPSim.h"
+#include "PICFLIP.h"
 
 using namespace DirectX;
 using namespace std;
 
-PICFLIPSim::PICFLIPSim(GridData& index, EX ex, float timeStep)
-	:GridFluidSim(index, timeStep)
+PICFLIP::PICFLIP(GridData& index, EX ex, float timeStep)
+	:GridLiquid(index, timeStep)
 {
 	_initialize(ex);
 }
 
-PICFLIPSim::~PICFLIPSim()
+PICFLIP::~PICFLIP()
 {
 }
 
-void PICFLIPSim::setFlipRatio(int value)
+void PICFLIP::setFlipRatio(int value)
 {
 	_flipRatio = static_cast<float>(value) / 100.0f;
 }
 
-void PICFLIPSim::_initialize(EX ex)
+void PICFLIP::_initialize(EX ex)
 {
-	GridFluidSim::_initialize(ex);
+	GridLiquid::_initialize(ex);
 
 	size_t vSize = static_cast<size_t>(_gridCount) * static_cast<size_t>(_gridCount);
 
@@ -31,7 +31,7 @@ void PICFLIPSim::_initialize(EX ex)
 
 
 
-void PICFLIPSim::_update()
+void PICFLIP::_update()
 {
 	_advect(0);
 
@@ -47,7 +47,7 @@ void PICFLIPSim::_update()
 	_paintGrid();
 }
 
-void PICFLIPSim::_advect(int iter)
+void PICFLIP::_advect(int iter)
 {
 	int N = _gridCount - 2;
 	for (int i = 0; i < _particlePosition.size(); i++)
@@ -88,7 +88,7 @@ void PICFLIPSim::_advect(int iter)
 	}
 }
 
-void PICFLIPSim::_force(int iter)
+void PICFLIP::_force(int iter)
 {
 	float dt = _timeStep;
 
@@ -107,7 +107,7 @@ void PICFLIPSim::_force(int iter)
 }
 
 
-void PICFLIPSim::_project(int iter)
+void PICFLIP::_project(int iter)
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -159,7 +159,7 @@ void PICFLIPSim::_project(int iter)
 
 }
 
-void PICFLIPSim::_updateParticlePos(int iter)
+void PICFLIP::_updateParticlePos(int iter)
 {
 	float dt = _timeStep;
 

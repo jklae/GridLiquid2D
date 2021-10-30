@@ -1,11 +1,11 @@
 #pragma once
-#include "GridFluidSim.h"
+#include "GridLiquid.h"
 
-class PICFLIPSim : public GridFluidSim
+class PICFLIP : public GridLiquid
 {
 public:
-	PICFLIPSim(GridData& index, EX ex, float timeStep);
-	~PICFLIPSim() override;
+	PICFLIP(GridData& index, EX ex, float timeStep);
+	~PICFLIP() override;
 
 	void setFlipRatio(int value);
 

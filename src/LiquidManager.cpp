@@ -1,21 +1,21 @@
-#include "FluidSimManager.h"
+#include "LiquidManager.h"
 
 using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
 
-FluidSimManager::FluidSimManager(int x, int y, float timeStep)
+LiquidManager::LiquidManager(int x, int y, float timeStep)
 {
 	// 2 are boundaries.
 	_index.gridCount = x + 2;
 	_index.particleCount = 4;
 
-	_sim.push_back(new EulerLiquidSim(_index, _ex, FPS_60 / 2.0f));
-	_sim.push_back(new PICFLIPSim(_index, _ex, FPS_60 / 2.0f));
+	_sim.push_back(new Eulerian(_index, _ex, FPS_60 / 2.0f));
+	_sim.push_back(new PICFLIP(_index, _ex, FPS_60 / 2.0f));
 }
 
-FluidSimManager::~FluidSimManager()
+LiquidManager::~LiquidManager()
 {
 	for (auto& sim : _sim)
 	{
@@ -23,25 +23,25 @@ FluidSimManager::~FluidSimManager()
 	}
 }
 
-wchar_t* FluidSimManager::_int2wchar(int value)
+wchar_t* LiquidManager::_int2wchar(int value)
 {
 	_itow(value, wBuffer, 10);
 	return wBuffer;
 }
 
-void FluidSimManager::_setDrawFlag(FLAG flagType, bool flag)
+void LiquidManager::_setDrawFlag(FLAG flagType, bool flag)
 {
 	int i = static_cast<int>(flagType);
 	_drawFlag[i] = flag;
 }
 
-bool FluidSimManager::_getDrawFlag(FLAG flagType)
+bool LiquidManager::_getDrawFlag(FLAG flagType)
 {
 	int i = static_cast<int>(flagType);
 	return _drawFlag[i];
 }
 
-void FluidSimManager::_resetSim(DX12App* dxapp)
+void LiquidManager::_resetSim(DX12App* dxapp)
 {
 	dxapp->resetSimulationState();
 	dxapp->update();
@@ -52,7 +52,7 @@ void FluidSimManager::_resetSim(DX12App* dxapp)
 
 #pragma region Implementation
 // ################################## Implementation ####################################
-void FluidSimManager::iUpdate()
+void LiquidManager::iUpdate()
 {
 	clock_t startTime = clock();
 	_sim[_simIndex]->iUpdate();
@@ -62,32 +62,32 @@ void FluidSimManager::iUpdate()
 	_simFrame++;
 }
 
-void FluidSimManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
+void LiquidManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
 {
 	_sim[_simIndex]->iResetSimulationState(constantBuffer, _ex);
 }
 
-vector<Vertex> FluidSimManager::iGetVertice()
+vector<Vertex> LiquidManager::iGetVertice()
 {
 	return _sim[_simIndex]->iGetVertice();;
 }
 
-vector<unsigned int> FluidSimManager::iGetIndice()
+vector<unsigned int> LiquidManager::iGetIndice()
 {
 	return _sim[_simIndex]->iGetIndice();
 }
 
-int FluidSimManager::iGetObjectCount()
+int LiquidManager::iGetObjectCount()
 {
 	return _sim[_simIndex]->iGetObjectCount();
 }
 
-void FluidSimManager::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
+void LiquidManager::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	_sim[_simIndex]->iCreateObjectParticle(constantBuffer);
 }
 
-void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
+void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 {
 	CreateWindow(L"button", L"Grid : ON ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		90, 30, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::GRID_BTN), hInstance, NULL);
@@ -138,9 +138,6 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"button", L"¢ºl", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		165, 385, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::NEXTSTEP), hInstance, NULL);
 
-	CreateWindow(L"button", L"¢Ã Record", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-		88, 430, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::RECORD), hInstance, NULL);
-
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
 		60, 480, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", _int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
@@ -169,18 +166,18 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	SetTimer(hwnd, 1, 10, NULL);
 }
 
-void FluidSimManager::iWMTimer(HWND hwnd)
+void LiquidManager::iWMTimer(HWND hwnd)
 {
 	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
 	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), _int2wchar(_simFrame));
 }
 
-void FluidSimManager::iWMDestory(HWND hwnd)
+void LiquidManager::iWMDestory(HWND hwnd)
 {
 	KillTimer(hwnd, 1);
 }
 
-void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp)
+void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp)
 {
 	switch (LOWORD(wParam))
 	{
@@ -209,11 +206,11 @@ void FluidSimManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTA
 	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), _int2wchar(100 - _scrollPos));
 	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), _int2wchar(_scrollPos));
 
-	dynamic_cast<PICFLIPSim*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
+	dynamic_cast<PICFLIP*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
 	_resetSim(dxapp);
 }
 
-void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
+void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
 {
 	switch (LOWORD(wParam))
 	{
@@ -337,12 +334,12 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 }
 
 
-void FluidSimManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuffer, int i)
+void LiquidManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuffer, int i)
 {
 	_sim[_simIndex]->iUpdateConstantBuffer(constantBuffer, i);
 }
 
-void FluidSimManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)
+void LiquidManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)
 {
 	_sim[_simIndex]->iDraw(mCommandList, size, indexCount, _drawFlag, i);
 }

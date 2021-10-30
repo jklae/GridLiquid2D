@@ -5,7 +5,7 @@
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 //#endif
 
-#include "FluidSimManager.h" // This includes Win32App.h
+#include "LiquidManager.h" // This includes Win32App.h
 
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
@@ -15,7 +15,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     int y = 60;
     float timeStep = 0.01f;
 
-    FluidSimManager* fluidsim = new FluidSimManager(x, y, timeStep);
+    LiquidManager* liquidman = new LiquidManager(x, y, timeStep);
 
     // DirectX init
     DX12App* dxapp = new DX12App();
@@ -23,7 +23,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     // Window init
     Win32App winApp(800, 800);
-    winApp.initialize(hInstance, dxapp, fluidsim);
+    winApp.initialize(hInstance, dxapp, liquidman);
 
     return winApp.run();
 }

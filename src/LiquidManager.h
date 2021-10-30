@@ -4,17 +4,17 @@
 #include "Win32App.h" // This includes ISimulation.h.
 					  // Win32App is required in main().
 
-// These include GridFluidSim.h.
-#include "EulerLiquidSim.h"
-#include "PICFLIPSim.h"
+// These include GridLiquid.h.
+#include "Eulerian.h"
+#include "PICFLIP.h"
 
 // These include TimeIntegration.h.
 
-class FluidSimManager : public ISimulation
+class LiquidManager : public ISimulation
 {
 public:
-	FluidSimManager(int x, int y, float timeStep);
-	~FluidSimManager() override;
+	LiquidManager(int x, int y, float timeStep);
+	~LiquidManager() override;
 
 
 #pragma region Implementation
@@ -40,14 +40,14 @@ public:
 
 
 private:
-	std::vector<GridFluidSim*> _sim;
+	std::vector<GridLiquid*> _sim;
 	int _simIndex = 1;
 	int _scrollPos = 99;
 
 	enum class _COM
 	{
 		GRID_BTN, PARTICLE_BTN, VELOCITY_BTN,
-		PLAY, STOP, NEXTSTEP, RECORD,
+		PLAY, STOP, NEXTSTEP,
 		EX_GROUP, DAM_RADIO, DROP1_RADIO, DROP2_RADIO,
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
 		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO,
