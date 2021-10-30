@@ -11,15 +11,8 @@ FluidSimManager::FluidSimManager(int x, int y, float timeStep)
 	_index.gridCount = x + 2;
 	_index.particleCount = 4;
 
-	_sim.push_back(new EulerLiquidSim(_index, _ex));
-	_sim.push_back(new PICFLIPSim(_index, _ex));
-
-	_timeInteg.push_back(new FixedIntegration(0.005f, _index));
-	_timeInteg.push_back(new GlobalIntegration(0.0167f, _index));
-	_timeInteg.push_back(new KoikeIntegration(0.0167f, _index));
-	_timeInteg.push_back(new OursIntegration(0.0167f, _index));
-
-	_setSimTimeInteg(0);
+	_sim.push_back(new EulerLiquidSim(_index, _ex, FPS_60 / 2.0f));
+	_sim.push_back(new PICFLIPSim(_index, _ex, FPS_60 / 2.0f));
 }
 
 FluidSimManager::~FluidSimManager()
@@ -28,12 +21,6 @@ FluidSimManager::~FluidSimManager()
 	{
 		delete sim;
 	}
-
-	for (auto& tInteg : _timeInteg)
-	{
-		delete tInteg;
-	}
-
 }
 
 wchar_t* FluidSimManager::_int2wchar(int value)
@@ -52,14 +39,6 @@ bool FluidSimManager::_getDrawFlag(FLAG flagType)
 {
 	int i = static_cast<int>(flagType);
 	return _drawFlag[i];
-}
-
-void FluidSimManager::_setSimTimeInteg(int timeIntegIndex)
-{
-	for (auto& sim : _sim)
-	{
-		sim->setTimeInteg(_timeInteg[timeIntegIndex]);
-	}
 }
 
 void FluidSimManager::_resetSim(DX12App* dxapp)
@@ -145,16 +124,10 @@ void FluidSimManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
 			40, 250, 200, 20, hwnd, reinterpret_cast<HMENU>(_COM::RATIO_BAR), hInstance, NULL);
 
-	CreateWindow(L"button", L"Time Integration", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+	CreateWindow(L"button", L"ion", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
 		30, 290, 220, 79, hwnd, reinterpret_cast<HMENU>(_COM::INTEG_GROUP), hInstance, NULL);
 	CreateWindow(L"button", L"Fixed", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
 		42, 309, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::FIXED_RADIO), hInstance, NULL);
-	CreateWindow(L"button", L"Global", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		107, 309, 65, 25, hwnd, reinterpret_cast<HMENU>(_COM::GLOBAL_RADIO), hInstance, NULL);
-	CreateWindow(L"button", L"Koike", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		177, 309, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::KOIKE_RADIO), hInstance, NULL);
-	CreateWindow(L"button", L"Reinhardt", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		42, 335, 90, 25, hwnd, reinterpret_cast<HMENU>(_COM::REINHARDT_RADIO), hInstance, NULL);
 	CreateWindow(L"button", L"Ours", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
 		140, 335, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::OURS_RADIO), hInstance, NULL);
 
@@ -348,32 +321,14 @@ void FluidSimManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lPar
 		break;
 		// #####################
 
-		// ### Time integration radio buttons ###
+		// ###  radio buttons ###
 		case static_cast<int>(_COM::FIXED_RADIO) :
 		{
-			_setSimTimeInteg(0);
-			_resetSim(dxapp);
-		}
-		break;
-		case static_cast<int>(_COM::GLOBAL_RADIO) :
-		{
-			_setSimTimeInteg(1);
-			_resetSim(dxapp);
-		}
-		break;
-		case static_cast<int>(_COM::REINHARDT_RADIO) :
-		{
-		}
-		break;
-		case static_cast<int>(_COM::KOIKE_RADIO) :
-		{
-			_setSimTimeInteg(2);
 			_resetSim(dxapp);
 		}
 		break;
 		case static_cast<int>(_COM::OURS_RADIO) :
 		{
-			_setSimTimeInteg(3);
 			_resetSim(dxapp);
 		}
 		break;

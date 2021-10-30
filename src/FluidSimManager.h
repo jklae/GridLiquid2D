@@ -9,10 +9,6 @@
 #include "PICFLIPSim.h"
 
 // These include TimeIntegration.h.
-#include "FixedIntegration.h"
-#include "GlobalIntegration.h"
-#include "KoikeIntegration.h"
-#include "OursIntegration.h"
 
 class FluidSimManager : public ISimulation
 {
@@ -45,7 +41,6 @@ public:
 
 private:
 	std::vector<GridFluidSim*> _sim;
-	std::vector<TimeIntegration*> _timeInteg;
 	int _simIndex = 1;
 	int _scrollPos = 99;
 
@@ -56,7 +51,7 @@ private:
 		EX_GROUP, DAM_RADIO, DROP1_RADIO, DROP2_RADIO,
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
 		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO,
-		INTEG_GROUP, FIXED_RADIO, GLOBAL_RADIO, REINHARDT_RADIO, KOIKE_RADIO, OURS_RADIO,
+		INTEG_GROUP, FIXED_RADIO, OURS_RADIO,
 		TIME_TEXT, FRAME_TEXT
 	};
 
@@ -73,8 +68,6 @@ private:
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
-
-	void _setSimTimeInteg(int timeIntegIndex);
 
 	void _resetSim(DX12App* dxapp);
 };

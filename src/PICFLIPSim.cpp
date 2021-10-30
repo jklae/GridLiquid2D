@@ -3,25 +3,10 @@
 using namespace DirectX;
 using namespace std;
 
-PICFLIPSim::PICFLIPSim(GridData& index, EX ex)
-	:GridFluidSim(index)
+PICFLIPSim::PICFLIPSim(GridData& index, EX ex, float timeStep)
+	:GridFluidSim(index, timeStep)
 {
 	_initialize(ex);
-
-	int arr[5] = { 1, 2, 2, 1, 3 };
-
-	for (int i = 1; i < 8; i++)
-	{
-		cout << i << "th : ";
-		for (int j = 0; j < 5; j++)
-		{
-			if (i < pow(2, arr[j])) // (i >= pow(2, arr[j] - 1) && i < pow(2, arr[j]))
-				cout << arr[j] << ", ";
-			else
-				cout << "., ";
-		}
-		cout << endl;
-	}
 }
 
 PICFLIPSim::~PICFLIPSim()
@@ -48,24 +33,16 @@ void PICFLIPSim::_initialize(EX ex)
 
 void PICFLIPSim::_update()
 {
-	assert(_timeInteg != nullptr);
-	_timeInteg->computeGlobalTimeStep(_gridVelocity, _gridState);
-	_timeInteg->setGroup(_gridVelocity);
+	_advect(0);
 
-	int iterNum = _timeInteg->getIterNum();
-	for (int i = 1; i <= iterNum; i++)
-	{
-		_advect(i);
+	_force(0);
+	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 
-		_force(i);
-		_setBoundary(_gridVelocity);
-		_setFreeSurface(_gridVelocity);
-
-		_project(i);
-		// Solve boundary condition again due to numerical errors in previous step
-		_setBoundary(_gridVelocity);
-		_updateParticlePos(i);
-	}
+	_project(0);
+	// Solve boundary condition again due to numerical errors in previous step
+	_setBoundary(_gridVelocity);
+	_updateParticlePos(0);
 
 	_paintGrid();
 }
@@ -87,7 +64,6 @@ void PICFLIPSim::_advect(int iter)
 		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
 
 		reInterp(_particleVelocity[i], _tempVel, ratio, minIndex, maxIndex, _INDEX);
-		_timeInteg->reInterpTimeStep(ratio, minIndex, maxIndex, i);
 	}
 
 	for (int i = 0; i < _gridCount; i++)
@@ -95,22 +71,18 @@ void PICFLIPSim::_advect(int iter)
 		for (int j = 0; j < _gridCount; j++)
 		{
 
-				if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
-				{
-					_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / _pCount[_INDEX(i, j)];
-				}
-				else
-				{
-					_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
-				}
+			if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
+			{
+				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / _pCount[_INDEX(i, j)];
+			}
+			else
+			{
+				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+			}
 
-				_timeInteg->computeAdvectTimeStep(_pCount, i, j);
-
-				// Reset
-				_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
-				_pCount[_INDEX(i, j)] = 0.0f;
-
-		
+			// Reset
+			_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+			_pCount[_INDEX(i, j)] = 0.0f;
 
 		}
 	}
@@ -118,25 +90,18 @@ void PICFLIPSim::_advect(int iter)
 
 void PICFLIPSim::_force(int iter)
 {
-	assert(_timeInteg != nullptr);
-	float dt;
+	float dt = _timeStep;
 
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-
-			if (_timeInteg->isValidGroup(iter, i, j))
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
 			{
-
-				if (_gridState[_INDEX(i, j)] == STATE::FLUID)
-				{
-					dt = _timeInteg->computeGridTimeStep(_gridVelocity[_INDEX(i, j)], i, j);
-					_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
-				}
-
+				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
+
 		}
 	}
 }
@@ -187,12 +152,8 @@ void PICFLIPSim::_project(int iter)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-
-			if (_timeInteg->isValidGroup(iter, i, j))
-			{
-				_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
-				_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
-			}
+			_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
+			_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 		}
 	}
 
@@ -200,7 +161,7 @@ void PICFLIPSim::_project(int iter)
 
 void PICFLIPSim::_updateParticlePos(int iter)
 {
-	float dt;
+	float dt = _timeStep;
 
 	int N = _gridCount - 2;
 	for (int i = 0; i < _oldVel.size(); i++)
@@ -218,21 +179,16 @@ void PICFLIPSim::_updateParticlePos(int iter)
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		if (_timeInteg->isValidGroup(iter, i, -1))
-		{
-			dt = _timeInteg->computeParticleTimeStep(_particleVelocity[i], i);
+		XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
+		XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
 
-			XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-			XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
+		_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
+		_particlePosition[i] += _particleVelocity[i] * dt;
 
-			_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
-			_particlePosition[i] += _particleVelocity[i] * dt;
+		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
+		else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
 
-			if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
-			else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
-
-			if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
-			else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
-		}
+		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
+		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
 	}
 }

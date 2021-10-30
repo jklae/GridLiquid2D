@@ -4,21 +4,17 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 
-GridFluidSim::GridFluidSim(GridData& index)
+GridFluidSim::GridFluidSim(GridData& index, float timeStep)
 	:_INDEX(index)
 {
 	_gridCount = _INDEX.gridCount;
 	_particleCount = _INDEX.particleCount;
+	_timeStep = timeStep;
 }
 
 GridFluidSim::~GridFluidSim()
 {
 	
-}
-
-void GridFluidSim::setTimeInteg(TimeIntegration* timeInteg)
-{
-	_timeInteg = timeInteg;
 }
 
 void GridFluidSim::_initialize(EX ex)
@@ -400,29 +396,11 @@ float GridFluidSim::_interpolation(float value1, float value2, float ratio)
 
 XMFLOAT4 GridFluidSim::_getColor(int i)
 {
-	assert(_timeInteg != nullptr);
 
 	switch (_gridState[i])
 	{
 	case STATE::FLUID:
-		switch (_timeInteg->getGroup(i))
-		{
-		default:
-			return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
-			break;
-
-		case 1:
-			return XMFLOAT4(0.0f, 0.0f, 1.0f, 1.0f);
-			break;
-
-		case 2:
-			return XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
-			break;
-
-		case 3:
-			return XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
-			break;
-		}
+		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;
 
 	case STATE::BOUNDARY:
@@ -449,12 +427,11 @@ XMFLOAT4 GridFluidSim::_getColor(int i)
 // ################################## Implementation ####################################
 void GridFluidSim::iUpdate()
 {
-	float timeStep;
-	for (float i = 0; i <= FPS_60; i += timeStep)
-	{
+	//float timeStep;
+	//for (float i = 0; i <= FPS_60; i += timeStep)
+	//{
 		_update();
-		timeStep = _timeInteg->getTimeStep();
-	}
+	//}
 
 	//Sleep(_delayTime);
 }

@@ -1,14 +1,11 @@
 #pragma once
 #include "gridsimheader.h"
-#include "TimeIntegration.h"
 
 class GridFluidSim
 {
 public:
-	GridFluidSim(GridData& index);
+	GridFluidSim(GridData& index, float timeStep);
 	virtual ~GridFluidSim();
-
-	void setTimeInteg(TimeIntegration* timeInteg);
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
@@ -44,7 +41,7 @@ protected:
 	float _particleScale = 0.2f;
 	int _particleCount = 0;
 
-	TimeIntegration* _timeInteg = nullptr;
+	float _timeStep = 0.0f;
 
 	DirectX::XMFLOAT4 _getColor(int i);
 
