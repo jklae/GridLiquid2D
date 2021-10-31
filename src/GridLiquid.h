@@ -1,11 +1,14 @@
 #pragma once
 #include "gridsimheader.h"
+#include "Interpolation.h"
 
 class GridLiquid
 {
 public:
 	GridLiquid(GridData& index, float timeStep);
 	virtual ~GridLiquid();
+
+	void setInterp(Interpolation* interp);
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
@@ -24,7 +27,6 @@ public:
 	// #######################################################################################
 
 protected:
-	enum class _VALUE { MIN, MAX };
 	GridData& _INDEX;
 
 	// Grid
@@ -42,6 +44,7 @@ protected:
 	int _particleCount = 0;
 
 	float _timeStep = 0.0f;
+	Interpolation* _interp = nullptr;
 
 	DirectX::XMFLOAT4 _getColor(int i);
 
@@ -59,8 +62,5 @@ protected:
 	// ---
 
 	DirectX::XMINT2 _computeFaceMinMaxIndex(_VALUE vState, DirectX::XMFLOAT2 particlePos);
-	DirectX::XMINT2 _computeCenterMinMaxIndex(_VALUE vState, DirectX::XMFLOAT2 particlePos);
-	DirectX::XMFLOAT2 _velocityInterpolation(DirectX::XMFLOAT2 pos, const std::vector<DirectX::XMFLOAT2>& oldvel);
-	float _interpolation(float value1, float value2, float ratio);
 };
 

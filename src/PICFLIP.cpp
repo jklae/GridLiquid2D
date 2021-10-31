@@ -47,6 +47,24 @@ void PICFLIP::_update()
 	_paintGrid();
 }
 
+XMINT2 _computeCenterMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
+{
+	// 2.
+	switch (vState)
+	{
+	case _VALUE::MIN:
+		return { static_cast<int>(floor(particlePos.x)), static_cast<int>(floor(particlePos.y)) };
+		break;
+	case _VALUE::MAX:
+		// 3.
+		return { static_cast<int>(ceil(particlePos.x)), static_cast<int>(ceil(particlePos.y)) };
+		break;
+	default:
+		return { -1, -1 };
+		break;
+	}
+}
+
 void PICFLIP::_advect(int iter)
 {
 	int N = _gridCount - 2;
@@ -189,8 +207,8 @@ void PICFLIP::_updateParticlePos(int iter)
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		XMFLOAT2 _picVel = _velocityInterpolation(_particlePosition[i], _gridVelocity);
-		XMFLOAT2 _flipVel = _particleVelocity[i] + _velocityInterpolation(_particlePosition[i], _oldVel);
+		XMFLOAT2 _picVel = _interp->gridToParticle(_particlePosition[i], _gridVelocity, _gridPosition);
+		XMFLOAT2 _flipVel = _particleVelocity[i] + _interp->gridToParticle(_particlePosition[i], _oldVel, _gridPosition);
 
 		_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
 		_particlePosition[i] += _particleVelocity[i] * dt;

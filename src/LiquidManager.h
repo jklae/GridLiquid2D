@@ -8,7 +8,8 @@
 #include "Eulerian.h"
 #include "PICFLIP.h"
 
-// These include TimeIntegration.h.
+// These include VelocityInterpolation.h.
+#include "Trilinear.h"
 
 class LiquidManager : public ISimulation
 {
@@ -44,6 +45,8 @@ private:
 	int _simIndex = 1;
 	int _scrollPos = 99;
 
+	std::vector<Interpolation*> _interp;
+
 	enum class _COM
 	{
 		GRID_BTN, PARTICLE_BTN, VELOCITY_BTN,
@@ -65,6 +68,8 @@ private:
 
 	GridData _index;
 	EX _ex = EX::DROP2;
+
+	void _setSimInterp(int interpIndex);
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);

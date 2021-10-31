@@ -17,6 +17,11 @@ GridLiquid::~GridLiquid()
 	
 }
 
+void GridLiquid::setInterp(Interpolation* interp)
+{
+	_interp = interp;
+}
+
 void GridLiquid::_initialize(EX ex)
 {
 	// Set _fluid
@@ -339,60 +344,6 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
 	return { static_cast<int>(floor(value.x)), static_cast<int>(floor(value.y)) };
 }
 
-
-// Different from _computeFaceMinMaxIndex().
-// 1. Subtract the count of offset by 1.
-// 2. Do not subtract particleStride from min, max calculation.
-// 3. ceil maxIndex instead of floor.
-// ------------------------------------------------------------------
-// _PaintGrid() uses the face as the transition point.
-// _updateParticlePosition() uses the center as the transition point.
-XMINT2 GridLiquid::_computeCenterMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
-{
-	// 2.
-	switch (vState)
-	{
-	case _VALUE::MIN:
-		return { static_cast<int>(floor(particlePos.x)), static_cast<int>(floor(particlePos.y)) };
-		break;
-	case _VALUE::MAX:
-		// 3.
-		return { static_cast<int>(ceil(particlePos.x)), static_cast<int>(ceil(particlePos.y)) };
-		break;
-	default:
-		return { -1, -1 };
-		break;
-	}
-}
-
-															// For semi-Lagrangian and FLIP
-XMFLOAT2 GridLiquid::_velocityInterpolation(XMFLOAT2 pos, const vector<XMFLOAT2>& oldvel)
-{
-	// 2. 3.
-	XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
-	XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
-
-	float xRatio = (pos.x - _gridPosition[_INDEX(minIndex.x, minIndex.y)].x);
-	float yRatio = (pos.y - _gridPosition[_INDEX(minIndex.x, minIndex.y)].y);
-
-	XMFLOAT2 minMinVelocity = oldvel[_INDEX(minIndex.x, minIndex.y)];
-	XMFLOAT2 minMaxVelocity = oldvel[_INDEX(minIndex.x, maxIndex.y)];
-	XMFLOAT2 maxMinVelocity = oldvel[_INDEX(maxIndex.x, minIndex.y)];
-	XMFLOAT2 maxMaxVelocity = oldvel[_INDEX(maxIndex.x, maxIndex.y)];
-
-	// s0* (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
-	//	s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
-	// minMinVelocity.x and minMinVelocity.x ​​can be different because they are "velocity", not position.
-	return XMFLOAT2(
-		_interpolation(_interpolation(minMinVelocity.x, minMaxVelocity.x, yRatio), _interpolation(maxMinVelocity.x, maxMaxVelocity.x, yRatio), xRatio),
-		_interpolation(_interpolation(minMinVelocity.y, minMaxVelocity.y, yRatio), _interpolation(maxMinVelocity.y, maxMaxVelocity.y, yRatio), xRatio)
-	);
-}
-
-float GridLiquid::_interpolation(float value1, float value2, float ratio)
-{
-	return value1 * (1.0f - ratio) + value2 * ratio;
-}
 
 XMFLOAT4 GridLiquid::_getColor(int i)
 {

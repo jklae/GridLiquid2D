@@ -13,6 +13,10 @@ LiquidManager::LiquidManager(int x, int y, float timeStep)
 
 	_sim.push_back(new Eulerian(_index, _ex, FPS_60 / 2.0f));
 	_sim.push_back(new PICFLIP(_index, _ex, FPS_60 / 2.0f));
+
+	_interp.push_back(new Trilinear(_index));
+
+	_setSimInterp(0);
 }
 
 LiquidManager::~LiquidManager()
@@ -21,12 +25,25 @@ LiquidManager::~LiquidManager()
 	{
 		delete sim;
 	}
+
+	for (auto& interp : _interp)
+	{
+		delete interp;
+	}
 }
 
 wchar_t* LiquidManager::_int2wchar(int value)
 {
 	_itow(value, wBuffer, 10);
 	return wBuffer;
+}
+
+void LiquidManager::_setSimInterp(int interpIndex)
+{
+	for (auto& sim : _sim)
+	{
+		sim->setInterp(_interp[interpIndex]);
+	}
 }
 
 void LiquidManager::_setDrawFlag(FLAG flagType, bool flag)
