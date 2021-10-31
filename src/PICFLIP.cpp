@@ -23,10 +23,7 @@ void PICFLIP::_initialize(EX ex)
 	GridLiquid::_initialize(ex);
 
 	size_t vSize = static_cast<size_t>(_gridCount) * static_cast<size_t>(_gridCount);
-
 	_oldVel.assign(vSize, { 0.0f, 0.0f });
-	_tempVel.assign(vSize, { 0.0f, 0.0f });
-	_pCount.assign(vSize, 0.0f);
 }
 
 
@@ -47,71 +44,19 @@ void PICFLIP::_update()
 	_paintGrid();
 }
 
-XMINT2 _computeCenterMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
-{
-	// 2.
-	switch (vState)
-	{
-	case _VALUE::MIN:
-		return { static_cast<int>(floor(particlePos.x)), static_cast<int>(floor(particlePos.y)) };
-		break;
-	case _VALUE::MAX:
-		// 3.
-		return { static_cast<int>(ceil(particlePos.x)), static_cast<int>(ceil(particlePos.y)) };
-		break;
-	default:
-		return { -1, -1 };
-		break;
-	}
-}
-
 void PICFLIP::_advect(int iter)
 {
 	int N = _gridCount - 2;
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		XMFLOAT2 pos = _particlePosition[i];
-
-		XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
-		XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
-
-		XMFLOAT2 ratio = pos - _gridPosition[_INDEX(minIndex.x, minIndex.y)];
-		_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - ratio.x) * (1.0f - ratio.y);
-		_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - ratio.x) * ratio.y;
-		_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);
-		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
-
-		XMFLOAT2 minMin_minMax = _particleVelocity[i] * (1.0f - ratio.x);
-		XMFLOAT2 maxMin_maxMax = _particleVelocity[i] * ratio.x;
-		XMFLOAT2 minMin = minMin_minMax * (1.0f - ratio.y);
-		XMFLOAT2 minMax = minMin_minMax * ratio.y;
-		XMFLOAT2 maxMin = maxMin_maxMax * (1.0f - ratio.y);
-		XMFLOAT2 maxMax = maxMin_maxMax * ratio.y;
-
-		_tempVel[_INDEX(minIndex.x, minIndex.y)] += minMin;
-		_tempVel[_INDEX(minIndex.x, maxIndex.y)] += minMax;
-		_tempVel[_INDEX(maxIndex.x, minIndex.y)] += maxMin;
-		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += maxMax;
+		_interp->particleToGrid(_particlePosition[i], _particleVelocity[i], _gridPosition);
 	}
 
 	for (int i = 0; i < _gridCount; i++)
 	{
 		for (int j = 0; j < _gridCount; j++)
 		{
-
-			if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
-			{
-				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / _pCount[_INDEX(i, j)];
-			}
-			else
-			{
-				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
-			}
-
-			// Reset
-			_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
-			_pCount[_INDEX(i, j)] = 0.0f;
-
+			_interp->setGridVelocity(_gridVelocity, _oldVel, i, j);
 		}
 	}
 }

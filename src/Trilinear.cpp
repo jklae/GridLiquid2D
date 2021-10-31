@@ -13,6 +13,49 @@ Trilinear::~Trilinear()
 {
 }
 
+void Trilinear::particleToGrid(XMFLOAT2 particlePos, XMFLOAT2 particleVel, vector<XMFLOAT2>& gridPos)
+{
+	XMFLOAT2 pos = particlePos;
+
+	XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
+	XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
+
+	XMFLOAT2 ratio = pos - gridPos[_INDEX(minIndex.x, minIndex.y)];
+	_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - ratio.x) * (1.0f - ratio.y);
+	_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - ratio.x) * ratio.y;
+	_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);
+	_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
+
+	XMFLOAT2 minMin_minMax = particleVel * (1.0f - ratio.x);
+	XMFLOAT2 maxMin_maxMax = particleVel * ratio.x;
+	XMFLOAT2 minMin = minMin_minMax * (1.0f - ratio.y);
+	XMFLOAT2 minMax = minMin_minMax * ratio.y;
+	XMFLOAT2 maxMin = maxMin_maxMax * (1.0f - ratio.y);
+	XMFLOAT2 maxMax = maxMin_maxMax * ratio.y;
+
+	_tempVel[_INDEX(minIndex.x, minIndex.y)] += minMin;
+	_tempVel[_INDEX(minIndex.x, maxIndex.y)] += minMax;
+	_tempVel[_INDEX(maxIndex.x, minIndex.y)] += maxMin;
+	_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += maxMax;
+
+}
+
+void Trilinear::setGridVelocity(vector<XMFLOAT2>& gridVel, vector<XMFLOAT2>& oldVel, int i, int j)
+{
+	if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
+	{
+		gridVel[_INDEX(i, j)] = oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / _pCount[_INDEX(i, j)];
+	}
+	else
+	{
+		gridVel[_INDEX(i, j)] = oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+	}
+
+	// Reset
+	_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+	_pCount[_INDEX(i, j)] = 0.0f;
+}
+
 
 												// For semi-Lagrangian and FLIP
 XMFLOAT2 Trilinear::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldvel, vector<XMFLOAT2>& gridPos)
@@ -37,7 +80,6 @@ XMFLOAT2 Trilinear::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldve
 		_interpolation(_interpolation(minMinVelocity.y, minMaxVelocity.y, yRatio), _interpolation(maxMinVelocity.y, maxMaxVelocity.y, yRatio), xRatio)
 	);
 }
-
 
 // Different from _computeFaceMinMaxIndex().
 // 1. Subtract the count of offset by 1.

@@ -11,9 +11,6 @@ public:
 
 private:
 	std::vector<DirectX::XMFLOAT2> _oldVel;
-	std::vector<DirectX::XMFLOAT2> _tempVel;
-	std::vector<float> _tempStep;
-	std::vector<float> _pCount;
 
 	float _flipRatio = 0.99f;
 
