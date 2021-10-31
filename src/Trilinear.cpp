@@ -17,8 +17,8 @@ void Trilinear::particleToGrid(XMFLOAT2 particlePos, XMFLOAT2 particleVel, vecto
 {
 	XMFLOAT2 pos = particlePos;
 
-	XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, pos);
-	XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, pos);
+	XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
+	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
 
 	XMFLOAT2 ratio = pos - gridPos[_INDEX(minIndex.x, minIndex.y)];
 	_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - ratio.x) * (1.0f - ratio.y);
@@ -61,8 +61,8 @@ void Trilinear::setGridVelocity(vector<XMFLOAT2>& gridVel, vector<XMFLOAT2>& old
 XMFLOAT2 Trilinear::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldvel, vector<XMFLOAT2>& gridPos)
 {
 	// 2. 3.
-	XMINT2 minIndex = _computeCenterMinMaxIndex(_VALUE::MIN, particlePos);
-	XMINT2 maxIndex = _computeCenterMinMaxIndex(_VALUE::MAX, particlePos);
+	XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, particlePos);
+	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, particlePos);
 
 	float xRatio = (particlePos.x - gridPos[_INDEX(minIndex.x, minIndex.y)].x);
 	float yRatio = (particlePos.y - gridPos[_INDEX(minIndex.x, minIndex.y)].y);
@@ -88,15 +88,15 @@ XMFLOAT2 Trilinear::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldve
 // ------------------------------------------------------------------
 // _PaintGrid() uses the face as the transition point.
 // _updateParticlePosition() uses the center as the transition point.
-XMINT2 Trilinear::_computeCenterMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
+XMINT2 Trilinear::_computeCenterMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 {
 	// 2.
 	switch (vState)
 	{
-	case _VALUE::MIN:
+	case VALUE::MIN:
 		return { static_cast<int>(floor(particlePos.x)), static_cast<int>(floor(particlePos.y)) };
 		break;
-	case _VALUE::MAX:
+	case VALUE::MAX:
 		// 3.
 		return { static_cast<int>(ceil(particlePos.x)), static_cast<int>(ceil(particlePos.y)) };
 		break;

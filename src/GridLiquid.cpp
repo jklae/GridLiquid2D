@@ -274,8 +274,8 @@ void GridLiquid::_paintGrid()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		XMINT2 minIndex = _computeFaceMinMaxIndex(_VALUE::MIN, _particlePosition[i]);
-		XMINT2 maxIndex = _computeFaceMinMaxIndex(_VALUE::MAX, _particlePosition[i]);
+		XMINT2 minIndex = _computeFaceMinMaxIndex(VALUE::MIN, _particlePosition[i]);
+		XMINT2 maxIndex = _computeFaceMinMaxIndex(VALUE::MAX, _particlePosition[i]);
 
 		// Painting
 		STATE& minMin = _gridState[_INDEX(minIndex.x, minIndex.y)];
@@ -322,17 +322,17 @@ void GridLiquid::_paintGrid()
 // For example, if the scale is 1.0f, the result is (index * 1.0f).
 // But if the scale is 0.5f, the result is (index * 0.5f).
 // The index value should of course be immutable.
-XMINT2 GridLiquid::_computeFaceMinMaxIndex(_VALUE vState, XMFLOAT2 particlePos)
+XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 {
 	XMFLOAT2 value;
 
 	// Compute position by normalizing from (-N, N) to (0, N + 1)
 	switch (vState)
 	{
-	case _VALUE::MIN:
+	case VALUE::MIN:
 		value = particlePos + 0.5f - 0.5f * _particleScale;
 		break;
-	case _VALUE::MAX:
+	case VALUE::MAX:
 		value = particlePos + 0.5f + 0.5f * _particleScale;
 		break;
 	default:

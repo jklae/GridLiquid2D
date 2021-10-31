@@ -61,6 +61,6 @@ protected:
 
 	// ---
 
-	DirectX::XMINT2 _computeFaceMinMaxIndex(_VALUE vState, DirectX::XMFLOAT2 particlePos);
+	DirectX::XMINT2 _computeFaceMinMaxIndex(VALUE vState, DirectX::XMFLOAT2 particlePos);
 };
 
