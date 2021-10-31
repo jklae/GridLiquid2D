@@ -141,12 +141,14 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
 			40, 250, 200, 20, hwnd, reinterpret_cast<HMENU>(_COM::RATIO_BAR), hInstance, NULL);
 
-	CreateWindow(L"button", L"ion", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
-		30, 290, 220, 79, hwnd, reinterpret_cast<HMENU>(_COM::INTEG_GROUP), hInstance, NULL);
-	CreateWindow(L"button", L"Fixed", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
-		42, 309, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::FIXED_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Interpolation", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
+		30, 290, 220, 79, hwnd, reinterpret_cast<HMENU>(_COM::INTERP_GROUP), hInstance, NULL);
+	CreateWindow(L"button", L"Trilinear", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON | WS_GROUP,
+		42, 309, 80, 25, hwnd, reinterpret_cast<HMENU>(_COM::TRILINEAR_RADIO), hInstance, NULL);
+	CreateWindow(L"button", L"Cubic Spline", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
+		130, 309, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::CUBIC_RADIO), hInstance, NULL);
 	CreateWindow(L"button", L"Ours", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
-		140, 335, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::OURS_RADIO), hInstance, NULL);
+		42, 335, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::OURS_RADIO), hInstance, NULL);
 
 	CreateWindow(L"button", L"бл", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		65, 385, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::PLAY), hInstance, NULL);
@@ -167,7 +169,7 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CheckRadioButton(hwnd, static_cast<int>(_COM::DAM_RADIO), static_cast<int>(_COM::DROP2_RADIO), static_cast<int>(_COM::DROP2_RADIO));
 	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::PICFLIP_RADIO));
-	CheckRadioButton(hwnd, static_cast<int>(_COM::FIXED_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::FIXED_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::TRILINEAR_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::TRILINEAR_RADIO));
 
 	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
 
@@ -336,7 +338,13 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		// #####################
 
 		// ###  radio buttons ###
-		case static_cast<int>(_COM::FIXED_RADIO) :
+		case static_cast<int>(_COM::TRILINEAR_RADIO) :
+		{
+			_resetSim(dxapp);
+			_setSimInterp(0);
+		}
+		break;
+		case static_cast<int>(_COM::CUBIC_RADIO) :
 		{
 			_resetSim(dxapp);
 		}
