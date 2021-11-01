@@ -70,7 +70,7 @@ void PICFLIP::_force(int iter)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
@@ -105,7 +105,7 @@ void PICFLIP::_project(int iter)
 			for (int j = 1; j <= N; j++)
 			{
 
-				if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+				if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 				{
 					_gridPressure[_INDEX(i, j)] =
 						(

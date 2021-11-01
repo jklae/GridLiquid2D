@@ -36,7 +36,7 @@ void GridLiquid::_initialize(EX ex)
 			_gridPressure.push_back(0.0f);
 		}
 	}
-
+	_gridState[_INDEX(4, 4)] = STATE::LIQUID;
 }
 
 void GridLiquid::_computeGridState(EX ex, int i, int j)
@@ -57,7 +57,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 			&& (2 < j)  //((N + 1) / 2 - offset < j)     
 			&& (j < (N) - offset))            
 		{
-			_gridState.push_back(STATE::FLUID);
+			_gridState.push_back(STATE::LIQUID);
 		}
 		else 
 		{ 
@@ -80,7 +80,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		//	&& ((N + 1) / 2 - offset < j)  //((N + 1) / 2 - offset < j)     
 		//	&& (j < (N + 1) / 2 + offset))
 		{
-			_gridState.push_back(STATE::FLUID);
+			_gridState.push_back(STATE::LIQUID);
 		}
 		else
 		{
@@ -94,7 +94,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		{
 			_gridState.push_back(STATE::BOUNDARY);
 		}
-		else if
+		/*else if
 			(
 				(
 					((N + 1) / 2 - offset > i)
@@ -112,8 +112,8 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 
 				)
 		{
-			_gridState.push_back(STATE::FLUID);
-		}
+			_gridState.push_back(STATE::LIQUID);
+		}*/
 		else
 		{
 			_gridState.push_back(STATE::AIR);
@@ -138,25 +138,25 @@ void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 				XMFLOAT2 temp = { 0.0f, 0.0f };
 				int count = 0;
 
-				if (_gridState[_INDEX(i + 1, j)] == STATE::FLUID)
+				if (_gridState[_INDEX(i + 1, j)] == STATE::LIQUID)
 				{
 					temp += vec[_INDEX(i + 1, j)];
 					count++;
 				}
 
-				if (_gridState[_INDEX(i - 1, j)] == STATE::FLUID)
+				if (_gridState[_INDEX(i - 1, j)] == STATE::LIQUID)
 				{
 					temp += vec[_INDEX(i - 1, j)];
 					count++;
 				}
 
-				if (_gridState[_INDEX(i, j + 1)] == STATE::FLUID)
+				if (_gridState[_INDEX(i, j + 1)] == STATE::LIQUID)
 				{
 					temp += vec[_INDEX(i, j + 1)];
 					count++;
 				}
 
-				if (_gridState[_INDEX(i, j - 1)] == STATE::FLUID)
+				if (_gridState[_INDEX(i, j - 1)] == STATE::LIQUID)
 				{
 					temp += vec[_INDEX(i, j - 1)];
 					count++;
@@ -262,7 +262,8 @@ void GridLiquid::_setBoundary(std::vector<float>& scalar)
 void GridLiquid::_paintGrid()
 {
 	int N = _gridCount - 2;
-	// Reset _grid
+
+	// Reset grid
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
@@ -284,20 +285,19 @@ void GridLiquid::_paintGrid()
 		STATE& maxMax = _gridState[_INDEX(maxIndex.x, maxIndex.y)];
 
 		// Boundary Checking
-		if (minMin != STATE::BOUNDARY) minMin = STATE::FLUID;
-		if (minMax != STATE::BOUNDARY) minMax = STATE::FLUID;
-		if (maxMin != STATE::BOUNDARY) maxMin = STATE::FLUID;
-		if (maxMax != STATE::BOUNDARY) maxMax = STATE::FLUID;
+		if (minMin != STATE::BOUNDARY) minMin = STATE::LIQUID;
+		if (minMax != STATE::BOUNDARY) minMax = STATE::LIQUID;
+		if (maxMin != STATE::BOUNDARY) maxMin = STATE::LIQUID;
+		if (maxMax != STATE::BOUNDARY) maxMax = STATE::LIQUID;
 	}
 
 
 	// Surface painting 
-	
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
 				if (_gridState[_INDEX(i + 1, j)] == STATE::AIR) 
 					_gridState[_INDEX(i + 1, j)] = STATE::SURFACE;
@@ -350,7 +350,7 @@ XMFLOAT4 GridLiquid::_getColor(int i)
 
 	switch (_gridState[i])
 	{
-	case STATE::FLUID:
+	case STATE::LIQUID:
 		return XMFLOAT4(0.2f, 0.5f, 0.5f, 1.0f);
 		break;
 
@@ -483,7 +483,7 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 				(float)j,    // "j"
 				(float)i);   // "i"
 
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
 				for (int k = 0; k < _particleCount; k++)
 				{

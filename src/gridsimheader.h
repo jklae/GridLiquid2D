@@ -7,7 +7,7 @@
 constexpr float FPS_60 = 0.0167f;
 
 enum class FLAG { GRID, PARTICLE, VELOCITY };
-enum class STATE { FLUID, BOUNDARY, AIR, SURFACE };
+enum class STATE { LIQUID, BOUNDARY, AIR, SURFACE };
 enum class EX { DAM, DROP1, DROP2 };
 enum class VALUE { MIN, MAX };
 

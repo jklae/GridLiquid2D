@@ -72,10 +72,10 @@ XMFLOAT2 Trilinear::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldve
 	XMFLOAT2 maxMinVelocity = oldvel[_INDEX(maxIndex.x, minIndex.y)];
 	XMFLOAT2 maxMaxVelocity = oldvel[_INDEX(maxIndex.x, maxIndex.y)];
 
-	/*cout << "min Min velocity : " << minMinVelocity.x << ", " << minMinVelocity.y << endl;
+	cout << "min Min velocity : " << minMinVelocity.x << ", " << minMinVelocity.y << endl;
 	cout << "min Max velocity : " << minMaxVelocity.x << ", " << minMaxVelocity.y << endl;
 	cout << "max Min velocity : " << maxMinVelocity.x << ", " << maxMinVelocity.y << endl;
-	cout << "max Max velocity : " << maxMaxVelocity.x << ", " << maxMaxVelocity.y << endl;*/
+	cout << "max Max velocity : " << maxMaxVelocity.x << ", " << maxMaxVelocity.y << endl;
 
 
 	// s0* (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +

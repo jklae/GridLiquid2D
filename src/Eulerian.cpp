@@ -35,7 +35,7 @@ void Eulerian::_force()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
@@ -66,7 +66,7 @@ void Eulerian::_advect()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
 				XMFLOAT2 backPos =
 					XMFLOAT2(
@@ -114,7 +114,7 @@ void Eulerian::_project()
 		{
 			for (int j = 1; j <= N; j++)
 			{
-				if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+				if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 				{
 					_gridPressure[_INDEX(i, j)] =
 						(
@@ -166,6 +166,6 @@ void Eulerian::_updateParticlePos()
 		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
 		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
 
-		//cout << "particle velocity : " << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
+		cout << "particle velocity : " << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
 	}
 }
