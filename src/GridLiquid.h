@@ -52,7 +52,8 @@ protected:
 	void _setBoundary(std::vector<float>& scalar);
 	void _setFreeSurface(std::vector<DirectX::XMFLOAT2>& vec);
 
-	void _paintGrid();
+	void _paintLiquid();
+	void _paintSurface();
 
 	virtual void _update() = 0;
 

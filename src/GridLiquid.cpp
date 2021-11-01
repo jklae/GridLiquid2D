@@ -37,6 +37,8 @@ void GridLiquid::_initialize(EX ex)
 		}
 	}
 	_gridState[_INDEX(4, 4)] = STATE::LIQUID;
+
+	_paintSurface();
 }
 
 void GridLiquid::_computeGridState(EX ex, int i, int j)
@@ -259,7 +261,7 @@ void GridLiquid::_setBoundary(std::vector<float>& scalar)
 	scalar[_INDEX(N + 1, N + 1)] = (scalar[_INDEX(N + 1, N)] + scalar[_INDEX(N, N + 1)]) / 2.0f;
 }
 
-void GridLiquid::_paintGrid()
+void GridLiquid::_paintLiquid()
 {
 	int N = _gridCount - 2;
 
@@ -293,29 +295,33 @@ void GridLiquid::_paintGrid()
 
 
 	// Surface painting 
+	_paintSurface();
+}
+
+void GridLiquid::_paintSurface()
+{
+	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
-				if (_gridState[_INDEX(i + 1, j)] == STATE::AIR) 
+				if (_gridState[_INDEX(i + 1, j)] == STATE::AIR)
 					_gridState[_INDEX(i + 1, j)] = STATE::SURFACE;
 
-				if (_gridState[_INDEX(i - 1, j)] == STATE::AIR) 
+				if (_gridState[_INDEX(i - 1, j)] == STATE::AIR)
 					_gridState[_INDEX(i - 1, j)] = STATE::SURFACE;
 
 				if (_gridState[_INDEX(i, j + 1)] == STATE::AIR)
 					_gridState[_INDEX(i, j + 1)] = STATE::SURFACE;
 
-				if (_gridState[_INDEX(i, j - 1)] == STATE::AIR) 
+				if (_gridState[_INDEX(i, j - 1)] == STATE::AIR)
 					_gridState[_INDEX(i, j - 1)] = STATE::SURFACE;
 			}
 		}
-	} 
-
+	}
 }
-
 
 // To calculate the grid index, the calculation result must not depend on the _gridScale.
 // Therefore, the intermediate computed variable "should not be multiplied by the _gridScale".

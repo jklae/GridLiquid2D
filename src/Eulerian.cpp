@@ -22,7 +22,7 @@ void Eulerian::_update()
 
 	_project();
 	_updateParticlePos();
-	_paintGrid();
+	_paintLiquid();
 
 }
 

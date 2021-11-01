@@ -41,7 +41,7 @@ void PICFLIP::_update()
 	_setBoundary(_gridVelocity);
 	_updateParticlePos(0);
 
-	_paintGrid();
+	_paintLiquid();
 }
 
 void PICFLIP::_advect(int iter)
