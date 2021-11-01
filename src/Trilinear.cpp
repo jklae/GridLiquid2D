@@ -66,6 +66,11 @@ XMFLOAT2 Trilinear::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldVe
 
 	XMFLOAT2 ratio = (particlePos - gridPos[_INDEX(minIndex.x, minIndex.y)]);
 
+	float minMinRatio = (1.0f - ratio.x) * (1.0f - ratio.y);
+	float minMaxRatio = (1.0f - ratio.x) * ratio.y;
+	float maxMinRatio = ratio.x * (1.0f - ratio.y);
+	float maxMaxRatio = ratio.x * ratio.y;
+
 	//cout << "x ratio : " << 1 - ratio.x << ", " << ratio.x << endl;
 	//cout << "y ratio : " << 1 - ratio.y << ", " << ratio.y << endl;
 
@@ -79,14 +84,7 @@ XMFLOAT2 Trilinear::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldVe
 	cout << "max Min velocity : " << maxMinVel.x << ", " << maxMinVel.y << endl;
 	cout << "max Max velocity : " << maxMaxVel.x << ", " << maxMaxVel.y << endl;*/
 
-
-	// s0* (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
-	//	s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
-	// minMinVelocity.x and minMinVelocity.x ​​can be different because they are "velocity", not position.
-	return XMFLOAT2(
-		_interpolation(_interpolation(minMinVel.x, minMaxVel.x, 1 - ratio.y, ratio.y), _interpolation(maxMinVel.x, maxMaxVel.x, 1 - ratio.y, ratio.y), 1 - ratio.x, ratio.x),
-		_interpolation(_interpolation(minMinVel.y, minMaxVel.y, 1 - ratio.y, ratio.y), _interpolation(maxMinVel.y, maxMaxVel.y, 1 - ratio.y, ratio.y), 1 - ratio.x, ratio.x)
-	);
+	return minMinVel * minMinRatio + minMaxVel * minMaxRatio + maxMinVel * maxMinRatio + maxMaxVel * maxMaxRatio;
 }
 
 // Different from _computeFaceMinMaxIndex().
@@ -112,9 +110,4 @@ XMINT2 Trilinear::_computeCenterMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 		return { -1, -1 };
 		break;
 	}
-}
-
-float Trilinear::_interpolation(float value1, float value2, float ratio1, float ratio2)
-{
-	return value1 * ratio1 + value2 * ratio2;
 }

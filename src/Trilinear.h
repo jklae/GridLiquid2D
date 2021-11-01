@@ -14,6 +14,5 @@ public:
 
 private:
 	DirectX::XMINT2 _computeCenterMinMaxIndex(VALUE vState, DirectX::XMFLOAT2 particlePos);
-	float _interpolation(float value1, float value2, float ratio1, float ratio2);
 };
 
