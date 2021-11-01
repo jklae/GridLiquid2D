@@ -9,7 +9,7 @@ CubicSpline::~CubicSpline()
 {
 }
 
-DirectX::XMFLOAT2 CubicSpline::gridToParticle(DirectX::XMFLOAT2 particlePos, std::vector<DirectX::XMFLOAT2>& oldvel, std::vector<DirectX::XMFLOAT2>& gridPos)
+DirectX::XMFLOAT2 CubicSpline::gridToParticle(DirectX::XMFLOAT2 particlePos, std::vector<DirectX::XMFLOAT2>& oldvel, std::vector<DirectX::XMFLOAT2>& gridPos, std::vector<STATE>& gridState)
 {
 	return DirectX::XMFLOAT2();
 }

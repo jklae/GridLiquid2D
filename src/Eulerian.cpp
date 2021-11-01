@@ -80,7 +80,7 @@ void Eulerian::_advect()
 				else if (backPos.y < yMin) backPos.y = yMin;
 
 
-				_gridVelocity[_INDEX(i, j)] = _interp->gridToParticle(backPos, oldVelocity, _gridPosition);
+				_gridVelocity[_INDEX(i, j)] = _interp->gridToParticle(backPos, oldVelocity, _gridPosition, _gridState);
 			}
 		}
 	}
@@ -157,7 +157,7 @@ void Eulerian::_updateParticlePos()
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
-		_particleVelocity[i] = _interp->gridToParticle(_particlePosition[i], _gridVelocity, _gridPosition);
+		_particleVelocity[i] = _interp->gridToParticle(_particlePosition[i], _gridVelocity, _gridPosition, _gridState);
 		_particlePosition[i] += _particleVelocity[i] * dt;
 
 		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
@@ -166,6 +166,6 @@ void Eulerian::_updateParticlePos()
 		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
 		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
 
-		cout << "particle velocity : " << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
+		//cout << "particle velocity : " << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
 	}
 }

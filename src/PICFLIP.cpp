@@ -152,8 +152,8 @@ void PICFLIP::_updateParticlePos(int iter)
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		XMFLOAT2 _picVel = _interp->gridToParticle(_particlePosition[i], _gridVelocity, _gridPosition);
-		XMFLOAT2 _flipVel = _particleVelocity[i] + _interp->gridToParticle(_particlePosition[i], _oldVel, _gridPosition);
+		XMFLOAT2 _picVel = _interp->gridToParticle(_particlePosition[i], _gridVelocity, _gridPosition, _gridState);
+		XMFLOAT2 _flipVel = _particleVelocity[i] + _interp->gridToParticle(_particlePosition[i], _oldVel, _gridPosition, _gridState);
 
 		_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
 		_particlePosition[i] += _particleVelocity[i] * dt;
