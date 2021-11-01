@@ -72,7 +72,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 			_gridState.push_back(STATE::BOUNDARY); 
 		}
 		else if ((N + 1) / 2 - offset < i 
-			&& (i < (N + 1) / 2 + offset + 1)
+			&& (i < (N - 10))
 			&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
 			&& (j < (N)))
 		//else if ((N + 1) / 2 - offset < i 

@@ -49,7 +49,7 @@ void PICFLIP::_advect(int iter)
 	int N = _gridCount - 2;
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		_interp->particleToGrid(_particlePosition[i], _particleVelocity[i], _gridPosition);
+		_interp->particleToGrid(_particlePosition[i], _particleVelocity[i], _gridPosition, _gridState);
 	}
 
 	for (int i = 0; i < _gridCount; i++)
@@ -145,10 +145,10 @@ void PICFLIP::_updateParticlePos(int iter)
 	// 0.5f is the correct value.
 	// But we assign a value of 1.1f to minmax for boundary conditions.
 	// By doing this, "the velocity of the boundary" is not affected by the interpolation of the particle velocity.
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 1.1f;
-	float yMin = _gridPosition[_INDEX(0, 0)].y + 1.1f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 1.1f;
-	float xMin = _gridPosition[_INDEX(0, 0)].x + 1.1f;
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{

@@ -66,19 +66,22 @@ void Eulerian::_advect()
 	{
 		for (int j = 1; j <= N; j++)
 		{
-			XMFLOAT2 backPos =
-				XMFLOAT2(
-					_gridPosition[_INDEX(i, j)].x - dt * oldVelocity[_INDEX(i, j)].x,
-					_gridPosition[_INDEX(i, j)].y - dt * oldVelocity[_INDEX(i, j)].y
-				);
-			if (backPos.x > xMax) backPos.x = xMax;
-			else if (backPos.x < xMin) backPos.x = xMin;
+			if (_gridState[_INDEX(i, j)] == STATE::FLUID)
+			{
+				XMFLOAT2 backPos =
+					XMFLOAT2(
+						_gridPosition[_INDEX(i, j)].x - dt * oldVelocity[_INDEX(i, j)].x,
+						_gridPosition[_INDEX(i, j)].y - dt * oldVelocity[_INDEX(i, j)].y
+					);
+				if (backPos.x > xMax) backPos.x = xMax;
+				else if (backPos.x < xMin) backPos.x = xMin;
 
-			if (backPos.y > yMax) backPos.y = yMax;
-			else if (backPos.y < yMin) backPos.y = yMin;
+				if (backPos.y > yMax) backPos.y = yMax;
+				else if (backPos.y < yMin) backPos.y = yMin;
 
 
-			_gridVelocity[_INDEX(i, j)] = _interp->gridToParticle(backPos, oldVelocity, _gridPosition);
+				_gridVelocity[_INDEX(i, j)] = _interp->gridToParticle(backPos, oldVelocity, _gridPosition);
+			}
 		}
 	}
 	_setBoundary(_gridVelocity);
@@ -146,10 +149,10 @@ void Eulerian::_updateParticlePos()
 	// 0.5f is the correct value.
 	// But we assign a value of 1.1f to minmax for boundary conditions.
 	// By doing this, "the velocity of the boundary" is not affected by the interpolation of the particle velocity.
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 1.1f;
-	float yMin = _gridPosition[_INDEX(0, 0)].y + 1.1f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 1.1f;
-	float xMin = _gridPosition[_INDEX(0, 0)].x + 1.1f;
+	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
+	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -162,5 +165,7 @@ void Eulerian::_updateParticlePos()
 
 		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
 		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
+
+		//cout << "particle velocity : " << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
 	}
 }

@@ -13,7 +13,7 @@ Trilinear::~Trilinear()
 {
 }
 
-void Trilinear::particleToGrid(XMFLOAT2 particlePos, XMFLOAT2 particleVel, vector<XMFLOAT2>& gridPos)
+void Trilinear::particleToGrid(XMFLOAT2 particlePos, XMFLOAT2 particleVel, vector<XMFLOAT2>& gridPos, vector<STATE>& gridState)
 {
 	XMFLOAT2 pos = particlePos;
 
@@ -21,10 +21,10 @@ void Trilinear::particleToGrid(XMFLOAT2 particlePos, XMFLOAT2 particleVel, vecto
 	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
 
 	XMFLOAT2 ratio = pos - gridPos[_INDEX(minIndex.x, minIndex.y)];
-	_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - ratio.x) * (1.0f - ratio.y);
-	_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - ratio.x) * ratio.y;
-	_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);
-	_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;
+	_pCount[_INDEX(minIndex.x, minIndex.y)] += (1.0f - ratio.x) * (1.0f - ratio.y);			//if (gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::FLUID)
+		_pCount[_INDEX(minIndex.x, maxIndex.y)] += (1.0f - ratio.x) * ratio.y;				//	if (gridState[_INDEX(minIndex.x, maxIndex.y)] != STATE::FLUID)
+		_pCount[_INDEX(maxIndex.x, minIndex.y)] += ratio.x * (1.0f - ratio.y);				//	if (gridState[_INDEX(maxIndex.x, minIndex.y)] != STATE::FLUID)
+		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += ratio.x * ratio.y;						//	if (gridState[_INDEX(maxIndex.x, minIndex.y)] != STATE::FLUID)
 
 	XMFLOAT2 minMin_minMax = particleVel * (1.0f - ratio.x);
 	XMFLOAT2 maxMin_maxMax = particleVel * ratio.x;
@@ -71,6 +71,12 @@ XMFLOAT2 Trilinear::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldve
 	XMFLOAT2 minMaxVelocity = oldvel[_INDEX(minIndex.x, maxIndex.y)];
 	XMFLOAT2 maxMinVelocity = oldvel[_INDEX(maxIndex.x, minIndex.y)];
 	XMFLOAT2 maxMaxVelocity = oldvel[_INDEX(maxIndex.x, maxIndex.y)];
+
+	//cout << "min Min velocity : " << minMinVelocity.x << ", " << minMinVelocity.y << endl;
+	//cout << "min Max velocity : " << minMaxVelocity.x << ", " << minMaxVelocity.y << endl;
+	//cout << "max Min velocity : " << maxMinVelocity.x << ", " << maxMinVelocity.y << endl;
+	//cout << "max Max velocity : " << maxMaxVelocity.x << ", " << maxMaxVelocity.y << endl;
+
 
 	// s0* (t0 * d0[IX(i0, j0)] + t1 * d0[IX(i0, j1)]) +
 	//	s1 * (t0 * d0[IX(i1, j0)] + t1 * d0[IX(i1, j1)]);
