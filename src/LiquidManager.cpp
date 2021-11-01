@@ -88,6 +88,7 @@ void LiquidManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer
 	_sim[_simIndex]->iResetSimulationState(constantBuffer, _ex);
 }
 
+
 vector<Vertex> LiquidManager::iGetVertice()
 {
 	return _sim[_simIndex]->iGetVertice();;
@@ -103,10 +104,22 @@ int LiquidManager::iGetObjectCount()
 	return _sim[_simIndex]->iGetObjectCount();
 }
 
+
 void LiquidManager::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	_sim[_simIndex]->iCreateObjectParticle(constantBuffer);
 }
+
+void LiquidManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuffer, int i)
+{
+	_sim[_simIndex]->iUpdateConstantBuffer(constantBuffer, i);
+}
+
+void LiquidManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)
+{
+	_sim[_simIndex]->iDraw(mCommandList, size, indexCount, _drawFlag, i);
+}
+
 
 void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 {
@@ -236,7 +249,7 @@ void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANC
 	_resetSim(dxapp);
 }
 
-void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, bool& updateFlag, DX12App* dxapp)
+void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp)
 {
 	switch (LOWORD(wParam))
 	{
@@ -273,11 +286,11 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		// ### Execution buttons ###
 		case static_cast<int>(_COM::PLAY) :
 		{
-			updateFlag = !updateFlag;
-			SetDlgItemText(hwnd, static_cast<int>(_COM::PLAY), updateFlag ? L"бл" : L"в║");
+			_updateFlag = !_updateFlag;
+			SetDlgItemText(hwnd, static_cast<int>(_COM::PLAY), _updateFlag ? L"бл" : L"в║");
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::STOP)), true);
-			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), !updateFlag);
+			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), !_updateFlag);
 		}
 		break;
 		case static_cast<int>(_COM::STOP) :
@@ -287,7 +300,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		break;
 		case static_cast<int>(_COM::NEXTSTEP) :
 		{
-			if (!updateFlag)
+			if (!_updateFlag)
 			{
 				dxapp->update();
 				dxapp->draw();
@@ -366,14 +379,9 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 }
 
 
-void LiquidManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuffer, int i)
+bool LiquidManager::iGetUpdateFlag()
 {
-	_sim[_simIndex]->iUpdateConstantBuffer(constantBuffer, i);
-}
-
-void LiquidManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i)
-{
-	_sim[_simIndex]->iDraw(mCommandList, size, indexCount, _drawFlag, i);
+	return _updateFlag;
 }
 // #######################################################################################
 #pragma endregion
