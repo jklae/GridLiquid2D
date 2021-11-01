@@ -58,6 +58,7 @@ private:
 		TIME_TEXT, FRAME_TEXT
 	};
 
+					// grid, particle, velocity
 	bool _drawFlag[3] = { true, true, false };
 
 	wchar_t wBuffer[5];

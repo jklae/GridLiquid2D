@@ -7,8 +7,7 @@ using namespace std;
 
 LiquidManager::LiquidManager(int x, int y, float timeStep)
 {
-	// 2 are boundaries.
-	_index.gridCount = x + 2;
+	_index.gridCount = x + 2; // 2 are boundaries.
 	_index.particleCount = 4;
 
 	_sim.push_back(new Eulerian(_index, _ex, FPS_60 / 2.0f));
@@ -16,7 +15,12 @@ LiquidManager::LiquidManager(int x, int y, float timeStep)
 
 	_interp.push_back(new Trilinear(_index));
 
+	// 0 is Eulerian, 1 is PIC/FLIP
+	_simIndex = 0;
+
+	// 0 is Trilinear
 	_setSimInterp(0);
+
 }
 
 LiquidManager::~LiquidManager()
@@ -168,16 +172,19 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 
 	CheckRadioButton(hwnd, static_cast<int>(_COM::DAM_RADIO), static_cast<int>(_COM::DROP2_RADIO), static_cast<int>(_COM::DROP2_RADIO));
-	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), static_cast<int>(_COM::EULERIAN_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), (_simIndex == 0) ? static_cast<int>(_COM::EULERIAN_RADIO) : static_cast<int>(_COM::PICFLIP_RADIO));
 	CheckRadioButton(hwnd, static_cast<int>(_COM::TRILINEAR_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::TRILINEAR_RADIO));
 
 	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
 
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), false);
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), false);
+	if (_simIndex == 0)
+	{
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), false);
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), false);
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_RATIO)), false);
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_TEXT)), false);
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::FLIP_RATIO)), false);
+	}
 
 	SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 	SetScrollPos(scroll, SB_CTL, _scrollPos, TRUE);
