@@ -8,7 +8,7 @@ using namespace std;
 LiquidManager::LiquidManager(int x, int y, float timeStep)
 {
 	_index.gridCount = x + 2; // 2 are boundaries.
-	_index.particleCount = 1;
+	_index.particleCount = 4;
 
 	_sim.push_back(new Eulerian(_index, _ex, FPS_60 / 2.0f));
 	_sim.push_back(new PICFLIP(_index, _ex, FPS_60 / 2.0f));

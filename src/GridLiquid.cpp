@@ -36,7 +36,7 @@ void GridLiquid::_initialize(EX ex)
 			_gridPressure.push_back(0.0f);
 		}
 	}
-	_gridState[_INDEX(4, 4)] = STATE::LIQUID;
+	//_gridState[_INDEX(4, 4)] = STATE::LIQUID;
 
 	_paintSurface();
 }
@@ -96,7 +96,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		{
 			_gridState.push_back(STATE::BOUNDARY);
 		}
-		/*else if
+		else if
 			(
 				(
 					((N + 1) / 2 - offset > i)
@@ -115,7 +115,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 				)
 		{
 			_gridState.push_back(STATE::LIQUID);
-		}*/
+		}
 		else
 		{
 			_gridState.push_back(STATE::AIR);
