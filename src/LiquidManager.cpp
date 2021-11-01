@@ -167,7 +167,7 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"button", L"Ours", WS_CHILD | WS_VISIBLE | BS_AUTORADIOBUTTON,
 		42, 335, 60, 25, hwnd, reinterpret_cast<HMENU>(_COM::OURS_RADIO), hInstance, NULL);
 
-	CreateWindow(L"button", L"бл", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+	CreateWindow(L"button", _updateFlag ? L"бл" : L"в║", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		65, 385, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::PLAY), hInstance, NULL);
 	CreateWindow(L"button", L"бс", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		115, 385, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::STOP), hInstance, NULL);
@@ -188,7 +188,10 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), (_simIndex == 0) ? static_cast<int>(_COM::EULERIAN_RADIO) : static_cast<int>(_COM::PICFLIP_RADIO));
 	CheckRadioButton(hwnd, static_cast<int>(_COM::TRILINEAR_RADIO), static_cast<int>(_COM::OURS_RADIO), static_cast<int>(_COM::TRILINEAR_RADIO));
 
-	EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
+	if (_updateFlag)
+	{
+		EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::NEXTSTEP)), false);
+	}
 
 	if (_simIndex == 0)
 	{
