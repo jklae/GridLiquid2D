@@ -74,7 +74,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 			_gridState.push_back(STATE::BOUNDARY); 
 		}
 		else if ((N + 1) / 2 - offset < i 
-			&& (i < (N - 10))
+			&& (i < (N - 4))
 			&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
 			&& (j < (N)))
 		//else if ((N + 1) / 2 - offset < i 
@@ -166,7 +166,7 @@ void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 
 				if (count > 0)
 				{
-					vec[_INDEX(i, j)] = temp / (float)count;
+					vec[_INDEX(i, j)] = temp / static_cast<float>(count);
 				}
 			}
 
@@ -336,10 +336,10 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 	switch (vState)
 	{
 	case VALUE::MIN:
-		value = particlePos + 0.5f - 0.5f * _particleScale;
+		value = particlePos + 0.5f; //- 0.5f * _particleScale;
 		break;
 	case VALUE::MAX:
-		value = particlePos + 0.5f + 0.5f * _particleScale;
+		value = particlePos + 0.5f; //+ 0.5f * _particleScale;
 		break;
 	default:
 		value = { 0.0f, 0.0f };
