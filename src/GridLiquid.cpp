@@ -46,17 +46,17 @@ void GridLiquid::_initialize(EX ex)
 	}*/
 
 
-	//for (int i = 0; i < _gridCount; i++)
-	//{
-	//	for (int j = 0; j < _gridCount; j++)
-	//	{
-	//		if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
-	//		{
-	//			_gridVelocity[_INDEX(i, j)].x = 3.0f;
-	//			_gridVelocity[_INDEX(i, j)].y = 3.0f;
-	//		}
-	//	}
-	//}
+	for (int i = 0; i < _gridCount; i++)
+	{
+		for (int j = 0; j < _gridCount; j++)
+		{
+			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
+			{
+				_gridVelocity[_INDEX(i, j)].x = 3.0f;
+				_gridVelocity[_INDEX(i, j)].y = 3.0f;
+			}
+		}
+	}
 
 	_paintSurface();
 }
@@ -94,8 +94,8 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 			_gridState.push_back(STATE::BOUNDARY); 
 		}
 		else if ((N + 1) / 2 - offset < i 
-			&& (i < (N - 4))
-			&& ((N + 1) / 2 < j)  //((N + 1) / 2 - offset < j)     
+			&& (i < (N - 1))
+			&& ((N + 1) / 4 < j)  //((N + 1) / 2 - offset < j)     
 			&& (j < (N)))
 		//else if ((N + 1) / 2 - offset < i 
 		//	&& (i < (N))
@@ -116,7 +116,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		{
 			_gridState.push_back(STATE::BOUNDARY);
 		}
-		else if
+		/*else if
 			(
 				(
 					((N + 1) / 2 - offset > i)
@@ -132,7 +132,9 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 				&& ((N + 1) / 2 < j)
 				&& (j < N)
 
-				)
+				)*/
+
+		else if (i == N && j < (N + 1) / 2 + offset && j > (N + 1) / 2 - offset)
 				
 		{
 			_gridState.push_back(STATE::LIQUID);
@@ -252,6 +254,15 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 	// (xCount, yCount)
 	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
 	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
+
+	//// (0, 0)
+	//vec[_INDEX(0, 0)] = (vec[_INDEX(0, 1)] + vec[_INDEX(1, 0)]) / 2.0f;
+	//// (0, yCount)
+	//vec[_INDEX(0, N + 1)] = (vec[_INDEX(0, N)] + vec[_INDEX(1, N + 1)]) / 2.0f;
+	//// (xCount, 0)
+	//vec[_INDEX(N + 1, 0)] = (vec[_INDEX(N + 1, 1)] + vec[_INDEX(N, 0)]) / 2.0f;
+	//// (xCount, yCount)
+	//vec[_INDEX(N + 1, N + 1)] = (vec[_INDEX(N + 1, N)] + vec[_INDEX(N, N + 1)]) / 2.0f;
 }
 
 void GridLiquid::_setBoundary(std::vector<float>& scalar)
@@ -516,7 +527,7 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 				{
 					for (int m = 0; m < _particleCount; m++)
 					{
-						_particleVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
+						_particleVelocity.push_back(XMFLOAT2(3.0f, 3.0f));
 						_particlePosition.push_back(
 							{ -0.3f + pos.y + k * _particleScale * 1.1f,    // y
 							  -0.3f + pos.x + m * _particleScale * 1.1f }); // x

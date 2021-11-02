@@ -21,10 +21,11 @@ void Trilinear::particleToGrid(XMFLOAT2 particlePos, XMFLOAT2 particleVel, vecto
 	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
 
 	XMFLOAT2 ratio = pos - gridPos[_INDEX(minIndex.x, minIndex.y)];
-	float minMinRatio = gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * (1.0f - ratio.y) : 0.0f;
-	float minMaxRatio = gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * ratio.y : 0.0f;
-	float maxMinRatio = gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID ? ratio.x * (1.0f - ratio.y) : 0.0f;
-	float maxMaxRatio = gridState[_INDEX(maxIndex.x, maxIndex.y)] == STATE::LIQUID ? ratio.x * ratio.y : 0.0f;
+
+	float minMinRatio =		 gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID	 ?	 (1.0f - ratio.x) * (1.0f - ratio.y)   : 0.0f;
+	float minMaxRatio =		 gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID	 ?	 (1.0f - ratio.x) * ratio.y			   : 0.0f;
+	float maxMinRatio =		 gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID	 ?	 ratio.x * (1.0f - ratio.y)			   : 0.0f;
+	float maxMaxRatio =		 gridState[_INDEX(maxIndex.x, maxIndex.y)] == STATE::LIQUID	 ?	 ratio.x * ratio.y					   : 0.0f;
 
 	float totalRatio = minMinRatio + minMaxRatio + maxMinRatio + maxMaxRatio;
 	if (totalRatio > EPS_FLOAT)
