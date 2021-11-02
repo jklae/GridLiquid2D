@@ -37,6 +37,26 @@ void GridLiquid::_initialize(EX ex)
 		}
 	}
 	//_gridState[_INDEX(4, 4)] = STATE::LIQUID;
+	int N = _gridCount - 2;
+	/*for (int i = 1; i <= N; i++)
+	{
+		_gridState[_INDEX(i, N - 2)] = STATE::LIQUID;
+		_gridState[_INDEX(i, N - 1)] = STATE::LIQUID;
+		_gridState[_INDEX(i, N)] = STATE::LIQUID;
+	}*/
+
+
+	//for (int i = 0; i < _gridCount; i++)
+	//{
+	//	for (int j = 0; j < _gridCount; j++)
+	//	{
+	//		if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
+	//		{
+	//			_gridVelocity[_INDEX(i, j)].x = 3.0f;
+	//			_gridVelocity[_INDEX(i, j)].y = 3.0f;
+	//		}
+	//	}
+	//}
 
 	_paintSurface();
 }
@@ -57,7 +77,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		else if ((N + 1) / 3 - offset < i 
 			&& (i < (N + 1) / 2 + 1)
 			&& (2 < j)  //((N + 1) / 2 - offset < j)     
-			&& (j < (N) - offset))            
+			&& (j < (N) - offset)) 
 		{
 			_gridState.push_back(STATE::LIQUID);
 		}
@@ -113,6 +133,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 				&& (j < N)
 
 				)
+				
 		{
 			_gridState.push_back(STATE::LIQUID);
 		}
@@ -199,38 +220,38 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 	}
 
 
-	//// (x, 0) (x, yMax+1)
-	//for (int i = 1; i <= N; i++)
-	//{
-	//	vec[_INDEX(i, 0)].x = +vec[_INDEX(i, 1)].x;
-	//	vec[_INDEX(i, 0)].y = -vec[_INDEX(i, 1)].y;
+	// (x, 0) (x, yMax+1)
+	for (int i = 1; i <= N; i++)
+	{
+		vec[_INDEX(i, 0)].x = vec[_INDEX(i, 1)].x;
+		vec[_INDEX(i, 0)].y = vec[_INDEX(i, 1)].y;
 
-	//	vec[_INDEX(i, N + 1)].x = +vec[_INDEX(i, N)].x;
-	//	vec[_INDEX(i, N + 1)].y = -vec[_INDEX(i, N)].y;
-	//}
+		vec[_INDEX(i, N + 1)].x = vec[_INDEX(i, N)].x;
+		vec[_INDEX(i, N + 1)].y = vec[_INDEX(i, N)].y;
+	}
 
-	//// (0, y) (xMax+1, y)
-	//for (int j = 1; j <= N; j++)
-	//{
-	//	vec[_INDEX(0, j)].x = -vec[_INDEX(1, j)].x;
-	//	vec[_INDEX(0, j)].y = +vec[_INDEX(1, j)].y;
+	// (0, y) (xMax+1, y)
+	for (int j = 1; j <= N; j++)
+	{
+		vec[_INDEX(0, j)].x = vec[_INDEX(1, j)].x;
+		vec[_INDEX(0, j)].y = vec[_INDEX(1, j)].y;
 
-	//	vec[_INDEX(N + 1, j)].x = -vec[_INDEX(N, j)].x;
-	//	vec[_INDEX(N + 1, j)].y = +vec[_INDEX(N, j)].y;
-	//}
+		vec[_INDEX(N + 1, j)].x = vec[_INDEX(N, j)].x;
+		vec[_INDEX(N + 1, j)].y = vec[_INDEX(N, j)].y;
+	}
 
-	//// (0, 0)
-	//vec[_INDEX(0, 0)].x = vec[_INDEX(0, 1)].x;
-	//vec[_INDEX(0, 0)].y = vec[_INDEX(1, 0)].y;
-	//// (0, yCount)
-	//vec[_INDEX(0, N + 1)].x = vec[_INDEX(0, N)].x;
-	//vec[_INDEX(0, N + 1)].y = vec[_INDEX(1, N + 1)].y ;
-	//// (xCount, 0)
-	//vec[_INDEX(N + 1, 0)].x = vec[_INDEX(N + 1, 1)].x;
-	//vec[_INDEX(N + 1, 0)].y = vec[_INDEX(N, 0)].y;
-	//// (xCount, yCount)
-	//vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
-	//vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
+	// (0, 0)
+	vec[_INDEX(0, 0)].x = vec[_INDEX(0, 1)].x;
+	vec[_INDEX(0, 0)].y = vec[_INDEX(1, 0)].y;
+	// (0, yCount)
+	vec[_INDEX(0, N + 1)].x = vec[_INDEX(0, N)].x;
+	vec[_INDEX(0, N + 1)].y = vec[_INDEX(1, N + 1)].y ;
+	// (xCount, 0)
+	vec[_INDEX(N + 1, 0)].x = vec[_INDEX(N + 1, 1)].x;
+	vec[_INDEX(N + 1, 0)].y = vec[_INDEX(N, 0)].y;
+	// (xCount, yCount)
+	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
+	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
 }
 
 void GridLiquid::_setBoundary(std::vector<float>& scalar)
@@ -336,10 +357,10 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 	switch (vState)
 	{
 	case VALUE::MIN:
-		value = particlePos + 0.5f; //- 0.5f * _particleScale;
+		value = particlePos + 0.5f - 0.5f * _particleScale;
 		break;
 	case VALUE::MAX:
-		value = particlePos + 0.5f; //+ 0.5f * _particleScale;
+		value = particlePos + 0.5f + 0.5f * _particleScale;
 		break;
 	default:
 		value = { 0.0f, 0.0f };

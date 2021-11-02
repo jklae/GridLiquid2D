@@ -46,7 +46,6 @@ void Eulerian::_force()
 		}
 	}
 	_setBoundary(_gridVelocity);
-	_setFreeSurface(_gridVelocity);
 }
 
 void Eulerian::_advect()
