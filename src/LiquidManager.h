@@ -62,7 +62,7 @@ private:
 
 					// grid, particle, velocity
 	bool _drawFlag[3] = { true, true, true };
-	bool _updateFlag = true;
+	bool _updateFlag = false;
 
 	wchar_t wBuffer[5];
 	wchar_t* _int2wchar(int value);

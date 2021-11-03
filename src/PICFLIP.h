@@ -17,10 +17,10 @@ private:
 	void _initialize(EX ex) override;
 
 	void _update() override;
-	void _advect(int iter);
-	void _force(int iter);
-	void _project(int iter);
+	void _advect();
+	void _force();
+	void _project();
 
-	void _updateParticlePos(int iter);
+	void _updateParticlePos();
 };
 

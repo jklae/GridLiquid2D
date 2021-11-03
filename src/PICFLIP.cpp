@@ -30,21 +30,59 @@ void PICFLIP::_initialize(EX ex)
 
 void PICFLIP::_update()
 {
-	_advect(0);
+	//_advect();
 
-	_force(0);
-	_setBoundary(_gridVelocity);
-	_setFreeSurface(_gridVelocity);
+	//_force();
+	//_setBoundary(_gridVelocity);
+	//_setFreeSurface(_gridVelocity);
 
-	_project(0);
+	//_project();
+	//// Solve boundary condition again due to numerical errors in previous step
+	//_setBoundary(_gridVelocity);
+	//_updateParticlePos();
+
+	//_paintLiquid();
+
+	static int i = 0;
+
+	switch (i % 5)
+	{
+	case 0:
+		_advect();
+		_setBoundary(_gridVelocity);
+		cout << "p2g" << endl;
+		break;
+	case 1:
+		_force();
+		cout << "force" << endl;
+		break;
+	case 2:
+		_setBoundary(_gridVelocity);
+		_setFreeSurface(_gridVelocity);
+		cout << "boundary" << endl;
+		break;
+	case 3:
+		_project();
+		_setBoundary(_gridVelocity);
+		cout << "project" << endl;
+		break;
+	case 4:
+		_updateParticlePos();
+
+		_paintLiquid();
+		cout << "g2p" << endl << endl;
+		break;
+	}
+	int N = _gridCount - 2;
+	cout << "Grid velocity : " << _gridVelocity[_INDEX(N / 2, N)].x << ", " << _gridVelocity[_INDEX(N / 2, N)].y << endl;
+	cout << "particle velocity : " << _particleVelocity[119].x << ", " << _particleVelocity[119].y << endl;
+	i++;
+
 	// Solve boundary condition again due to numerical errors in previous step
-	_setBoundary(_gridVelocity);
-	_updateParticlePos(0);
-
-	_paintLiquid();
+	
 }
 
-void PICFLIP::_advect(int iter)
+void PICFLIP::_advect()
 {
 	int N = _gridCount - 2;
 	for (int i = 0; i < _particlePosition.size(); i++)
@@ -61,7 +99,7 @@ void PICFLIP::_advect(int iter)
 	}
 }
 
-void PICFLIP::_force(int iter)
+void PICFLIP::_force()
 {
 	float dt = _timeStep;
 
@@ -72,7 +110,7 @@ void PICFLIP::_force(int iter)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
-				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
+				_gridVelocity[_INDEX(i, j)].y -= 30.8f * dt;
 			}
 
 		}
@@ -80,7 +118,7 @@ void PICFLIP::_force(int iter)
 }
 
 
-void PICFLIP::_project(int iter)
+void PICFLIP::_project()
 {
 	int N = _gridCount - 2;
 	for (int i = 1; i <= N; i++)
@@ -135,7 +173,7 @@ void PICFLIP::_project(int iter)
 
 }
 
-void PICFLIP::_updateParticlePos(int iter)
+void PICFLIP::_updateParticlePos()
 {
 	float dt = _timeStep;
 
@@ -166,5 +204,7 @@ void PICFLIP::_updateParticlePos(int iter)
 
 		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
 		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
+
+		//cout << i << ":  particle velocity : " << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
 	}
 }

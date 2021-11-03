@@ -15,14 +15,44 @@ Eulerian::~Eulerian()
 
 void Eulerian::_update()
 {
-	_force();
+	//_force();
+
+	////_project();
+	//_advect();
 
 	//_project();
-	_advect();
+	//_updateParticlePos();
+	//_paintLiquid();
 
-	_project();
-	_updateParticlePos();
-	_paintLiquid();
+	static int i = 0;
+
+	switch (i % 4)
+	{
+	case 0:
+		_force();
+		cout << "force" << endl;
+		break;
+
+	case 1:
+		//_project();
+		_advect();
+		cout << "advect" << endl;
+		break;
+
+	case 2:
+		_project();
+		cout << "project" << endl;
+		break;
+
+	case 3:
+		_updateParticlePos();
+		_paintLiquid();
+		cout << "updateparticle" << endl << endl;
+		break;
+	}
+
+	i++;
+
 
 }
 
@@ -37,7 +67,7 @@ void Eulerian::_force()
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
-				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
+				_gridVelocity[_INDEX(i, j)].y -= 30.8f * dt;
 			}
 			else
 			{

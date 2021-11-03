@@ -52,8 +52,8 @@ void GridLiquid::_initialize(EX ex)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
-				_gridVelocity[_INDEX(i, j)].x = 3.0f;
-				_gridVelocity[_INDEX(i, j)].y = 3.0f;
+				_gridVelocity[_INDEX(i, j)].x = 0.0f;
+				_gridVelocity[_INDEX(i, j)].y = 30.0f;
 			}
 		}
 	}
@@ -134,7 +134,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 
 				)*/
 
-		else if (i == N && j < (N + 1) / 2 + offset && j > (N + 1) / 2 - offset)
+		else if (j == N / 2 || j == N / 2 + 1)
 				
 		{
 			_gridState.push_back(STATE::LIQUID);
@@ -393,7 +393,7 @@ XMFLOAT4 GridLiquid::_getColor(int i)
 		break;
 
 	case STATE::BOUNDARY:
-		return XMFLOAT4(0.2f, 0.2f, 0.2f, 1.0f);
+		return XMFLOAT4(0.7f, 0.7f, 0.7f, 1.0f);
 		break;
 
 	case STATE::AIR:
@@ -453,10 +453,10 @@ vector<Vertex> GridLiquid::iGetVertice()
 	int N = _gridCount - 2;
 	for (int i = 0; i < _gridCount; i++)
 	{
-		for (int j = 0; j < _gridCount; j++)
+		for (int j = _gridCount - 3; j < _gridCount; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 0.5f , x.y + _gridVelocity[_INDEX(i, j)].y * 0.5f };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 0.05f , x.y + _gridVelocity[_INDEX(i, j)].y * 0.9f };
 			vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -2.0f) }));
 			vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -2.0f) }));
 		}
@@ -527,7 +527,7 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 				{
 					for (int m = 0; m < _particleCount; m++)
 					{
-						_particleVelocity.push_back(XMFLOAT2(3.0f, 3.0f));
+						_particleVelocity.push_back(XMFLOAT2(0.0f, 30.0f));
 						_particlePosition.push_back(
 							{ -0.3f + pos.y + k * _particleScale * 1.1f,    // y
 							  -0.3f + pos.x + m * _particleScale * 1.1f }); // x
