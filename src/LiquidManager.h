@@ -45,7 +45,7 @@ public:
 private:
 	std::vector<GridLiquid*> _sim;
 	int _simIndex = 0;
-	int _scrollPos = 99;
+	int _scrollPos = 0;
 
 	std::vector<Interpolation*> _interp;
 

@@ -12,7 +12,7 @@ public:
 private:
 	std::vector<DirectX::XMFLOAT2> _oldVel;
 
-	float _flipRatio = 0.99f;
+	float _flipRatio = 0.0f;
 
 	void _initialize(EX ex) override;
 

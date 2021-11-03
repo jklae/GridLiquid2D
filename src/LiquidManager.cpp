@@ -8,7 +8,7 @@ using namespace std;
 LiquidManager::LiquidManager(int x, int y, float timeStep)
 {
 	_index.gridCount = x + 2; // 2 are boundaries.
-	_index.particleCount = 1;
+	_index.particleCount = 4;
 
 	_sim.push_back(new Eulerian(_index, _ex, FPS_60 / 2.0f));
 	_sim.push_back(new PICFLIP(_index, _ex, FPS_60 / 2.0f));
@@ -204,6 +204,7 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 	SetScrollPos(scroll, SB_CTL, _scrollPos, TRUE);
+	dynamic_cast<PICFLIP*>(_sim[1])->setFlipRatio(_scrollPos);
 
 	SetTimer(hwnd, 1, 10, NULL);
 }
