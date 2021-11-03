@@ -36,7 +36,7 @@ void GridLiquid::_initialize(EX ex)
 			_gridPressure.push_back(0.0f);
 		}
 	}
-	//_gridState[_INDEX(4, 4)] = STATE::LIQUID;
+	_gridState[_INDEX(4, 4)] = STATE::LIQUID;
 	int N = _gridCount - 2;
 	/*for (int i = 1; i <= N; i++)
 	{
@@ -116,29 +116,29 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		{
 			_gridState.push_back(STATE::BOUNDARY);
 		}
-		else if
-			(
-				(
-					((N + 1) / 2 - offset > i)
-					&& (i > 0)
+		//else if
+		//	(
+		//		(
+		//			((N + 1) / 2 - offset > i)
+		//			&& (i > 0)
 
-					||
+		//			||
 
-					(i > (N + 1) / 2 + offset + 1)
-					&&
-					(i < N + 1)
-					)
+		//			(i > (N + 1) / 2 + offset + 1)
+		//			&&
+		//			(i < N + 1)
+		//			)
 
-				&& ((N + 1) / 2 < j)
-				&& (j < N)
+		//		&& ((N + 1) / 2 < j)
+		//		&& (j < N)
 
-				)
+		//		)
 
-		//else if (j == N / 2 || j == N / 2 + 1)
-				
-		{
-			_gridState.push_back(STATE::LIQUID);
-		}
+		////else if (j == N / 2 || j == N / 2 + 1)
+		//		
+		//{
+		//	_gridState.push_back(STATE::LIQUID);
+		//}
 		else
 		{
 			_gridState.push_back(STATE::AIR);
@@ -419,10 +419,51 @@ void GridLiquid::iUpdate()
 	//float timeStep;
 	//for (float i = 0; i <= FPS_60; i += timeStep)
 	//{
-		_update();
+		//_update();
 	//}
 
 	//Sleep(_delayTime);
+	int N = _gridCount - 2;
+
+	// Reset grid
+	for (int i = 1; i <= N; i++)
+	{
+		for (int j = 1; j <= N; j++)
+		{
+			_gridState[_INDEX(i, j)] = STATE::AIR;
+		}
+	}
+	static bool flag = true;
+	if (flag)
+	{
+		//_particlePosition[0] = { 1.0f, 1.0f };
+		flag = false;
+	}
+
+	XMFLOAT2 pos = _particlePosition[0];
+	XMINT2 minIndex = { static_cast<int>(floor(pos.x - 2.0f)), static_cast<int>(floor(pos.y - 2.0f)) };
+	XMINT2 maxIndex = { static_cast<int>(floor(pos.x + 2.0f)), static_cast<int>(floor(pos.y + 2.0f)) };
+
+	for (int i = minIndex.x; i <= maxIndex.x; i++)
+	{
+		for (int j = minIndex.y; j <= maxIndex.y; j++)
+		{
+			_gridState[_INDEX(i, j)] = STATE::LIQUID;
+		}
+	}
+	/*_gridState[_INDEX(minIndex.x, minIndex.y)] = STATE::LIQUID;
+	_gridState[_INDEX(minIndex.x, maxIndex.y)] = STATE::LIQUID;
+	_gridState[_INDEX(maxIndex.x, minIndex.y)] = STATE::LIQUID;
+	_gridState[_INDEX(maxIndex.x, maxIndex.y)] = STATE::LIQUID;*/
+
+	//cout << minIndex.x << ", " << minIndex.y << endl;
+	//cout << maxIndex.x << ", " << maxIndex.y << endl;
+
+	cout << _particlePosition[0].x << endl;
+
+	_particlePosition[0] += 0.001f;
+
+
 }
 
 void GridLiquid::iResetSimulationState(vector<ConstantBuffer>& constantBuffer, EX ex)
