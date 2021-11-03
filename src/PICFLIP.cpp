@@ -30,55 +30,19 @@ void PICFLIP::_initialize(EX ex)
 
 void PICFLIP::_update()
 {
-	//_advect();
+	_advect();
 
-	//_force();
-	//_setBoundary(_gridVelocity);
-	//_setFreeSurface(_gridVelocity);
+	_force();
+	_setBoundary(_gridVelocity);
+	_setFreeSurface(_gridVelocity);
 
-	//_project();
-	//// Solve boundary condition again due to numerical errors in previous step
-	//_setBoundary(_gridVelocity);
-	//_updateParticlePos();
-
-	//_paintLiquid();
-
-	static int i = 0;
-
-	switch (i % 5)
-	{
-	case 0:
-		_advect();
-		_setBoundary(_gridVelocity);
-		cout << "p2g" << endl;
-		break;
-	case 1:
-		_force();
-		cout << "force" << endl;
-		break;
-	case 2:
-		_setBoundary(_gridVelocity);
-		_setFreeSurface(_gridVelocity);
-		cout << "boundary" << endl;
-		break;
-	case 3:
-		_project();
-		_setBoundary(_gridVelocity);
-		cout << "project" << endl;
-		break;
-	case 4:
-		_updateParticlePos();
-
-		_paintLiquid();
-		cout << "g2p" << endl << endl;
-		break;
-	}
-	int N = _gridCount - 2;
-	cout << "Grid velocity : " << _gridVelocity[_INDEX(N / 2, N)].x << ", " << _gridVelocity[_INDEX(N / 2, N)].y << endl;
-	cout << "particle velocity : " << _particleVelocity[119].x << ", " << _particleVelocity[119].y << endl;
-	i++;
-
+	_project();
 	// Solve boundary condition again due to numerical errors in previous step
+	_setBoundary(_gridVelocity);
+	_updateParticlePos();
+
+	_paintLiquid();
+
 	
 }
 

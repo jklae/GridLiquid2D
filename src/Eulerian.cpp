@@ -15,43 +15,16 @@ Eulerian::~Eulerian()
 
 void Eulerian::_update()
 {
-	//_force();
-
-	////_project();
-	//_advect();
+	_force();
 
 	//_project();
-	//_updateParticlePos();
-	//_paintLiquid();
+	_advect();
 
-	static int i = 0;
+	_project();
+	_updateParticlePos();
+	_paintLiquid();
 
-	switch (i % 4)
-	{
-	case 0:
-		_force();
-		cout << "force" << endl;
-		break;
-
-	case 1:
-		//_project();
-		_advect();
-		cout << "advect" << endl;
-		break;
-
-	case 2:
-		_project();
-		cout << "project" << endl;
-		break;
-
-	case 3:
-		_updateParticlePos();
-		_paintLiquid();
-		cout << "updateparticle" << endl << endl;
-		break;
-	}
-
-	i++;
+	
 
 
 }
