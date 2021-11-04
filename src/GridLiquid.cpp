@@ -433,22 +433,36 @@ void GridLiquid::iUpdate()
 			_gridState[_INDEX(i, j)] = STATE::AIR;
 		}
 	}
-	static bool flag = true;
-	if (flag)
+
+	auto cubic = [](float x) 
 	{
-		//_particlePosition[0] = { 1.0f, 1.0f };
-		flag = false;
-	}
+		if (x >= 0.0f && x < 1.0f)
+			return (0.5f * x * x * x) - (x * x) + 0.667f;
+		else if (x >= 1.0f && x < 2.0f)
+			return (-0.167f * x * x * x) + (x * x) - (2.0f * x) + 1.333f;
+		else
+			return 0.0f;
+	};
+
+	//cout << cubic(1.5f) << endl;
 
 	XMFLOAT2 pos = _particlePosition[0];
 	XMINT2 minIndex = { static_cast<int>(floor(pos.x - 2.0f)), static_cast<int>(floor(pos.y - 2.0f)) };
 	XMINT2 maxIndex = { static_cast<int>(floor(pos.x + 2.0f)), static_cast<int>(floor(pos.y + 2.0f)) };
 
+	float sum = 0.0f;
 	for (int i = minIndex.x; i <= maxIndex.x; i++)
 	{
 		for (int j = minIndex.y; j <= maxIndex.y; j++)
 		{
-			_gridState[_INDEX(i, j)] = STATE::LIQUID;
+			XMFLOAT2 dist = { fabsf(pos.x - _gridPosition[_INDEX(i, j)].x), fabsf(pos.y - _gridPosition[_INDEX(i, j)].y) };
+
+			float weight = cubic(dist.x) * cubic(dist.y);
+
+			if (weight > EPS_FLOAT)
+				_gridState[_INDEX(i, j)] = STATE::LIQUID;
+
+			sum += weight;
 		}
 	}
 	/*_gridState[_INDEX(minIndex.x, minIndex.y)] = STATE::LIQUID;
@@ -459,7 +473,7 @@ void GridLiquid::iUpdate()
 	//cout << minIndex.x << ", " << minIndex.y << endl;
 	//cout << maxIndex.x << ", " << maxIndex.y << endl;
 
-	cout << _particlePosition[0].x << endl;
+	cout << _particlePosition[0].x << ",    " << sum <<endl;
 
 	_particlePosition[0] += 0.001f;
 

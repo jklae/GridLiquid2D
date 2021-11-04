@@ -123,11 +123,11 @@ void LiquidManager::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int s
 
 void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 {
-	CreateWindow(L"button", L"Grid : ON ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+	CreateWindow(L"button", _getDrawFlag(FLAG::GRID) ? L"Grid : ON " : L"Grid : OFF ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		90, 30, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::GRID_BTN), hInstance, NULL);
-	CreateWindow(L"button", L"Particle : ON ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+	CreateWindow(L"button", _getDrawFlag(FLAG::PARTICLE) ? L"Particle : ON " : L"Particle : OFF ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		30, 60, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::PARTICLE_BTN), hInstance, NULL);
-	CreateWindow(L"button", L"Velcoity : OFF ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+	CreateWindow(L"button", _getDrawFlag(FLAG::PARTICLE) ? L"Velcoity : ON " : L"Velcoity : OFF ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 		150, 60, 100, 25, hwnd, reinterpret_cast<HMENU>(_COM::VELOCITY_BTN), hInstance, NULL);
 
 	CreateWindow(L"button", L"Example", WS_CHILD | WS_VISIBLE | BS_GROUPBOX,
