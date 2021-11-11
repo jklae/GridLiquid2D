@@ -16,3 +16,5 @@ git submodule update --progress --init -- "ext/DXViewer"
 ```
 
 ## Reference
+* Kalle Bladin. _Fluid_Simulation_. https://github.com/kbladin/Fluid_Simulation
+* Ryan Guy. _Blender-FLIP-Fluids_. https://github.com/rlguy/Blender-FLIP-Fluids
