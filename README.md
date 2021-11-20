@@ -1,7 +1,7 @@
 # GridLiquids
 ## Overview
 <img src="docs/images/demo.gif" width="80%" height="80%">
-GridLiquids is a liquid simulation for Eulerian and PIC/FLIP. This simulation is rendered using DXViewer. For more details about DXViewer, see <A href="https://github.com/frostsim/DXViewer">here</A>.
+GridLiquids is a liquid simulation for Eulerian and PIC/FLIP. This simulation is rendered using <A href="https://github.com/frostsim/DXViewer">DXViewer</A>.
 
 ## Build
 This repo was developed in the following environment:
