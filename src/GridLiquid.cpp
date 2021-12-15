@@ -4,7 +4,7 @@ using Microsoft::WRL::ComPtr;
 using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
-using namespace DXViewer::xmfloat3;
+using namespace DXViewer::xmint2;
 
 GridLiquid::GridLiquid(int x, int y, float timeStep)
 {
@@ -22,7 +22,7 @@ GridLiquid::~GridLiquid()
 void GridLiquid::_initialize(EX ex)
 {
 	// Set _fluid
-	for (int j = 0; j < _gridCount.x; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
 		for (int i = 0; i < _gridCount.x; i++)
 		{
@@ -37,21 +37,21 @@ void GridLiquid::_initialize(EX ex)
 
 void GridLiquid::_computeGridState(EX ex, int i, int j)
 {
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 	int offset = _gridCount.x / 10;
 
 	switch (ex)
 	{
 	case EX::DAM:
-		if (i == 0 || j == 0 
-		|| i == N + 1 || j == N + 1) 
+		if (i == 0 || i == N.x + 1
+		||  j == 0 || j == N.y + 1)
 		{ 
 			_gridState.push_back(STATE::BOUNDARY); 
 		}
 		else if ((2 < i)
-			&& (i < (N + 1) / 2 - offset)
+			&& (i < (N.x + 1) / 2 - offset)
 			&& (2 < j)  
-			&& (j < ((N + 1) / 2 + offset * 2.0f)))
+			&& (j < ((N.y + 1) / 2 + offset * 2.0f)))
 		{
 			_gridState.push_back(STATE::LIQUID);
 		}
@@ -64,15 +64,15 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		break;
 
 	case EX::DROP:
-		if (i == 0 || j == 0 
-		|| i == N + 1 || j == N + 1) 
+		if (i == 0 || i == N.x + 1
+		 || j == 0 || j == N.y + 1)
 		{ 
 			_gridState.push_back(STATE::BOUNDARY); 
 		}
-		else if ((N + 1) / 2 - offset * 2.3f < i
-			&& (i < (N + 1) / 2 + offset * 2.3f)
-			&& ((N + 1) / 2 + offset< j)
-			&& (j < N - 2))
+		else if ((N.x + 1) / 2 - offset * 2.3f < i
+			&& (i < (N.x + 1) / 2 + offset * 2.3f)
+			&& ((N.y + 1) / 2 + offset< j)
+			&& (j < N.y - 2))
 		{
 			_gridState.push_back(STATE::LIQUID);
 		}
@@ -256,10 +256,10 @@ void GridLiquid::_paintLiquid()
 
 void GridLiquid::_paintSurface()
 {
-	int N = _gridCount.x - 2;
-	for (int j = 1; j <= N; j++)
+	XMINT2 N = _gridCount - 2;
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
@@ -448,7 +448,7 @@ vector<Vertex>& GridLiquid::iGetVertice()
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) }));
 
 	int N = _gridCount.x - 2;
-	for (int j = 0; j < _gridCount.x; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
 		for (int i = 0; i < _gridCount.x; i++)
 		{
@@ -469,9 +469,8 @@ vector<unsigned int>& GridLiquid::iGetIndice()
 	_indices.push_back(0); _indices.push_back(1); _indices.push_back(2);
 	_indices.push_back(0); _indices.push_back(2); _indices.push_back(3);
 
-	int N = _gridCount.x - 2;
 									// The number of lines needs to be doubled because it needs "position" and "direction".
-	for (int i = 0; i <= _gridCount.x * _gridCount.x * 2; i++)
+	for (int i = 0; i <= _gridCount.x * _gridCount.y * 2; i++)
 	{
 		_indices.push_back(i);
 	}
@@ -487,7 +486,7 @@ int GridLiquid::iGetObjectCount()
 void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	// ###### Create Object ######
-	for (int j = 0; j < _gridCount.x; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
 		for (int i = 0; i < _gridCount.x; i++)
 		{
@@ -510,7 +509,7 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 	// ###### ###### ###### ######
 
 	// ###### Create particle ######
-	for (int j = 0; j < _gridCount.x; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
 		for (int i = 0; i < _gridCount.x; i++)
 		{
@@ -560,7 +559,7 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 
 void GridLiquid::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
 {
-	int objectEndIndex = _gridCount.x * _gridCount.x;
+	int objectEndIndex = _gridCount.x * _gridCount.y;
 	int size = constantBuffer.size();
 
 	// Set object color					
@@ -586,7 +585,7 @@ void GridLiquid::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuff
 
 void GridLiquid::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i)
 {
-	int objectEndIndex = _gridCount.x * _gridCount.x;
+	int objectEndIndex = _gridCount.x * _gridCount.y;
 
 	if (i < objectEndIndex)
 	{
