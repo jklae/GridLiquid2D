@@ -54,7 +54,7 @@ void LiquidManager::_resetSim()
 void LiquidManager::iUpdate()
 {
 	clock_t startTime = clock();
-	//_sim[_simIndex]->iUpdate();
+	_sim[_simIndex]->iUpdate();
 	clock_t endTime = clock();
 	
 	_simTime += endTime - startTime; // ms

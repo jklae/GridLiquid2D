@@ -3,6 +3,7 @@
 using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
+using namespace DXViewer::xmint2;
 
 Eulerian::Eulerian(int x, int y, EX ex, float timeStep)
 	:GridLiquid(x, y, timeStep)
@@ -19,22 +20,22 @@ void Eulerian::_update()
 	_force();
 
 	//_project();
-	_advect();
+	/*_advect();
 
 	_project();
 	_updateParticlePos();
-	_paintLiquid();
+	_paintLiquid();*/
 }
 
 void Eulerian::_force()
 {
 	float dt = _timeStep;
 
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 
-	for (int j = 1; j <= N; j++)
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{

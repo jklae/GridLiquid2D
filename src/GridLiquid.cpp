@@ -139,46 +139,46 @@ void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 
 void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 
 	// (x, 0) (x, yMax+1)
-	for (int i = 1; i <= N; i++)
+	for (int i = 1; i <= N.x; i++)
 	{
 		if (vec[_INDEX(i, 1)].y < EPS_FLOAT) { vec[_INDEX(i, 1)].y = 0.0f; }
-		if (vec[_INDEX(i, N)].y > EPS_FLOAT) { vec[_INDEX(i, N)].y = 0.0f; }
+		if (vec[_INDEX(i, N.y)].y > EPS_FLOAT) { vec[_INDEX(i, N.y)].y = 0.0f; }
 
 		vec[_INDEX(i, 0)].x = vec[_INDEX(i, 1)].x;
 		vec[_INDEX(i, 0)].y = vec[_INDEX(i, 1)].y;
 
-		vec[_INDEX(i, N + 1)].x = vec[_INDEX(i, N)].x;
-		vec[_INDEX(i, N + 1)].y = vec[_INDEX(i, N)].y;
+		vec[_INDEX(i, N.y + 1)].x = vec[_INDEX(i, N.y)].x;
+		vec[_INDEX(i, N.y + 1)].y = vec[_INDEX(i, N.y)].y;
 	}
 
 	// (0, y) (xMax+1, y)
-	for (int j = 1; j <= N; j++)
+	for (int j = 1; j <= N.y; j++)
 	{
 		if (vec[_INDEX(1, j)].x < EPS_FLOAT) { vec[_INDEX(1, j)].x = 0.0f; }
-		if (vec[_INDEX(N, j)].x > EPS_FLOAT) { vec[_INDEX(N, j)].x = 0.0f; }
+		if (vec[_INDEX(N.x, j)].x > EPS_FLOAT) { vec[_INDEX(N.x, j)].x = 0.0f; }
 
 		vec[_INDEX(0, j)].x = vec[_INDEX(1, j)].x;
 		vec[_INDEX(0, j)].y = vec[_INDEX(1, j)].y;
 
-		vec[_INDEX(N + 1, j)].x = vec[_INDEX(N, j)].x;
-		vec[_INDEX(N + 1, j)].y = vec[_INDEX(N, j)].y;
+		vec[_INDEX(N.x + 1, j)].x = vec[_INDEX(N.x, j)].x;
+		vec[_INDEX(N.x + 1, j)].y = vec[_INDEX(N.x, j)].y;
 	}
 
 	// (0, 0)
 	vec[_INDEX(0, 0)].x = vec[_INDEX(0, 1)].x;
 	vec[_INDEX(0, 0)].y = vec[_INDEX(1, 0)].y;
 	// (0, yCount)
-	vec[_INDEX(0, N + 1)].x = vec[_INDEX(0, N)].x;
-	vec[_INDEX(0, N + 1)].y = vec[_INDEX(1, N + 1)].y ;
+	vec[_INDEX(0, N.y + 1)].x = vec[_INDEX(0, N.y)].x;
+	vec[_INDEX(0, N.y + 1)].y = vec[_INDEX(1, N.y + 1)].y ;
 	// (xCount, 0)
-	vec[_INDEX(N + 1, 0)].x = vec[_INDEX(N + 1, 1)].x;
-	vec[_INDEX(N + 1, 0)].y = vec[_INDEX(N, 0)].y;
+	vec[_INDEX(N.x + 1, 0)].x = vec[_INDEX(N.x + 1, 1)].x;
+	vec[_INDEX(N.x + 1, 0)].y = vec[_INDEX(N.x, 0)].y;
 	// (xCount, yCount)
-	vec[_INDEX(N + 1, N + 1)].x = vec[_INDEX(N + 1, N)].x;
-	vec[_INDEX(N + 1, N + 1)].y = vec[_INDEX(N, N + 1)].y;
+	vec[_INDEX(N.x + 1, N.y + 1)].x = vec[_INDEX(N.x + 1, N.y)].x;
+	vec[_INDEX(N.x + 1, N.y + 1)].y = vec[_INDEX(N.x, N.y + 1)].y;
 
 	//// (0, 0)
 	//vec[_INDEX(0, 0)] = (vec[_INDEX(0, 1)] + vec[_INDEX(1, 0)]) / 2.0f;

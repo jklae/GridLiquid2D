@@ -44,7 +44,7 @@ private:
 	std::vector<GridLiquid*> _sim;
 
 	// 0 is Eulerian, 1 is PIC/FLIP
-	int _simIndex = 1;
+	int _simIndex = 0;
 	int _scrollPos = 99;
 
 	DX12App* _dxapp;
