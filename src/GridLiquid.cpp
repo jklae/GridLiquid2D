@@ -122,14 +122,9 @@ void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 	int N = _gridCount - 2;
 
 	// Free surface boundary
-#pragma omp parallel for
-	for (int k = 0; k < _gridCount * _gridCount; k++)
+	for (int i = 1; i <= N; i++)
 	{
-		int i = k / _gridCount;
-		int j = k % _gridCount;
-
-		if (1 <= i && i <= N &&
-			1 <= j && j <= N)
+		for (int j = 1; j <= N; j++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::SURFACE)
 			{
@@ -196,7 +191,6 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 
 
 	// (x, 0) (x, yMax+1)
-#pragma omp parallel for
 	for (int i = 1; i <= N; i++)
 	{
 		if (vec[_INDEX(i, 1)].y < EPS_FLOAT) { vec[_INDEX(i, 1)].y = 0.0f; }
@@ -210,7 +204,6 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 	}
 
 	// (0, y) (xMax+1, y)
-#pragma omp parallel for
 	for (int j = 1; j <= N; j++)
 	{
 		if (vec[_INDEX(1, j)].x < EPS_FLOAT) { vec[_INDEX(1, j)].x = 0.0f; }
@@ -251,7 +244,6 @@ void GridLiquid::_setBoundary(std::vector<float>& scalar)
 	int N = _gridCount - 2;
 
 	// (x, 0) (x, yMax+1)
-#pragma omp parallel for
 	for (int i = 1; i <= N; i++)
 	{
 		scalar[_INDEX(i, 0)] = scalar[_INDEX(i, 1)];
@@ -259,7 +251,6 @@ void GridLiquid::_setBoundary(std::vector<float>& scalar)
 	}
 
 	// (0, y) (xMax+1, y)
-#pragma omp parallel for
 	for (int j = 1; j <= N; j++)
 	{
 		scalar[_INDEX(0, j)] = scalar[_INDEX(1, j)];
@@ -281,20 +272,14 @@ void GridLiquid::_paintLiquid()
 	int N = _gridCount - 2;
 
 	// Reset grid
-#pragma omp parallel for
-	for (int k = 0; k < _gridCount * _gridCount; k++)
+	for (int i = 1; i <= N; i++)
 	{
-		int i = k / _gridCount;
-		int j = k % _gridCount;
-
-		if (1 <= i && i <= N &&
-			1 <= j && j <= N)
+		for (int j = 1; j <= N; j++)
 		{
 			_gridState[_INDEX(i, j)] = STATE::AIR;
 		}
 	}
 
-#pragma omp parallel for
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		XMINT2 minIndex = _computeFaceMinMaxIndex(VALUE::MIN, _particlePosition[i]);
