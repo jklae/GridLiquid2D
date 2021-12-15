@@ -20,11 +20,11 @@ void Eulerian::_update()
 	_force();
 
 	//_project();
-	/*_advect();
+	_advect();
 
-	_project();
-	_updateParticlePos();
-	_paintLiquid();*/
+	//_project();
+	//_updateParticlePos();
+	//_paintLiquid();
 }
 
 void Eulerian::_force()
@@ -56,18 +56,18 @@ void Eulerian::_advect()
 {
 	float dt = _timeStep;
 
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMax = _gridPosition[_INDEX(0, N.y + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMax = _gridPosition[_INDEX(N.x + 1, 0)].x - 0.5f;
 	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
 	vector<XMFLOAT2> oldVelocity = _gridVelocity;
 
-	for (int j = 1; j <= N; j++)
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{

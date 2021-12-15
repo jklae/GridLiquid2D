@@ -90,12 +90,12 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 
 void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 {
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 
 	// Free surface boundary
-	for (int j = 1; j <= N; j++)
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::SURFACE)
 			{
