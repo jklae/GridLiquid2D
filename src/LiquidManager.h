@@ -8,9 +8,6 @@
 #include "Eulerian.h"
 #include "PICFLIP.h"
 
-// These include VelocityInterpolation.h.
-#include "Trilinear.h"
-
 class LiquidManager : public ISimulation
 {
 public:
@@ -23,17 +20,18 @@ public:
 	void iUpdate() override;
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer) override;
 
-	std::vector<Vertex> iGetVertice() override;
-	std::vector<unsigned int> iGetIndice() override;
+	std::vector<Vertex>& iGetVertice() override;
+	std::vector<unsigned int>& iGetIndice() override;
 	int iGetObjectCount() override;
 
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i) override;
+	void iSetDXApp(DX12App* dxApp) override;
 
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
-	void iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp) override;
-	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance, DX12App* dxapp) override;
+	void iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance) override;
+	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance) override;
 	void iWMTimer(HWND hwnd) override;
 	void iWMDestory(HWND hwnd) override;
 
@@ -44,24 +42,25 @@ public:
 
 private:
 	std::vector<GridLiquid*> _sim;
-	int _simIndex = 0;
-	int _scrollPos = 0;
 
-	std::vector<Interpolation*> _interp;
+	// 0 is Eulerian, 1 is PIC/FLIP
+	int _simIndex = 1;
+	int _scrollPos = 99;
+
+	DX12App* _dxapp;
 
 	enum class _COM
 	{
 		GRID_BTN, PARTICLE_BTN, VELOCITY_BTN,
 		PLAY, STOP, NEXTSTEP,
-		EX_GROUP, DAM_RADIO, DROP1_RADIO, DROP2_RADIO,
+		EX_GROUP, DAM_RADIO, DROP_RADIO,
 		SOLVER_GROUP, EULERIAN_RADIO, PICFLIP_RADIO,
 		RATIO_BAR, PIC_TEXT, PIC_RATIO, FLIP_TEXT, FLIP_RATIO,
-		INTERP_GROUP, TRILINEAR_RADIO, CUBIC_RADIO, OURS_RADIO,
 		TIME_TEXT, FRAME_TEXT
 	};
 
 					// grid, particle, velocity
-	bool _drawFlag[3] = { true, true, true };
+	bool _drawFlag[3] = { true, true, false };
 	bool _updateFlag = true;
 
 	wchar_t wBuffer[5];
@@ -70,14 +69,11 @@ private:
 	clock_t _simTime = 0;
 	int _simFrame = 0;
 
-	GridData _index;
-	EX _ex = EX::DROP2;
-
-	void _setSimInterp(int interpIndex);
+	EX _ex = EX::DAM;
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
 
-	void _resetSim(DX12App* dxapp);
+	void _resetSim();
 };
 

@@ -4,19 +4,14 @@
 
 #include "dx12header.h"
 
-constexpr float FPS_60 = 0.0167f;
+constexpr float FPS_30 = 0.033333f;
+constexpr float FPS_60 = 0.016667f;
+constexpr float FPS_90 = 0.011111f;
+constexpr float FPS_120 = 0.008333f;
 
 enum class FLAG { GRID, PARTICLE, VELOCITY };
 enum class STATE { LIQUID, BOUNDARY, AIR, SURFACE };
-enum class EX { DAM, DROP1, DROP2 };
+enum class EX { DAM, DROP };
 enum class VALUE { MIN, MAX };
-
-// These structures are shared by GridFluidSim and TimeIntegration.
-struct GridData
-{
-	int gridCount = 0;
-	int particleCount = 0;
-	int operator()(int i, int j) { return (i + gridCount * j); };
-};
 
 #endif

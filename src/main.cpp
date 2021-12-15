@@ -11,15 +11,16 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Simulation init
-    int x = 20;
+    int x = 60;
     int y = 60;
     float timeStep = 0.01f;
-
+    
     LiquidManager* liquidman = new LiquidManager(x, y, timeStep);
 
     // DirectX init
     DX12App* dxapp = new DX12App();
     dxapp->setProjectionType(PROJ::ORTHOGRAPHIC);
+    dxapp->setBackgroundColor(DirectX::Colors::LightSlateGray);
 
     // Window init
     Win32App winApp(800, 800);

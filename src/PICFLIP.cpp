@@ -2,9 +2,10 @@
 
 using namespace DirectX;
 using namespace std;
+using namespace DXViewer::xmfloat2;
 
-PICFLIP::PICFLIP(GridData& index, EX ex, float timeStep)
-	:GridLiquid(index, timeStep)
+PICFLIP::PICFLIP(int x, EX ex, float timeStep)
+	:GridLiquid(x, timeStep)
 {
 	_initialize(ex);
 }
@@ -24,6 +25,8 @@ void PICFLIP::_initialize(EX ex)
 
 	size_t vSize = static_cast<size_t>(_gridCount) * static_cast<size_t>(_gridCount);
 	_oldVel.assign(vSize, { 0.0f, 0.0f });
+	_tempVel.assign(vSize, { 0.0f, 0.0f });
+	_pCount.assign(vSize, 0.0f);
 }
 
 
@@ -49,16 +52,60 @@ void PICFLIP::_update()
 void PICFLIP::_advect()
 {
 	int N = _gridCount - 2;
+
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		_interp->particleToGrid(_particlePosition[i], _particleVelocity[i], _gridPosition, _gridState);
+		XMFLOAT2 pos = _particlePosition[i]; 
+		XMFLOAT2 vel = _particleVelocity[i];
+
+		XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
+		XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
+
+		XMFLOAT2 ratio = pos - _gridPosition[_INDEX(minIndex.x, minIndex.y)];
+
+		float minMinRatio = _gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * (1.0f - ratio.y) : 0.0f;
+		float minMaxRatio = _gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * ratio.y : 0.0f;
+		float maxMinRatio = _gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID ? ratio.x * (1.0f - ratio.y) : 0.0f;
+		float maxMaxRatio = _gridState[_INDEX(maxIndex.x, maxIndex.y)] == STATE::LIQUID ? ratio.x * ratio.y : 0.0f;
+
+		// Normalization
+		float totalRatio = minMinRatio + minMaxRatio + maxMinRatio + maxMaxRatio;
+		if (totalRatio > EPS_FLOAT)
+		{
+			minMinRatio /= totalRatio;
+			minMaxRatio /= totalRatio;
+			maxMinRatio /= totalRatio;
+			maxMaxRatio /= totalRatio;
+		}
+
+		_pCount[_INDEX(minIndex.x, minIndex.y)] += minMinRatio;
+		_pCount[_INDEX(minIndex.x, maxIndex.y)] += minMaxRatio;
+		_pCount[_INDEX(maxIndex.x, minIndex.y)] += maxMinRatio;
+		_pCount[_INDEX(maxIndex.x, maxIndex.y)] += maxMaxRatio;
+
+		_tempVel[_INDEX(minIndex.x, minIndex.y)] += vel * minMinRatio;
+		_tempVel[_INDEX(minIndex.x, maxIndex.y)] += vel * minMaxRatio;
+		_tempVel[_INDEX(maxIndex.x, minIndex.y)] += vel * maxMinRatio;
+		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += vel * maxMaxRatio;
 	}
 
 	for (int i = 0; i < _gridCount; i++)
 	{
 		for (int j = 0; j < _gridCount; j++)
 		{
-			_interp->setGridVelocity(_gridVelocity, _oldVel, i, j);
+
+			if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
+			{
+				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / (_pCount[_INDEX(i, j)]);
+			}
+			else
+			{
+				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+			}
+
+			// Reset
+			_tempVel[_INDEX(i, j)] = { 0.0f, 0.0f };
+			_pCount[_INDEX(i, j)] = 0.0f;
 		}
 	}
 }
@@ -74,7 +121,7 @@ void PICFLIP::_force()
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
-				_gridVelocity[_INDEX(i, j)].y -= 30.8f * dt;
+				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
 
 		}
@@ -85,6 +132,7 @@ void PICFLIP::_force()
 void PICFLIP::_project()
 {
 	int N = _gridCount - 2;
+
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
@@ -94,14 +142,17 @@ void PICFLIP::_project()
 					+ _gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y);
 
 			_gridPressure[_INDEX(i, j)] = 0.0f;
+
 		}
 	}
 
 	_setBoundary(_gridDivergence);
 	_setBoundary(_gridPressure);
 
+
 	for (int iter = 0; iter < 200; iter++)
 	{
+		
 		for (int i = 1; i <= N; i++)
 		{
 			for (int j = 1; j <= N; j++)
@@ -115,6 +166,7 @@ void PICFLIP::_project()
 							(_gridPressure[_INDEX(i + 1, j)] + _gridPressure[_INDEX(i - 1, j)] +
 								_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
 							) / -4.0f;
+
 				}
 			
 			}
@@ -131,6 +183,7 @@ void PICFLIP::_project()
 			{
 				_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
 				_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
+
 			}
 		}
 	}
@@ -147,9 +200,6 @@ void PICFLIP::_updateParticlePos()
 		_oldVel[i] = _gridVelocity[i] - _oldVel[i];
 	}
 
-	// 0.5f is the correct value.
-	// But we assign a value of 1.1f to minmax for boundary conditions.
-	// By doing this, "the velocity of the boundary" is not affected by the interpolation of the particle velocity.
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
 	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
@@ -157,8 +207,8 @@ void PICFLIP::_updateParticlePos()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		XMFLOAT2 _picVel = _interp->gridToParticle(_particlePosition[i], _gridVelocity, _gridPosition, _gridState);
-		XMFLOAT2 _flipVel = _particleVelocity[i] + _interp->gridToParticle(_particlePosition[i], _oldVel, _gridPosition, _gridState);
+		XMFLOAT2 _picVel = gridToParticle(_particlePosition[i], _gridVelocity);
+		XMFLOAT2 _flipVel = _particleVelocity[i] + gridToParticle(_particlePosition[i], _oldVel);
 
 		_particleVelocity[i] = _picVel * (1 - _flipRatio) + _flipVel * _flipRatio;
 		_particlePosition[i] += _particleVelocity[i] * dt;
@@ -168,7 +218,5 @@ void PICFLIP::_updateParticlePos()
 
 		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
 		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
-
-		//cout << i << ":  particle velocity : " << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
 	}
 }

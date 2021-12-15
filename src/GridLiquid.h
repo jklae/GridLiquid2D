@@ -1,22 +1,23 @@
 #pragma once
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+
 #include "gridsimheader.h"
-#include "Interpolation.h"
 
 class GridLiquid
 {
 public:
-	GridLiquid(GridData& index, float timeStep);
+	GridLiquid(int x, float timeStep);
 	virtual ~GridLiquid();
-
-	void setInterp(Interpolation* interp);
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
 	void iUpdate();
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer, EX ex);
 
-	std::vector<Vertex> iGetVertice();
-	std::vector<unsigned int> iGetIndice();
+	std::vector<Vertex>& iGetVertice();
+	std::vector<unsigned int>& iGetIndice();
 
 	int iGetObjectCount();
 
@@ -27,7 +28,11 @@ public:
 	// #######################################################################################
 
 protected:
-	GridData& _INDEX;
+	std::vector<Vertex> _vertices; 
+	std::vector<unsigned int> _indices;
+
+
+	inline int _INDEX(int i, int j) { return (i + _gridCount * j); };
 
 	// Grid
 	std::vector<STATE> _gridState;
@@ -40,13 +45,12 @@ protected:
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particlePosition;
 	std::vector<DirectX::XMFLOAT2> _particleVelocity;
-	float _particleScale = 0.2f;
+	float _particleScale = 0.3f;
 	int _particleCount = 0;
 
 	float _timeStep = 0.0f;
-	Interpolation* _interp = nullptr;
 
-	DirectX::XMFLOAT4 _getColor(int i);
+	DirectX::XMFLOAT4 _getGridColor(int i);
 
 	void _setBoundary(std::vector<DirectX::XMFLOAT2>& vec);
 	void _setBoundary(std::vector<float>& scalar);
@@ -63,5 +67,8 @@ protected:
 	// ---
 
 	DirectX::XMINT2 _computeFaceMinMaxIndex(VALUE vState, DirectX::XMFLOAT2 particlePos);
+	DirectX::XMINT2 _computeCenterMinMaxIndex(VALUE vState, DirectX::XMFLOAT2 particlePos);
+
+	DirectX::XMFLOAT2 gridToParticle(DirectX::XMFLOAT2 particlePos, std::vector<DirectX::XMFLOAT2>& oldvel);
 };
 

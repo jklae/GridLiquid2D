@@ -2,9 +2,10 @@
 
 using namespace DirectX;
 using namespace std;
+using namespace DXViewer::xmfloat2;
 
-Eulerian::Eulerian(GridData& index, EX ex, float timeStep)
-	:GridLiquid(index, timeStep)
+Eulerian::Eulerian(int x, EX ex, float timeStep)
+	:GridLiquid(x, timeStep)
 {
 	_initialize(ex);
 }
@@ -23,10 +24,6 @@ void Eulerian::_update()
 	_project();
 	_updateParticlePos();
 	_paintLiquid();
-
-	
-
-
 }
 
 void Eulerian::_force()
@@ -34,19 +31,22 @@ void Eulerian::_force()
 	float dt = _timeStep;
 
 	int N = _gridCount - 2;
+
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
-				_gridVelocity[_INDEX(i, j)].y -= 30.8f * dt;
+				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
 			else
 			{
 				_gridVelocity[_INDEX(i, j)] = { 0.0f, 0.0f };
 			}
+			
 		}
+		
 	}
 	_setBoundary(_gridVelocity);
 }
@@ -82,8 +82,9 @@ void Eulerian::_advect()
 				else if (backPos.y < yMin) backPos.y = yMin;
 
 
-				_gridVelocity[_INDEX(i, j)] = _interp->gridToParticle(backPos, oldVelocity, _gridPosition, _gridState);
+				_gridVelocity[_INDEX(i, j)] = gridToParticle(backPos, oldVelocity);
 			}
+			
 		}
 	}
 	_setBoundary(_gridVelocity);
@@ -101,9 +102,6 @@ void Eulerian::_project()
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x
 					+ _gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y);
 			_gridPressure[_INDEX(i, j)] = 0.0f;
-			//if (_gridState[_INDEX(i, j)] == STATE::FLUID) _gridPressure[_INDEX(i, j)] = 0.01f;
-			//else  _gridPressure[_INDEX(i, j)] = 0.0f;
-			//printf("%f  ", _gridDivergence[_INDEX(i, j)]);
 		}
 	}
 
@@ -125,6 +123,7 @@ void Eulerian::_project()
 								_gridPressure[_INDEX(i, j + 1)] + _gridPressure[_INDEX(i, j - 1)])
 							) / -4.0f;
 				}
+				
 			}
 
 		}
@@ -140,6 +139,7 @@ void Eulerian::_project()
 				_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
 				_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 			}
+			
 		}
 	}
 	_setBoundary(_gridVelocity);
@@ -151,9 +151,6 @@ void Eulerian::_updateParticlePos()
 	int N = _gridCount - 2;
 	float dt = _timeStep;
 
-	// 0.5f is the correct value.
-	// But we assign a value of 1.1f to minmax for boundary conditions.
-	// By doing this, "the velocity of the boundary" is not affected by the interpolation of the particle velocity.
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
 	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
@@ -162,7 +159,7 @@ void Eulerian::_updateParticlePos()
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
 		// 2. 3.
-		_particleVelocity[i] = _interp->gridToParticle(_particlePosition[i], _gridVelocity, _gridPosition, _gridState);
+		_particleVelocity[i] = gridToParticle(_particlePosition[i], _gridVelocity);
 		_particlePosition[i] += _particleVelocity[i] * dt;
 
 		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
@@ -170,7 +167,5 @@ void Eulerian::_updateParticlePos()
 
 		if (_particlePosition[i].y > yMax) _particlePosition[i].y = yMax;
 		else if (_particlePosition[i].y < yMin) _particlePosition[i].y = yMin;
-
-		//cout << "particle velocity : " << _particleVelocity[i].x << ", " << _particleVelocity[i].y << endl;
 	}
 }
