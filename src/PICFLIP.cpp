@@ -3,6 +3,7 @@
 using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
+using namespace DXViewer::xmint2;
 
 PICFLIP::PICFLIP(int x, int y, EX ex, float timeStep)
 	:GridLiquid(x, y, timeStep)
@@ -23,7 +24,7 @@ void PICFLIP::_initialize(EX ex)
 {
 	GridLiquid::_initialize(ex);
 
-	size_t vSize = static_cast<size_t>(_gridCount.x) * static_cast<size_t>(_gridCount.x);
+	size_t vSize = static_cast<size_t>(_gridCount.x) * static_cast<size_t>(_gridCount.y);
 	_oldVel.assign(vSize, { 0.0f, 0.0f });
 	_tempVel.assign(vSize, { 0.0f, 0.0f });
 	_pCount.assign(vSize, 0.0f);
@@ -51,7 +52,7 @@ void PICFLIP::_update()
 
 void PICFLIP::_advect()
 {
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -89,7 +90,7 @@ void PICFLIP::_advect()
 		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += vel * maxMaxRatio;
 	}
 
-	for (int j = 0; j < _gridCount.x; j++)
+	for (int j = 0; j < _gridCount.y; j++)
 	{
 		for (int i = 0; i < _gridCount.x; i++)
 		{
@@ -114,10 +115,10 @@ void PICFLIP::_force()
 {
 	float dt = _timeStep;
 
-	int N = _gridCount.x - 2;
-	for (int j = 1; j <= N; j++)
+	XMINT2 N = _gridCount - 2;
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
@@ -131,11 +132,11 @@ void PICFLIP::_force()
 
 void PICFLIP::_project()
 {
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 
-	for (int j = 1; j <= N; j++)
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x
@@ -153,9 +154,9 @@ void PICFLIP::_project()
 	for (int iter = 0; iter < 200; iter++)
 	{
 		
-		for (int j = 1; j <= N; j++)
+		for (int j = 1; j <= N.y; j++)
 		{
-			for (int i = 1; i <= N; i++)
+			for (int i = 1; i <= N.x; i++)
 			{
 
 				if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
@@ -175,9 +176,9 @@ void PICFLIP::_project()
 		_setBoundary(_gridPressure);
 	}
 
-	for (int j = 1; j <= N; j++)
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
@@ -194,15 +195,15 @@ void PICFLIP::_updateParticlePos()
 {
 	float dt = _timeStep;
 
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 	for (int i = 0; i < _oldVel.size(); i++)
 	{
 		_oldVel[i] = _gridVelocity[i] - _oldVel[i];
 	}
 
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMax = _gridPosition[_INDEX(0, N.y + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMax = _gridPosition[_INDEX(N.x + 1, 0)].x - 0.5f;
 	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
