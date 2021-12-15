@@ -4,8 +4,8 @@ using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
 
-PICFLIP::PICFLIP(int x, EX ex, float timeStep)
-	:GridLiquid(x, timeStep)
+PICFLIP::PICFLIP(int x, int y, EX ex, float timeStep)
+	:GridLiquid(x, y, timeStep)
 {
 	_initialize(ex);
 }
@@ -23,7 +23,7 @@ void PICFLIP::_initialize(EX ex)
 {
 	GridLiquid::_initialize(ex);
 
-	size_t vSize = static_cast<size_t>(_gridCount) * static_cast<size_t>(_gridCount);
+	size_t vSize = static_cast<size_t>(_gridCount.x) * static_cast<size_t>(_gridCount.x);
 	_oldVel.assign(vSize, { 0.0f, 0.0f });
 	_tempVel.assign(vSize, { 0.0f, 0.0f });
 	_pCount.assign(vSize, 0.0f);
@@ -51,7 +51,7 @@ void PICFLIP::_update()
 
 void PICFLIP::_advect()
 {
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
@@ -89,9 +89,9 @@ void PICFLIP::_advect()
 		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += vel * maxMaxRatio;
 	}
 
-	for (int i = 0; i < _gridCount; i++)
+	for (int i = 0; i < _gridCount.x; i++)
 	{
-		for (int j = 0; j < _gridCount; j++)
+		for (int j = 0; j < _gridCount.x; j++)
 		{
 
 			if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
@@ -114,7 +114,7 @@ void PICFLIP::_force()
 {
 	float dt = _timeStep;
 
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
@@ -131,7 +131,7 @@ void PICFLIP::_force()
 
 void PICFLIP::_project()
 {
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 
 	for (int i = 1; i <= N; i++)
 	{
@@ -194,7 +194,7 @@ void PICFLIP::_updateParticlePos()
 {
 	float dt = _timeStep;
 
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 	for (int i = 0; i < _oldVel.size(); i++)
 	{
 		_oldVel[i] = _gridVelocity[i] - _oldVel[i];

@@ -4,8 +4,8 @@ using namespace DirectX;
 using namespace std;
 using namespace DXViewer::xmfloat2;
 
-Eulerian::Eulerian(int x, EX ex, float timeStep)
-	:GridLiquid(x, timeStep)
+Eulerian::Eulerian(int x, int y, EX ex, float timeStep)
+	:GridLiquid(x, y, timeStep)
 {
 	_initialize(ex);
 }
@@ -30,7 +30,7 @@ void Eulerian::_force()
 {
 	float dt = _timeStep;
 
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 
 	for (int i = 1; i <= N; i++)
 	{
@@ -55,7 +55,7 @@ void Eulerian::_advect()
 {
 	float dt = _timeStep;
 
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
@@ -93,7 +93,7 @@ void Eulerian::_advect()
 
 void Eulerian::_project()
 {
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
@@ -148,7 +148,7 @@ void Eulerian::_project()
 
 void Eulerian::_updateParticlePos()
 {
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 	float dt = _timeStep;
 
 	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;

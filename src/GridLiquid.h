@@ -8,7 +8,7 @@
 class GridLiquid
 {
 public:
-	GridLiquid(int x, float timeStep);
+	GridLiquid(int x, int y, float timeStep);
 	virtual ~GridLiquid();
 
 #pragma region Implementation
@@ -32,7 +32,7 @@ protected:
 	std::vector<unsigned int> _indices;
 
 
-	inline int _INDEX(int i, int j) { return (i + _gridCount * j); };
+	inline int _INDEX(int i, int j) { return (i + _gridCount.x * j); };
 
 	// Grid
 	std::vector<STATE> _gridState;
@@ -40,7 +40,7 @@ protected:
 	std::vector<DirectX::XMFLOAT2> _gridVelocity;
 	std::vector<float> _gridPressure;
 	std::vector<float> _gridDivergence;
-	int _gridCount = 0;
+	DirectX::XMINT2 _gridCount = { 0, 0 };
 
 	// Particle
 	std::vector<DirectX::XMFLOAT2> _particlePosition;

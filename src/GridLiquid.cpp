@@ -6,9 +6,9 @@ using namespace std;
 using namespace DXViewer::xmfloat2;
 using namespace DXViewer::xmfloat3;
 
-GridLiquid::GridLiquid(int x, float timeStep)
+GridLiquid::GridLiquid(int x, int y, float timeStep)
 {
-	_gridCount = x + 2; // 2 are boundaries.
+	_gridCount.x = x + 2; // 2 are boundaries.
 	_particleCount = 3;
 	_timeStep = timeStep;
 }
@@ -22,9 +22,9 @@ GridLiquid::~GridLiquid()
 void GridLiquid::_initialize(EX ex)
 {
 	// Set _fluid
-	for (int i = 0; i < _gridCount; i++)
+	for (int i = 0; i < _gridCount.x; i++)
 	{
-		for (int j = 0; j < _gridCount; j++)
+		for (int j = 0; j < _gridCount.x; j++)
 		{
 			_computeGridState(ex, i, j);
 
@@ -32,35 +32,13 @@ void GridLiquid::_initialize(EX ex)
 			_gridPressure.push_back(0.0f);
 		}
 	}
-	//_gridState[_INDEX(5, 5)] = STATE::LIQUID;
-	int N = _gridCount - 2;
-	/*for (int i = 1; i <= N; i++)
-	{
-		_gridState[_INDEX(i, N - 2)] = STATE::LIQUID;
-		_gridState[_INDEX(i, N - 1)] = STATE::LIQUID;
-		_gridState[_INDEX(i, N)] = STATE::LIQUID;
-	}*/
-
-
-	for (int i = 0; i < _gridCount; i++)
-	{
-		for (int j = 0; j < _gridCount; j++)
-		{
-			//if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
-			//{
-				//_gridVelocity[_INDEX(i, j)].x = 0.1f;
-				//_gridVelocity[_INDEX(i, j)].y = 0.1f;
-			//}
-		}
-	}
-
 	_paintSurface();
 }
 
 void GridLiquid::_computeGridState(EX ex, int i, int j)
 {
-	int N = _gridCount - 2;
-	int offset = _gridCount / 10;
+	int N = _gridCount.x - 2;
+	int offset = _gridCount.x / 10;
 
 	switch (ex)
 	{
@@ -119,7 +97,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 
 void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 {
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 
 	// Free surface boundary
 	for (int i = 1; i <= N; i++)
@@ -168,27 +146,7 @@ void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 
 void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 {
-	int N = _gridCount - 2;
-	/*for (int i = 1; i <= N; i++)
-	{
-		for (int j = 1; j <= N; j++)
-		{
-			if ( ((_gridState[_INDEX(i - 1, j)] == STATE::BOUNDARY) && (vec[_INDEX(i, j)].x < EPS_FLOAT))
-				||
-				((_gridState[_INDEX(i + 1, j)] == STATE::BOUNDARY) && (vec[_INDEX(i, j)].x > EPS_FLOAT)) )
-			{
-				vec[_INDEX(i, j)].x = 0.0f;
-			}
-
-			if (((_gridState[_INDEX(i, j - 1)] == STATE::BOUNDARY) && (vec[_INDEX(i, j)].y < EPS_FLOAT))
-				||
-				((_gridState[_INDEX(i, j + 1)] == STATE::BOUNDARY) && (vec[_INDEX(i, j)].y > EPS_FLOAT)))
-			{
-				vec[_INDEX(i, j)].y = 0.0f;
-			}
-		}
-	}*/
-
+	int N = _gridCount.x - 2;
 
 	// (x, 0) (x, yMax+1)
 	for (int i = 1; i <= N; i++)
@@ -241,7 +199,7 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 
 void GridLiquid::_setBoundary(std::vector<float>& scalar)
 {
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 
 	// (x, 0) (x, yMax+1)
 	for (int i = 1; i <= N; i++)
@@ -269,7 +227,7 @@ void GridLiquid::_setBoundary(std::vector<float>& scalar)
 
 void GridLiquid::_paintLiquid()
 {
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 
 	// Reset grid
 	for (int i = 1; i <= N; i++)
@@ -305,7 +263,7 @@ void GridLiquid::_paintLiquid()
 
 void GridLiquid::_paintSurface()
 {
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 	for (int i = 1; i <= N; i++)
 	{
 		for (int j = 1; j <= N; j++)
@@ -496,10 +454,10 @@ vector<Vertex>& GridLiquid::iGetVertice()
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, +0.5f, -0.0f) }));
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) }));
 
-	int N = _gridCount - 2;
-	for (int i = 0; i < _gridCount; i++)
+	int N = _gridCount.x - 2;
+	for (int i = 0; i < _gridCount.x; i++)
 	{
-		for (int j = 0; j < _gridCount; j++)
+		for (int j = 0; j < _gridCount.x; j++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
 			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 0.1f , x.y + _gridVelocity[_INDEX(i, j)].y * 0.1f };
@@ -518,9 +476,9 @@ vector<unsigned int>& GridLiquid::iGetIndice()
 	_indices.push_back(0); _indices.push_back(1); _indices.push_back(2);
 	_indices.push_back(0); _indices.push_back(2); _indices.push_back(3);
 
-	int N = _gridCount - 2;
+	int N = _gridCount.x - 2;
 									// The number of lines needs to be doubled because it needs "position" and "direction".
-	for (int i = 0; i <= _gridCount * _gridCount * 2; i++)
+	for (int i = 0; i <= _gridCount.x * _gridCount.x * 2; i++)
 	{
 		_indices.push_back(i);
 	}
@@ -530,15 +488,15 @@ vector<unsigned int>& GridLiquid::iGetIndice()
 
 int GridLiquid::iGetObjectCount()
 {
-	return _gridCount;
+	return _gridCount.x;
 }
 
 void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	// ###### Create Object ######
-	for (int i = 0; i < _gridCount; i++)
+	for (int i = 0; i < _gridCount.x; i++)
 	{
-		for (int j = 0; j < _gridCount; j++)
+		for (int j = 0; j < _gridCount.x; j++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
@@ -559,9 +517,9 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 	// ###### ###### ###### ######
 
 	// ###### Create particle ######
-	for (int i = 0; i < _gridCount; i++)
+	for (int i = 0; i < _gridCount.x; i++)
 	{
-		for (int j = 0; j < _gridCount; j++)
+		for (int j = 0; j < _gridCount.x; j++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
@@ -609,7 +567,7 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 
 void GridLiquid::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i)
 {
-	int objectEndIndex = _gridCount * _gridCount;
+	int objectEndIndex = _gridCount.x * _gridCount.x;
 	int size = constantBuffer.size();
 
 	// Set object color					
@@ -635,7 +593,7 @@ void GridLiquid::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuff
 
 void GridLiquid::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i)
 {
-	int objectEndIndex = _gridCount * _gridCount;
+	int objectEndIndex = _gridCount.x * _gridCount.x;
 
 	if (i < objectEndIndex)
 	{

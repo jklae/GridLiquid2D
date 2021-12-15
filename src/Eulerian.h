@@ -4,7 +4,7 @@
 class Eulerian : public GridLiquid
 {
 public:
-	Eulerian(int x, EX ex, float timeStep);
+	Eulerian(int x, int y, EX ex, float timeStep);
 	~Eulerian() override;
 
 private:
