@@ -89,9 +89,9 @@ void PICFLIP::_advect()
 		_tempVel[_INDEX(maxIndex.x, maxIndex.y)] += vel * maxMaxRatio;
 	}
 
-	for (int i = 0; i < _gridCount.x; i++)
+	for (int j = 0; j < _gridCount.x; j++)
 	{
-		for (int j = 0; j < _gridCount.x; j++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 
 			if (_pCount[_INDEX(i, j)] > EPS_FLOAT)
@@ -115,9 +115,9 @@ void PICFLIP::_force()
 	float dt = _timeStep;
 
 	int N = _gridCount.x - 2;
-	for (int i = 1; i <= N; i++)
+	for (int j = 1; j <= N; j++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int i = 1; i <= N; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
@@ -133,9 +133,9 @@ void PICFLIP::_project()
 {
 	int N = _gridCount.x - 2;
 
-	for (int i = 1; i <= N; i++)
+	for (int j = 1; j <= N; j++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int i = 1; i <= N; i++)
 		{
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x
@@ -153,9 +153,9 @@ void PICFLIP::_project()
 	for (int iter = 0; iter < 200; iter++)
 	{
 		
-		for (int i = 1; i <= N; i++)
+		for (int j = 1; j <= N; j++)
 		{
-			for (int j = 1; j <= N; j++)
+			for (int i = 1; i <= N; i++)
 			{
 
 				if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
@@ -175,9 +175,9 @@ void PICFLIP::_project()
 		_setBoundary(_gridPressure);
 	}
 
-	for (int i = 1; i <= N; i++)
+	for (int j = 1; j <= N; j++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int i = 1; i <= N; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{

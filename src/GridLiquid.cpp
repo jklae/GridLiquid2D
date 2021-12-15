@@ -9,22 +9,22 @@ using namespace DXViewer::xmfloat3;
 GridLiquid::GridLiquid(int x, int y, float timeStep)
 {
 	_gridCount.x = x + 2; // 2 are boundaries.
+	_gridCount.y = y + 2;
+
 	_particleCount = 3;
 	_timeStep = timeStep;
 }
 
 GridLiquid::~GridLiquid()
 {
-
-	//filess.close();
 }
 
 void GridLiquid::_initialize(EX ex)
 {
 	// Set _fluid
-	for (int i = 0; i < _gridCount.x; i++)
+	for (int j = 0; j < _gridCount.x; j++)
 	{
-		for (int j = 0; j < _gridCount.x; j++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 			_computeGridState(ex, i, j);
 
@@ -49,9 +49,9 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 			_gridState.push_back(STATE::BOUNDARY); 
 		}
 		else if ((2 < i)
-			&& (i < ((N + 1) / 2 + offset * 2.0f))
+			&& (i < (N + 1) / 2 - offset)
 			&& (2 < j)  
-			&& (j < (N + 1) / 2 - offset))
+			&& (j < ((N + 1) / 2 + offset * 2.0f)))
 		{
 			_gridState.push_back(STATE::LIQUID);
 		}
@@ -69,20 +69,13 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		{ 
 			_gridState.push_back(STATE::BOUNDARY); 
 		}
-		else if ((N + 1) / 2 + offset  < i
-			&& (i < N - 2)
-			&& ((N + 1) / 2 - offset * 2.3f < j)   
-			&& (j < (N + 1) / 2 + offset * 2.3f))
+		else if ((N + 1) / 2 - offset * 2.3f < i
+			&& (i < (N + 1) / 2 + offset * 2.3f)
+			&& ((N + 1) / 2 + offset< j)
+			&& (j < N - 2))
 		{
 			_gridState.push_back(STATE::LIQUID);
 		}
-		/*else if (((N + 1) / 2 - offset * 3.0f < i)
-			&& (i < N - 2)
-			&& (2 < j)
-			&& (j < (N + 1) / 2 - offset))
-		{
-			_gridState.push_back(STATE::LIQUID);
-		}*/
 		else
 		{
 			_gridState.push_back(STATE::AIR);
@@ -100,9 +93,9 @@ void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 	int N = _gridCount.x - 2;
 
 	// Free surface boundary
-	for (int i = 1; i <= N; i++)
+	for (int j = 1; j <= N; j++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int i = 1; i <= N; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::SURFACE)
 			{
@@ -230,9 +223,9 @@ void GridLiquid::_paintLiquid()
 	int N = _gridCount.x - 2;
 
 	// Reset grid
-	for (int i = 1; i <= N; i++)
+	for (int j = 1; j <= N; j++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int i = 1; i <= N; i++)
 		{
 			_gridState[_INDEX(i, j)] = STATE::AIR;
 		}
@@ -264,9 +257,9 @@ void GridLiquid::_paintLiquid()
 void GridLiquid::_paintSurface()
 {
 	int N = _gridCount.x - 2;
-	for (int i = 1; i <= N; i++)
+	for (int j = 1; j <= N; j++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int i = 1; i <= N; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
@@ -455,9 +448,9 @@ vector<Vertex>& GridLiquid::iGetVertice()
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) }));
 
 	int N = _gridCount.x - 2;
-	for (int i = 0; i < _gridCount.x; i++)
+	for (int j = 0; j < _gridCount.x; j++)
 	{
-		for (int j = 0; j < _gridCount.x; j++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
 			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 0.1f , x.y + _gridVelocity[_INDEX(i, j)].y * 0.1f };
@@ -494,14 +487,14 @@ int GridLiquid::iGetObjectCount()
 void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	// ###### Create Object ######
-	for (int i = 0; i < _gridCount.x; i++)
+	for (int j = 0; j < _gridCount.x; j++)
 	{
-		for (int j = 0; j < _gridCount.x; j++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				(float)j,    // "j"
-				(float)i);   // "i"
+				(float)i,    
+				(float)j);   
 
 			_gridPosition.push_back(pos);
 
@@ -517,14 +510,14 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 	// ###### ###### ###### ######
 
 	// ###### Create particle ######
-	for (int i = 0; i < _gridCount.x; i++)
+	for (int j = 0; j < _gridCount.x; j++)
 	{
-		for (int j = 0; j < _gridCount.x; j++)
+		for (int i = 0; i < _gridCount.x; i++)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				(float)j,    // "j"
-				(float)i);   // "i"
+				(float)i,   
+				(float)j);  
 
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
@@ -536,8 +529,8 @@ void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 
 						_particleVelocity.push_back(gridVel);
 						_particlePosition.push_back(
-							{ -0.33f +  pos.y + k * _particleScale * 1.1f,    // y
-							  -0.33f +  pos.x + m * _particleScale * 1.1f }); // x
+							{ -0.33f +  pos.x + k * _particleScale * 1.1f,   
+							  -0.33f +  pos.y + m * _particleScale * 1.1f });
 
 						struct ConstantBuffer particleCB;
 						particleCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, -1.0f, _particleScale);
