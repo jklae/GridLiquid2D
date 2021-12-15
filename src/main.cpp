@@ -11,8 +11,8 @@
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Simulation init
-    int x = 30;
-    int y = 20;
+    int x = 60;
+    int y = 50;
     float timeStep = 0.01f;
     
     LiquidManager* liquidman = new LiquidManager(x, y, timeStep);

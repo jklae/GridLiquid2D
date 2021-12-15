@@ -23,8 +23,8 @@ void Eulerian::_update()
 	_advect();
 
 	_project();
-	//_updateParticlePos();
-	//_paintLiquid();
+	_updateParticlePos();
+	_paintLiquid();
 }
 
 void Eulerian::_force()
@@ -149,12 +149,12 @@ void Eulerian::_project()
 
 void Eulerian::_updateParticlePos()
 {
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 	float dt = _timeStep;
 
-	float yMax = _gridPosition[_INDEX(0, N + 1)].y - 0.5f;
+	float yMax = _gridPosition[_INDEX(0, N.y + 1)].y - 0.5f;
 	float yMin = _gridPosition[_INDEX(0, 0)].y + 0.5f;
-	float xMax = _gridPosition[_INDEX(N + 1, 0)].x - 0.5f;
+	float xMax = _gridPosition[_INDEX(N.x + 1, 0)].x - 0.5f;
 	float xMin = _gridPosition[_INDEX(0, 0)].x + 0.5f;
 
 	for (int i = 0; i < _particlePosition.size(); i++)
