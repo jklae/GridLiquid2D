@@ -478,9 +478,9 @@ vector<unsigned int>& GridLiquid::iGetIndice()
 	return _indices;
 }
 
-int GridLiquid::iGetObjectCount()
+XMINT2 GridLiquid::iGetObjectCount()
 {
-	return _gridCount.x;
+	return _gridCount;
 }
 
 void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)

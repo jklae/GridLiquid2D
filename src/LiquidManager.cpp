@@ -77,7 +77,7 @@ vector<unsigned int>& LiquidManager::iGetIndice()
 	return _sim[_simIndex]->iGetIndice();
 }
 
-int LiquidManager::iGetObjectCount()
+XMINT2 LiquidManager::iGetObjectCount()
 {
 	return _sim[_simIndex]->iGetObjectCount();
 }

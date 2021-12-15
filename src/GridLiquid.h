@@ -19,7 +19,7 @@ public:
 	std::vector<Vertex>& iGetVertice();
 	std::vector<unsigned int>& iGetIndice();
 
-	int iGetObjectCount();
+	DirectX::XMINT2 iGetObjectCount();
 
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i);
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i);
