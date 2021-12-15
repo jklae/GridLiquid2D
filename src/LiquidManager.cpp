@@ -7,8 +7,8 @@ using namespace std;
 
 LiquidManager::LiquidManager(int x, int y, float timeStep)
 {
-	_sim.push_back(new Eulerian(x, y, _ex, FPS_120));
-	_sim.push_back(new PICFLIP(x, y, _ex, FPS_120));
+	_sim.push_back(new Eulerian(x, y, _ex, timeStep));
+	_sim.push_back(new PICFLIP(x, y, _ex, timeStep));
 }
 
 LiquidManager::~LiquidManager()
