@@ -192,30 +192,30 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 
 void GridLiquid::_setBoundary(std::vector<float>& scalar)
 {
-	int N = _gridCount.x - 2;
+	XMINT2 N = _gridCount - 2;
 
 	// (x, 0) (x, yMax+1)
-	for (int i = 1; i <= N; i++)
+	for (int i = 1; i <= N.x; i++)
 	{
 		scalar[_INDEX(i, 0)] = scalar[_INDEX(i, 1)];
-		scalar[_INDEX(i, N + 1)] = scalar[_INDEX(i, N)];
+		scalar[_INDEX(i, N.y + 1)] = scalar[_INDEX(i, N.y)];
 	}
 
 	// (0, y) (xMax+1, y)
-	for (int j = 1; j <= N; j++)
+	for (int j = 1; j <= N.y; j++)
 	{
 		scalar[_INDEX(0, j)] = scalar[_INDEX(1, j)];
-		scalar[_INDEX(N + 1, j)] = scalar[_INDEX(N, j)];
+		scalar[_INDEX(N.x + 1, j)] = scalar[_INDEX(N.x, j)];
 	}
 
 	// (0, 0)
 	scalar[_INDEX(0, 0)] = (scalar[_INDEX(0, 1)] + scalar[_INDEX(1, 0)]) / 2.0f;
 	// (0, yCount)
-	scalar[_INDEX(0, N + 1)] = (scalar[_INDEX(0, N)] + scalar[_INDEX(1, N + 1)]) / 2.0f;
+	scalar[_INDEX(0, N.y + 1)] = (scalar[_INDEX(0, N.y)] + scalar[_INDEX(1, N.y + 1)]) / 2.0f;
 	// (xCount, 0)
-	scalar[_INDEX(N + 1, 0)] = (scalar[_INDEX(N + 1, 1)] + scalar[_INDEX(N, 0)]) / 2.0f;
+	scalar[_INDEX(N.x + 1, 0)] = (scalar[_INDEX(N.x + 1, 1)] + scalar[_INDEX(N.x, 0)]) / 2.0f;
 	// (xCount, yCount)
-	scalar[_INDEX(N + 1, N + 1)] = (scalar[_INDEX(N + 1, N)] + scalar[_INDEX(N, N + 1)]) / 2.0f;
+	scalar[_INDEX(N.x + 1, N.y + 1)] = (scalar[_INDEX(N.x + 1, N.y)] + scalar[_INDEX(N.x, N.y + 1)]) / 2.0f;
 }
 
 void GridLiquid::_paintLiquid()

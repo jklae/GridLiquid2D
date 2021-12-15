@@ -22,7 +22,7 @@ void Eulerian::_update()
 	//_project();
 	_advect();
 
-	//_project();
+	_project();
 	//_updateParticlePos();
 	//_paintLiquid();
 }
@@ -94,10 +94,10 @@ void Eulerian::_advect()
 
 void Eulerian::_project()
 {
-	int N = _gridCount.x - 2;
-	for (int j = 1; j <= N; j++)
+	XMINT2 N = _gridCount - 2;
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x
@@ -111,9 +111,9 @@ void Eulerian::_project()
 
 	for (int iter = 0; iter < 200; iter++)
 	{
-		for (int j = 1; j <= N; j++)
+		for (int j = 1; j <= N.y; j++)
 		{
-			for (int i = 1; i <= N; i++)
+			for (int i = 1; i <= N.x; i++)
 			{
 				if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 				{
@@ -131,9 +131,9 @@ void Eulerian::_project()
 		_setBoundary(_gridPressure);
 	}
 
-	for (int j = 1; j <= N; j++)
+	for (int j = 1; j <= N.y; j++)
 	{
-		for (int i = 1; i <= N; i++)
+		for (int i = 1; i <= N.x; i++)
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
