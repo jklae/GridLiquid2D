@@ -17,24 +17,29 @@ public:
 
 #pragma region Implementation
 	// ################################## Implementation ####################################
+	// Simulation methods
 	void iUpdate() override;
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer) override;
 
+	// Mesh methods
 	std::vector<Vertex>& iGetVertice() override;
 	std::vector<unsigned int>& iGetIndice() override;
 	DirectX::XMINT2 iGetObjectCount() override;
 
+	// DirectX methods
 	void iCreateObjectParticle(std::vector<ConstantBuffer>& constantBuffer) override;
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i) override;
 	void iSetDXApp(DX12App* dxApp) override;
 
+	// WndProc methods
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
 	void iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance) override;
 	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance) override;
 	void iWMTimer(HWND hwnd) override;
 	void iWMDestory(HWND hwnd) override;
 
+	// Win32 methods
 	bool iGetUpdateFlag() override;
 	// #######################################################################################
 #pragma endregion
@@ -44,7 +49,7 @@ private:
 	std::vector<GridLiquid*> _sim;
 
 	// 0 is Eulerian, 1 is PIC/FLIP
-	int _simIndex = 0;
+	int _simIndex = 1;
 	int _scrollPos = 99;
 
 	DX12App* _dxapp;

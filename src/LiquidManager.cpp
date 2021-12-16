@@ -46,11 +46,9 @@ void LiquidManager::_resetSim()
 	_simFrame = 0;
 }
 
-#include <ole2.h>
-#include <olectl.h>
-#include <sstream>
 #pragma region Implementation
 // ################################## Implementation ####################################
+// Simulation methods
 void LiquidManager::iUpdate()
 {
 	clock_t startTime = clock();
@@ -67,9 +65,10 @@ void LiquidManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer
 }
 
 
+// Mesh methods
 vector<Vertex>& LiquidManager::iGetVertice()
 {
-	return _sim[_simIndex]->iGetVertice();;
+	return _sim[_simIndex]->iGetVertice();
 }
 
 vector<unsigned int>& LiquidManager::iGetIndice()
@@ -83,6 +82,7 @@ XMINT2 LiquidManager::iGetObjectCount()
 }
 
 
+// DirectX methods
 void LiquidManager::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
 {
 	_sim[_simIndex]->iCreateObjectParticle(constantBuffer);
@@ -104,6 +104,7 @@ void LiquidManager::iSetDXApp(DX12App* dxApp)
 }
 
 
+// WndProc methods
 void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 {
 	CreateWindow(L"button", _getDrawFlag(FLAG::GRID) ? L"Grid : ON " : L"Grid : OFF ", WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
@@ -329,6 +330,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 }
 
 
+// Win32 methods
 bool LiquidManager::iGetUpdateFlag()
 {
 	return _updateFlag;
