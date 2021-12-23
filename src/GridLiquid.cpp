@@ -618,5 +618,13 @@ void GridLiquid::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size
 	}
 }
 
+UINT GridLiquid::iGetConstantBufferSize()
+{
+			
+	return (_gridCount.x * _gridCount.y)									 // cell
+		+ (_gridCount.x * _gridCount.y)										 // velocity
+		+ (_gridCount.x * _gridCount.y) * _particleCount * _particleCount;   // particle
+}
+
 // #######################################################################################
 #pragma endregion

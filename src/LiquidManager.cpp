@@ -103,6 +103,11 @@ void LiquidManager::iSetDXApp(DX12App* dxApp)
 	_dxapp = dxApp;
 }
 
+UINT LiquidManager::iGetConstantBufferSize()
+{
+	return _sim[_simIndex]->iGetConstantBufferSize();
+}
+
 
 // WndProc methods
 void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
@@ -157,8 +162,10 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		110, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
 
-	CheckRadioButton(hwnd, static_cast<int>(_COM::DAM_RADIO), static_cast<int>(_COM::DROP_RADIO), static_cast<int>(_COM::DAM_RADIO));
-	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), (_simIndex == 0) ? static_cast<int>(_COM::EULERIAN_RADIO) : static_cast<int>(_COM::PICFLIP_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::DAM_RADIO), static_cast<int>(_COM::DROP_RADIO), 
+		(_ex == EX::DAM) ? static_cast<int>(_COM::DAM_RADIO) : static_cast<int>(_COM::DROP_RADIO));
+	CheckRadioButton(hwnd, static_cast<int>(_COM::EULERIAN_RADIO), static_cast<int>(_COM::PICFLIP_RADIO), 
+		(_simIndex == 0) ? static_cast<int>(_COM::EULERIAN_RADIO) : static_cast<int>(_COM::PICFLIP_RADIO));
 
 	if (_updateFlag)
 	{

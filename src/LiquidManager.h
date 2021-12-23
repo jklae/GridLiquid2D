@@ -31,6 +31,7 @@ public:
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i) override;
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i) override;
 	void iSetDXApp(DX12App* dxApp) override;
+	UINT iGetConstantBufferSize() override;
 
 	// WndProc methods
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
@@ -74,7 +75,7 @@ private:
 	clock_t _simTime = 0;
 	int _simFrame = 0;
 
-	EX _ex = EX::DAM;
+	EX _ex = EX::DROP;
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
