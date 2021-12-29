@@ -633,9 +633,9 @@ UINT GridLiquid::iGetConstantBufferSize()
 		+ (_gridCount.x * _gridCount.y) * _particleCount * _particleCount;   // particle
 }
 
-XMINT2 GridLiquid::iGetDomainSize()
+XMINT3 GridLiquid::iGetDomainSize()
 {
-	return _gridCount;
+	return { _gridCount.x, _gridCount.y, 0 };
 }
 
 // #######################################################################################

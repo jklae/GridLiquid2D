@@ -25,7 +25,7 @@ public:
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i);
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i);
 	UINT iGetConstantBufferSize();
-	DirectX::XMINT2 iGetDomainSize();
+	DirectX::XMINT3 iGetDomainSize();
 
 	// #######################################################################################
 

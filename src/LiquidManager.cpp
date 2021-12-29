@@ -115,7 +115,7 @@ UINT LiquidManager::iGetConstantBufferSize()
 	return _sim[_simIndex]->iGetConstantBufferSize();
 }
 
-XMINT2 LiquidManager::iGetDomainSize()
+XMINT3 LiquidManager::iGetDomainSize()
 {
 	return _sim[_simIndex]->iGetDomainSize();
 }
