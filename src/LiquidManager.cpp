@@ -108,6 +108,16 @@ UINT LiquidManager::iGetConstantBufferSize()
 	return _sim[_simIndex]->iGetConstantBufferSize();
 }
 
+UINT LiquidManager::iGetVertexBufferSize()
+{
+	return _sim[_simIndex]->iGetVertexBufferSize();
+}
+
+UINT LiquidManager::iGetIndexBufferSize()
+{
+	return _sim[_simIndex]->iGetIndexBufferSize();
+}
+
 
 // WndProc methods
 void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)

@@ -32,6 +32,8 @@ public:
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i) override;
 	void iSetDXApp(DX12App* dxApp) override;
 	UINT iGetConstantBufferSize() override;
+	UINT iGetVertexBufferSize() override;
+	UINT iGetIndexBufferSize() override;
 
 	// WndProc methods
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;

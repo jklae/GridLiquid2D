@@ -447,7 +447,6 @@ vector<Vertex>& GridLiquid::iGetVertice()
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, +0.5f, -0.0f) }));
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) }));
 
-	int N = _gridCount.x - 2;
 	for (int j = 0; j < _gridCount.y; j++)
 	{
 		for (int i = 0; i < _gridCount.x; i++)
@@ -624,6 +623,19 @@ UINT GridLiquid::iGetConstantBufferSize()
 	return (_gridCount.x * _gridCount.y)									 // cell
 		+ (_gridCount.x * _gridCount.y)										 // velocity
 		+ (_gridCount.x * _gridCount.y) * _particleCount * _particleCount;   // particle
+}
+
+UINT GridLiquid::iGetVertexBufferSize()
+{
+	return 
+		4 +											  // cell, particle
+		(_gridCount.x * 2) * (_gridCount.y * 2);	  // velocity
+}
+
+UINT GridLiquid::iGetIndexBufferSize()
+{
+	return 6 +							  // cell, paricle
+		(_gridCount.x * _gridCount.y * 2 + 1);  // velocity
 }
 
 // #######################################################################################
