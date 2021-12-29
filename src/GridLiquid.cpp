@@ -435,7 +435,7 @@ void GridLiquid::iResetSimulationState(vector<ConstantBuffer>& constantBuffer, E
 	_particleVelocity.clear();
 
 	_initialize(ex);
-	iCreateObjectParticle(constantBuffer);
+	iCreateObject(constantBuffer);
 }
 
 vector<Vertex>& GridLiquid::iGetVertice()
@@ -483,7 +483,7 @@ XMINT2 GridLiquid::iGetObjectCount()
 	return _gridCount;
 }
 
-void GridLiquid::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
+void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 {
 	// ###### Create Object ######
 	for (int j = 0; j < _gridCount.y; j++)

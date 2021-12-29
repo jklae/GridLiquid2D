@@ -83,9 +83,9 @@ XMINT2 LiquidManager::iGetObjectCount()
 
 
 // DirectX methods
-void LiquidManager::iCreateObjectParticle(vector<ConstantBuffer>& constantBuffer)
+void LiquidManager::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 {
-	_sim[_simIndex]->iCreateObjectParticle(constantBuffer);
+	_sim[_simIndex]->iCreateObject(constantBuffer);
 }
 
 void LiquidManager::iUpdateConstantBuffer(vector<ConstantBuffer>& constantBuffer, int i)
