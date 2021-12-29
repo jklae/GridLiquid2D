@@ -76,10 +76,17 @@ vector<unsigned int>& LiquidManager::iGetIndice()
 	return _sim[_simIndex]->iGetIndice();
 }
 
-XMINT2 LiquidManager::iGetObjectCount()
+UINT LiquidManager::iGetVertexBufferSize()
 {
-	return _sim[_simIndex]->iGetObjectCount();
+	return _sim[_simIndex]->iGetVertexBufferSize();
 }
+
+UINT LiquidManager::iGetIndexBufferSize()
+{
+	return _sim[_simIndex]->iGetIndexBufferSize();
+}
+
+
 
 
 // DirectX methods
@@ -108,14 +115,9 @@ UINT LiquidManager::iGetConstantBufferSize()
 	return _sim[_simIndex]->iGetConstantBufferSize();
 }
 
-UINT LiquidManager::iGetVertexBufferSize()
+XMINT2 LiquidManager::iGetDomainSize()
 {
-	return _sim[_simIndex]->iGetVertexBufferSize();
-}
-
-UINT LiquidManager::iGetIndexBufferSize()
-{
-	return _sim[_simIndex]->iGetIndexBufferSize();
+	return _sim[_simIndex]->iGetObjectCount();
 }
 
 

@@ -18,14 +18,14 @@ public:
 
 	std::vector<Vertex>& iGetVertice();
 	std::vector<unsigned int>& iGetIndice();
-	DirectX::XMINT2 iGetObjectCount();
+	UINT iGetVertexBufferSize();
+	UINT iGetIndexBufferSize();
 
 	void iCreateObject(std::vector<ConstantBuffer>& constantBuffer);
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i);
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i);
 	UINT iGetConstantBufferSize();
-	UINT iGetVertexBufferSize();
-	UINT iGetIndexBufferSize();
+	DirectX::XMINT2 iGetDomainSize();
 
 	// #######################################################################################
 

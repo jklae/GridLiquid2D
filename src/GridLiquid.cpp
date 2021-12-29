@@ -477,9 +477,17 @@ vector<unsigned int>& GridLiquid::iGetIndice()
 	return _indices;
 }
 
-XMINT2 GridLiquid::iGetObjectCount()
+UINT GridLiquid::iGetVertexBufferSize()
 {
-	return _gridCount;
+	return
+		4 +											  // cell, particle
+		(_gridCount.x * 2) * (_gridCount.y * 2);	  // velocity
+}
+
+UINT GridLiquid::iGetIndexBufferSize()
+{
+	return 6 +							  // cell, paricle
+		(_gridCount.x * _gridCount.y * 2 + 1);  // velocity
 }
 
 void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
@@ -625,17 +633,9 @@ UINT GridLiquid::iGetConstantBufferSize()
 		+ (_gridCount.x * _gridCount.y) * _particleCount * _particleCount;   // particle
 }
 
-UINT GridLiquid::iGetVertexBufferSize()
+XMINT2 GridLiquid::iGetDomainSize()
 {
-	return 
-		4 +											  // cell, particle
-		(_gridCount.x * 2) * (_gridCount.y * 2);	  // velocity
-}
-
-UINT GridLiquid::iGetIndexBufferSize()
-{
-	return 6 +							  // cell, paricle
-		(_gridCount.x * _gridCount.y * 2 + 1);  // velocity
+	return _gridCount;
 }
 
 // #######################################################################################
