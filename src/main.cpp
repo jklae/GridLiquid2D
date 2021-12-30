@@ -7,6 +7,7 @@
 
 #include "LiquidManager.h" // This includes Win32App.h
 
+using namespace DXViewer::xmint3;
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
@@ -19,7 +20,12 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     // DirectX init
     DX12App* dxapp = new DX12App();
-    dxapp->setCameraProperties(PROJ::PERSPECTIVE, 4.0f);
+    dxapp->setCameraProperties(
+        PROJ::ORTHOGRAPHIC, 
+        static_cast<float>(max_element(liquidman->iGetObjectCount())) * 0.0015f,
+        2.0f
+    );
+    //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 0.0f, 1.5f);
     dxapp->setBackgroundColor(DirectX::Colors::LightSlateGray);
 
     // Window init
