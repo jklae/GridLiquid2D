@@ -33,7 +33,9 @@ public:
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, int i) override;
 	void iSetDXApp(DX12App* dxApp) override;
 	UINT iGetConstantBufferSize() override;
-	DirectX::XMINT3 iGetDomainSize() override;
+	DirectX::XMINT3 iGetObjectCount() override;
+	DirectX::XMFLOAT3 iGetObjectSize() override;
+	DirectX::XMFLOAT3 iGetObjectPositionOffset() override;
 
 	// WndProc methods
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;

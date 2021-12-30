@@ -86,6 +86,20 @@ UINT LiquidManager::iGetIndexBufferSize()
 	return _sim[_simIndex]->iGetIndexBufferSize();
 }
 
+XMINT3 LiquidManager::iGetObjectCount()
+{
+	return _sim[_simIndex]->iGetObjectCount();
+}
+
+XMFLOAT3 LiquidManager::iGetObjectSize()
+{
+	return _sim[_simIndex]->iGetObjectSize();
+}
+
+DirectX::XMFLOAT3 LiquidManager::iGetObjectPositionOffset()
+{
+	return _sim[_simIndex]->iGetObjectPositionOffset();
+}
 
 
 
@@ -113,11 +127,6 @@ void LiquidManager::iSetDXApp(DX12App* dxApp)
 UINT LiquidManager::iGetConstantBufferSize()
 {
 	return _sim[_simIndex]->iGetConstantBufferSize();
-}
-
-XMINT3 LiquidManager::iGetDomainSize()
-{
-	return _sim[_simIndex]->iGetDomainSize();
 }
 
 

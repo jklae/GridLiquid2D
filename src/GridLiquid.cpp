@@ -490,6 +490,21 @@ UINT GridLiquid::iGetIndexBufferSize()
 		(_gridCount.x * _gridCount.y * 2 + 1);  // velocity
 }
 
+XMINT3 GridLiquid::iGetObjectCount()
+{
+	return { _gridCount.x, _gridCount.y, 0 };
+}
+
+XMFLOAT3 GridLiquid::iGetObjectSize()
+{
+	return { 1.0f, 1.0f, 0.0f };
+}
+
+XMFLOAT3 GridLiquid::iGetObjectPositionOffset()
+{
+	return { 0.0f, 0.0f, 0.0f };
+}
+
 void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 {
 	// ###### Create Object ######
@@ -632,11 +647,5 @@ UINT GridLiquid::iGetConstantBufferSize()
 		+ (_gridCount.x * _gridCount.y)										 // velocity
 		+ (_gridCount.x * _gridCount.y) * _particleCount * _particleCount;   // particle
 }
-
-XMINT3 GridLiquid::iGetDomainSize()
-{
-	return { _gridCount.x, _gridCount.y, 0 };
-}
-
 // #######################################################################################
 #pragma endregion
