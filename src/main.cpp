@@ -22,8 +22,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     DX12App* dxapp = new DX12App();
     dxapp->setCameraProperties(
         PROJ::ORTHOGRAPHIC, 
-        static_cast<float>(max_element(liquidman->iGetObjectCount())) * 0.0015f,
-        2.0f, -0.7f, -0.7f
+        static_cast<float>(max_element(liquidman->iGetObjectCount())) * 0.0015f, // orthogonal distance
+        2.0f, -0.7f, -0.7f                                                       // radius, theta, phi
     );
     //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 0.0f, 1.5f, -0.7f, -0.7f);
     dxapp->setBackgroundColor(DirectX::Colors::LightSlateGray);
