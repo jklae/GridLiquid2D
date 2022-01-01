@@ -12,8 +12,8 @@ using namespace DXViewer::xmint3;
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, int showCmd)
 {
     // Simulation init
-    int x = 3;
-    int y = 2;
+    int x = 60;
+    int y = 60;
     float timeStep = FPS_120;
     
     LiquidManager* liquidman = new LiquidManager(x, y, timeStep);
@@ -23,7 +23,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     dxapp->setCameraProperties(
         PROJ::ORTHOGRAPHIC, 
         static_cast<float>(max_element(liquidman->iGetObjectCount())) * 0.0015f, // orthogonal distance
-        2.0f, -0.7f, -0.7f                                                       // radius, theta, phi
+        2.0f, 0.0f, 0.0f                                                       // radius, theta, phi
     );
     //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 0.0f, 1.5f, -0.7f, -0.7f);
     dxapp->setBackgroundColor(DirectX::Colors::LightSlateGray);
