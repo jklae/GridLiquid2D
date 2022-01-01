@@ -129,6 +129,11 @@ UINT LiquidManager::iGetConstantBufferSize()
 	return _sim[_simIndex]->iGetConstantBufferSize();
 }
 
+bool LiquidManager::iIsUpdate()
+{
+	return _updateFlag;
+}
+
 
 // WndProc methods
 void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
@@ -304,6 +309,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		break;
 		case static_cast<int>(_COM::NEXTSTEP) :
 		{
+			iUpdate();
 			_dxapp->update();
 			_dxapp->draw();
 		}
@@ -354,11 +360,5 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	}
 }
 
-
-// Win32 methods
-bool LiquidManager::iGetUpdateFlag()
-{
-	return _updateFlag;
-}
 // #######################################################################################
 #pragma endregion

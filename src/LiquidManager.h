@@ -36,6 +36,7 @@ public:
 	DirectX::XMINT3 iGetObjectCount() override;
 	DirectX::XMFLOAT3 iGetObjectSize() override;
 	DirectX::XMFLOAT3 iGetObjectPositionOffset() override;
+	bool iIsUpdate() override;
 
 	// WndProc methods
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
@@ -43,9 +44,6 @@ public:
 	void iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance) override;
 	void iWMTimer(HWND hwnd) override;
 	void iWMDestory(HWND hwnd) override;
-
-	// Win32 methods
-	bool iGetUpdateFlag() override;
 	// #######################################################################################
 #pragma endregion
 
