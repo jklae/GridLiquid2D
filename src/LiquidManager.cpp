@@ -129,7 +129,7 @@ UINT LiquidManager::iGetConstantBufferSize()
 	return _sim[_simIndex]->iGetConstantBufferSize();
 }
 
-bool LiquidManager::iIsUpdate()
+bool LiquidManager::iIsUpdated()
 {
 	return _updateFlag;
 }

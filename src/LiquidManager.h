@@ -36,7 +36,7 @@ public:
 	DirectX::XMINT3 iGetObjectCount() override;
 	DirectX::XMFLOAT3 iGetObjectSize() override;
 	DirectX::XMFLOAT3 iGetObjectPositionOffset() override;
-	bool iIsUpdate() override;
+	bool iIsUpdated() override;
 
 	// WndProc methods
 	void iWMCreate(HWND hwnd, HINSTANCE hInstance) override;
