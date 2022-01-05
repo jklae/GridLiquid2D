@@ -30,6 +30,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
 
     // Window init
     Win32App winApp(800, 800);
+    winApp.setWinName(L"2D Fluid Simulation");
     winApp.initialize(hInstance, dxapp, liquidman);
 
     return winApp.run();
