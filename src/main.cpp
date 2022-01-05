@@ -14,7 +14,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     // Simulation init
     int x = 60;
     int y = 60;
-    float timeStep = FPS_120;
+    float timeStep = FPS120_F;
     
     LiquidManager* liquidman = new LiquidManager(x, y, timeStep);
 
