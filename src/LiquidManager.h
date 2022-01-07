@@ -55,7 +55,7 @@ private:
 	int _simIndex = 1;
 	int _scrollPos = 99;
 
-	DX12App* _dxapp;
+	DX12App* _dxapp = nullptr;
 
 	enum class _COM
 	{

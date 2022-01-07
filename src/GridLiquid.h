@@ -20,15 +20,14 @@ public:
 	std::vector<unsigned int>& iGetIndice();
 	UINT iGetVertexBufferSize();
 	UINT iGetIndexBufferSize();
-	DirectX::XMINT3 iGetObjectCount();
-	DirectX::XMFLOAT3 iGetObjectSize();
-	DirectX::XMFLOAT3 iGetObjectPositionOffset();
 
 	void iCreateObject(std::vector<ConstantBuffer>& constantBuffer);
 	void iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuffer, int i);
 	void iDraw(Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size, UINT indexCount, bool* drawFlag, int i);
 	UINT iGetConstantBufferSize();
-
+	DirectX::XMINT3 iGetObjectCount();
+	DirectX::XMFLOAT3 iGetObjectSize();
+	DirectX::XMFLOAT3 iGetObjectPositionOffset();
 	// #######################################################################################
 
 protected:
