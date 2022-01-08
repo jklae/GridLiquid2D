@@ -1,6 +1,6 @@
 # GridLiquid2D
 ## Overview
-<img src="docs/images/demo.gif" width="80%" height="80%">
+<img src="docs/images/demo.gif" width="100%" height="100%">
 GridLiquid2D is a liquid simulation for Eulerian and PIC/FLIP. This simulation is rendered using <A href="https://github.com/frostsim/DXViewer">DXViewer</A>.
 
 ## Build
