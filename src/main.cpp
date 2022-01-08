@@ -22,14 +22,14 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE prevInstance, PSTR cmdLine, in
     DX12App* dxapp = new DX12App();
     dxapp->setCameraProperties(
         PROJ::ORTHOGRAPHIC, 
-        static_cast<float>(max_element(liquidman->iGetObjectCount())) * 0.0015f, // orthogonal distance
+        static_cast<float>(max_element(liquidman->iGetObjectCount())) * 0.0023f, // orthogonal distance
         2.0f, 0.0f, 0.0f                                                       // radius, theta, phi
     );
     //dxapp->setCameraProperties(PROJ::PERSPECTIVE, 0.0f, 1.5f, 0.0f, 0.0f);
     dxapp->setBackgroundColor(DirectX::Colors::LightSlateGray);
 
     // Window init
-    Win32App winApp(800, 800);
+    Win32App winApp(500, 500);
     winApp.setWinName(L"2D Fluid Simulation");
     winApp.initialize(hInstance, dxapp, liquidman);
 
