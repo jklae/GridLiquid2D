@@ -178,13 +178,13 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		165, 290, 50, 25, hwnd, reinterpret_cast<HMENU>(_COM::NEXTSTEP), hInstance, NULL);
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
-		60, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+		95, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", _int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
-		110, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
+		140, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
 	CreateWindow(L"static", L"frame :", WS_CHILD | WS_VISIBLE,
-		60, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
+		86, 360, 45, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
 	CreateWindow(L"static", _int2wchar(_simFrame), WS_CHILD | WS_VISIBLE,
-		110, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
+		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
 
 	CheckRadioButton(hwnd, static_cast<int>(_COM::DAM_RADIO), static_cast<int>(_COM::DROP_RADIO), 
