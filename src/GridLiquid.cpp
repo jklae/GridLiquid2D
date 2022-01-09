@@ -509,6 +509,7 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 			// Multiply by a specific value to make a stripe
 			objectCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, 0.0f, 1.0f);
 			objectCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
+			objectCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 			constantBuffer.push_back(objectCB);
@@ -542,6 +543,7 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 						struct ConstantBuffer particleCB;
 						particleCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, -1.0f, _particleScale);
 						particleCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
+						particleCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 						particleCB.color = XMFLOAT4(0.5f, 0.9f, 0.9f, 1.0f);
 
 						constantBuffer.push_back(particleCB);
@@ -559,6 +561,7 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 	struct ConstantBuffer velocityCB;
 	velocityCB.world = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f, 1.0f);
 	velocityCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
+	velocityCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 	velocityCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	constantBuffer.push_back(velocityCB);

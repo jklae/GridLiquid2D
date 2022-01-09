@@ -213,17 +213,6 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	SetTimer(hwnd, 1, 10, NULL);
 }
 
-void LiquidManager::iWMTimer(HWND hwnd)
-{
-	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
-	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), _int2wchar(_simFrame));
-}
-
-void LiquidManager::iWMDestory(HWND hwnd)
-{
-	KillTimer(hwnd, 1);
-}
-
 void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
 	switch (LOWORD(wParam))
@@ -359,5 +348,15 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 	}
 }
 
+void LiquidManager::iWMTimer(HWND hwnd)
+{
+	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), _int2wchar(_simFrame));
+}
+
+void LiquidManager::iWMDestory(HWND hwnd)
+{
+	KillTimer(hwnd, 1);
+}
 // #######################################################################################
 #pragma endregion
