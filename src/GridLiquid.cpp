@@ -49,9 +49,9 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 			_gridState.push_back(STATE::BOUNDARY); 
 		}
 		else if ((2 < i)
-			&& (i < (N.x + 1) / 2 - offset)
+			&& (i < (N.x + 1) / 2 - offset * 1.5f)
 			&& (2 < j)  
-			&& (j < ((N.y + 1) / 2 + offset * 2.0f)))
+			&& (j < ((N.y + 1) / 2 + offset * 1.5f)))
 		{
 			_gridState.push_back(STATE::LIQUID);
 		}
@@ -71,8 +71,8 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		}
 		else if ((N.x + 1) / 2 - offset * 2.3f < i
 			&& (i < (N.x + 1) / 2 + offset * 2.3f)
-			&& ((N.y + 1) / 2 + offset< j)
-			&& (j < N.y - 2))
+			&& ((N.y + 1) / 2 - offset< j)
+			&& (j < (N.y + 1) / 2 + offset * 2.5f))
 		{
 			_gridState.push_back(STATE::LIQUID);
 		}
@@ -452,7 +452,7 @@ vector<Vertex>& GridLiquid::iGetVertice()
 		for (int i = 0; i < _gridCount.x; i++)
 		{
 			XMFLOAT2 x = { static_cast<float>(i), static_cast<float>(j) };
-			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 0.1f , x.y + _gridVelocity[_INDEX(i, j)].y * 0.1f };
+			XMFLOAT2 v = { x.x + _gridVelocity[_INDEX(i, j)].x * 0.3f , x.y + _gridVelocity[_INDEX(i, j)].y * 0.3f };
 			_vertices.push_back(Vertex({ XMFLOAT3(x.x, x.y, -2.0f) }));
 			_vertices.push_back(Vertex({ XMFLOAT3(v.x, v.y, -2.0f) }));
 		}
