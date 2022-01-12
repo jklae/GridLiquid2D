@@ -37,15 +37,6 @@ bool LiquidManager::_getDrawFlag(FLAG flagType)
 	return _drawFlag[i];
 }
 
-void LiquidManager::_resetSim()
-{
-	_dxapp->resetSimulationState();
-	_dxapp->update();
-	_dxapp->draw();
-	_simTime = 0;
-	_simFrame = 0;
-}
-
 #pragma region Implementation
 // ################################## Implementation ####################################
 // Simulation methods
@@ -62,6 +53,11 @@ void LiquidManager::iUpdate()
 void LiquidManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer)
 {
 	_sim[_simIndex]->iResetSimulationState(constantBuffer, _ex);
+
+	_dxapp->update();
+	_dxapp->draw();
+	_simTime = 0;
+	_simFrame = 0;
 }
 
 
@@ -213,39 +209,6 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	SetTimer(hwnd, 1, 10, NULL);
 }
 
-void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
-{
-	switch (LOWORD(wParam))
-	{
-		case SB_THUMBTRACK:
-			_scrollPos = HIWORD(wParam);
-			break;
-
-		case SB_LINELEFT:
-			_scrollPos = max(0, _scrollPos - 1);
-			break;
-
-		case SB_LINERIGHT:
-			_scrollPos = min(100, _scrollPos + 1);
-			break;
-
-		case SB_PAGELEFT:
-			_scrollPos = max(0, _scrollPos - 5);
-			break;
-
-		case SB_PAGERIGHT:
-			_scrollPos = min(100, _scrollPos + 5);
-			break;
-	}
-
-	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
-	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), _int2wchar(100 - _scrollPos));
-	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), _int2wchar(_scrollPos));
-
-	dynamic_cast<PICFLIP*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
-	_resetSim();
-}
-
 void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
 	switch (LOWORD(wParam))
@@ -292,7 +255,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		break;
 		case static_cast<int>(_COM::STOP) :
 		{
-			_resetSim();
+			_dxapp->resetSimulationState();
 		}
 		break;
 		case static_cast<int>(_COM::NEXTSTEP) :
@@ -308,13 +271,13 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		case static_cast<int>(_COM::DAM_RADIO) :
 		{
 			_ex = EX::DAM;
-			_resetSim();
+			_dxapp->resetSimulationState();
 		}
 		break;
 		case static_cast<int>(_COM::DROP_RADIO) :
 		{
 			_ex = EX::DROP;
-			_resetSim();
+			_dxapp->resetSimulationState();
 		}
 		break; 
 		// #####################
@@ -323,7 +286,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		case static_cast<int>(_COM::EULERIAN_RADIO) :
 		{
 			_simIndex = 0;
-			_resetSim();
+			_dxapp->resetSimulationState();
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), false);
@@ -335,7 +298,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		case static_cast<int>(_COM::PICFLIP_RADIO) :
 		{
 			_simIndex = 1;
-			_resetSim();
+			_dxapp->resetSimulationState();
 
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::RATIO_BAR)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(_COM::PIC_TEXT)), true);
@@ -346,6 +309,39 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 		break;
 		// #####################
 	}
+}
+
+void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
+{
+	switch (LOWORD(wParam))
+	{
+	case SB_THUMBTRACK:
+		_scrollPos = HIWORD(wParam);
+		break;
+
+	case SB_LINELEFT:
+		_scrollPos = max(0, _scrollPos - 1);
+		break;
+
+	case SB_LINERIGHT:
+		_scrollPos = min(100, _scrollPos + 1);
+		break;
+
+	case SB_PAGELEFT:
+		_scrollPos = max(0, _scrollPos - 5);
+		break;
+
+	case SB_PAGERIGHT:
+		_scrollPos = min(100, _scrollPos + 5);
+		break;
+	}
+
+	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
+	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), _int2wchar(100 - _scrollPos));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), _int2wchar(_scrollPos));
+
+	dynamic_cast<PICFLIP*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
+	_dxapp->resetSimulationState();
 }
 
 void LiquidManager::iWMTimer(HWND hwnd)

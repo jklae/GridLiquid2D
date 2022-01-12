@@ -81,7 +81,5 @@ private:
 
 	void _setDrawFlag(FLAG flagType, bool flag);
 	bool _getDrawFlag(FLAG flagType);
-
-	void _resetSim();
 };
 
