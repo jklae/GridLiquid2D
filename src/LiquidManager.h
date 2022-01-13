@@ -71,9 +71,6 @@ private:
 	bool _drawFlag[3] = { true, true, false };
 	bool _updateFlag = true;
 
-	wchar_t wBuffer[5];
-	wchar_t* _int2wchar(int value);
-
 	clock_t _simTime = 0;
 	int _simFrame = 0;
 

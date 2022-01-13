@@ -19,12 +19,6 @@ LiquidManager::~LiquidManager()
 	}
 }
 
-wchar_t* LiquidManager::_int2wchar(int value)
-{
-	_itow(value, wBuffer, 10);
-	return wBuffer;
-}
-
 void LiquidManager::_setDrawFlag(FLAG flagType, bool flag)
 {
 	int i = static_cast<int>(flagType);
@@ -156,11 +150,11 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CreateWindow(L"static", L"PIC  :", WS_CHILD | WS_VISIBLE,
 		60, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_TEXT), hInstance, NULL);
-	CreateWindow(L"static", _int2wchar(100 - _scrollPos), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", DXViewer::util::int2wstring(100 - _scrollPos).c_str(), WS_CHILD | WS_VISIBLE,
 		100, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::PIC_RATIO), hInstance, NULL);
 	CreateWindow(L"static", L"FLIP :", WS_CHILD | WS_VISIBLE,
 		155, 220, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_TEXT), hInstance, NULL);
-	CreateWindow(L"static", _int2wchar(_scrollPos), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", DXViewer::util::int2wstring(_scrollPos).c_str(), WS_CHILD | WS_VISIBLE,
 		195, 220, 30, 20, hwnd, reinterpret_cast<HMENU>(_COM::FLIP_RATIO), hInstance, NULL);
 	HWND scroll =
 		CreateWindow(L"scrollbar", NULL, WS_CHILD | WS_VISIBLE | SBS_HORZ,
@@ -175,11 +169,11 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 
 	CreateWindow(L"static", L"time :", WS_CHILD | WS_VISIBLE,
 		95, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
-	CreateWindow(L"static", _int2wchar(_simTime), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", DXViewer::util::int2wstring(_simTime).c_str(), WS_CHILD | WS_VISIBLE,
 		140, 340, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::TIME_TEXT), hInstance, NULL);
 	CreateWindow(L"static", L"frame :", WS_CHILD | WS_VISIBLE,
 		86, 360, 45, 20, hwnd, reinterpret_cast<HMENU>(-1), hInstance, NULL);
-	CreateWindow(L"static", _int2wchar(_simFrame), WS_CHILD | WS_VISIBLE,
+	CreateWindow(L"static", DXViewer::util::int2wstring(_simFrame).c_str(), WS_CHILD | WS_VISIBLE,
 		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(_COM::FRAME_TEXT), hInstance, NULL);
 
 
@@ -337,8 +331,8 @@ void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANC
 	}
 
 	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
-	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), _int2wchar(100 - _scrollPos));
-	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), _int2wchar(_scrollPos));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::PIC_RATIO), DXViewer::util::int2wstring(100 - _scrollPos).c_str());
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FLIP_RATIO), DXViewer::util::int2wstring(_scrollPos).c_str());
 
 	dynamic_cast<PICFLIP*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
 	_dxapp->resetSimulationState();
@@ -346,8 +340,8 @@ void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANC
 
 void LiquidManager::iWMTimer(HWND hwnd)
 {
-	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), _int2wchar(_simTime));
-	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), _int2wchar(_simFrame));
+	SetDlgItemText(hwnd, static_cast<int>(_COM::TIME_TEXT), DXViewer::util::int2wstring(_simTime).c_str());
+	SetDlgItemText(hwnd, static_cast<int>(_COM::FRAME_TEXT), DXViewer::util::int2wstring(_simFrame).c_str());
 }
 
 void LiquidManager::iWMDestory(HWND hwnd)
