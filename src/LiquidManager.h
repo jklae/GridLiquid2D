@@ -57,7 +57,7 @@ private:
 
 	DX12App* _dxapp = nullptr;
 
-	enum class _COM
+	enum class COM
 	{
 		GRID_BTN, PARTICLE_BTN, VELOCITY_BTN,
 		PLAY, STOP, NEXTSTEP,
