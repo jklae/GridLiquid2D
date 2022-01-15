@@ -144,8 +144,8 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 	// (x, 0) (x, yMax+1)
 	for (int i = 1; i <= N.x; i++)
 	{
-		if (vec[_INDEX(i, 1)].y < EPS_F) { vec[_INDEX(i, 1)].y = 0.0f; }
-		if (vec[_INDEX(i, N.y)].y > EPS_F) { vec[_INDEX(i, N.y)].y = 0.0f; }
+		if (vec[_INDEX(i, 1)].y < FLT_EPSILON) { vec[_INDEX(i, 1)].y = 0.0f; }
+		if (vec[_INDEX(i, N.y)].y > FLT_EPSILON) { vec[_INDEX(i, N.y)].y = 0.0f; }
 
 		vec[_INDEX(i, 0)].x = vec[_INDEX(i, 1)].x;
 		vec[_INDEX(i, 0)].y = vec[_INDEX(i, 1)].y;
@@ -157,8 +157,8 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 	// (0, y) (xMax+1, y)
 	for (int j = 1; j <= N.y; j++)
 	{
-		if (vec[_INDEX(1, j)].x < EPS_F) { vec[_INDEX(1, j)].x = 0.0f; }
-		if (vec[_INDEX(N.x, j)].x > EPS_F) { vec[_INDEX(N.x, j)].x = 0.0f; }
+		if (vec[_INDEX(1, j)].x < FLT_EPSILON) { vec[_INDEX(1, j)].x = 0.0f; }
+		if (vec[_INDEX(N.x, j)].x > FLT_EPSILON) { vec[_INDEX(N.x, j)].x = 0.0f; }
 
 		vec[_INDEX(0, j)].x = vec[_INDEX(1, j)].x;
 		vec[_INDEX(0, j)].y = vec[_INDEX(1, j)].y;
@@ -349,7 +349,7 @@ XMFLOAT2 GridLiquid::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldV
 
 	// Normalization
 	float totalRatio = minMinRatio + minMaxRatio + maxMinRatio + maxMaxRatio;
-	if (totalRatio > EPS_F)
+	if (totalRatio > FLT_EPSILON)
 	{
 		minMinRatio /= totalRatio;
 		minMaxRatio /= totalRatio;
@@ -404,13 +404,13 @@ void GridLiquid::iUpdate()
 {
 	int iter = 0;
 	
-	if (fabsf(_timeStep - FPS30_F) < EPS_F)
+	if (fabsf(_timeStep - FPS30_F) < FLT_EPSILON)
 		iter = 3;
-	else if (fabsf(_timeStep - FPS60_F) < EPS_F)
+	else if (fabsf(_timeStep - FPS60_F) < FLT_EPSILON)
 		iter = 6;
-	else if (fabsf(_timeStep - FPS90_F) < EPS_F)
+	else if (fabsf(_timeStep - FPS90_F) < FLT_EPSILON)
 		iter = 9;
-	else if (fabsf(_timeStep - FPS120_F) < EPS_F)
+	else if (fabsf(_timeStep - FPS120_F) < FLT_EPSILON)
 		iter = 12;
 	else
 		iter = 1;

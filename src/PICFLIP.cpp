@@ -71,7 +71,7 @@ void PICFLIP::_advect()
 
 		// Normalization
 		float totalRatio = minMinRatio + minMaxRatio + maxMinRatio + maxMaxRatio;
-		if (totalRatio > EPS_F)
+		if (totalRatio > FLT_EPSILON)
 		{
 			minMinRatio /= totalRatio;
 			minMaxRatio /= totalRatio;
@@ -95,7 +95,7 @@ void PICFLIP::_advect()
 		for (int i = 0; i < _gridCount.x; i++)
 		{
 
-			if (_pCount[_INDEX(i, j)] > EPS_F)
+			if (_pCount[_INDEX(i, j)] > FLT_EPSILON)
 			{
 				_gridVelocity[_INDEX(i, j)] = _oldVel[_INDEX(i, j)] = _tempVel[_INDEX(i, j)] / (_pCount[_INDEX(i, j)]);
 			}
