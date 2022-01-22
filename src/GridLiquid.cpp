@@ -500,12 +500,12 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				(float)i,    
-				(float)j);   
+				static_cast<float>(i),    
+				static_cast<float>(j));
 
 			_gridPosition.push_back(pos);
 
-			struct ConstantBuffer objectCB;
+			ConstantBuffer objectCB;
 			// Multiply by a specific value to make a stripe
 			objectCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, 0.0f, 1.0f);
 			objectCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
@@ -524,8 +524,8 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 		{
 			// Position
 			XMFLOAT2 pos = XMFLOAT2(
-				(float)i,   
-				(float)j);  
+				static_cast<float>(i),
+				static_cast<float>(j));
 
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
@@ -540,7 +540,7 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 							{ -0.33f +  pos.x + k * _particleScale * 1.1f,   
 							  -0.33f +  pos.y + m * _particleScale * 1.1f });
 
-						struct ConstantBuffer particleCB;
+						ConstantBuffer particleCB;
 						particleCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, -1.0f, _particleScale);
 						particleCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 						particleCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
@@ -558,7 +558,7 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 
 
 	// ###### Create Velocity ######
-	struct ConstantBuffer velocityCB;
+	ConstantBuffer velocityCB;
 	velocityCB.world = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f, 1.0f);
 	velocityCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 	velocityCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
