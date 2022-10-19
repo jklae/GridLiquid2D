@@ -438,7 +438,7 @@ void GridLiquid::iResetSimulationState(vector<ConstantBuffer>& constantBuffer, E
 	iCreateObject(constantBuffer);
 }
 
-vector<Vertex>& GridLiquid::iGetVertice()
+vector<Vertex>& GridLiquid::iGetVertices()
 {
 	_vertices.clear();
 
@@ -461,7 +461,7 @@ vector<Vertex>& GridLiquid::iGetVertice()
 	return _vertices;
 }
 
-vector<unsigned int>& GridLiquid::iGetIndice()
+vector<unsigned int>& GridLiquid::iGetIndices()
 {
 	_indices.clear();
 

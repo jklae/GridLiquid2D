@@ -56,14 +56,14 @@ void LiquidManager::iResetSimulationState(vector<ConstantBuffer>& constantBuffer
 
 
 // Mesh methods
-vector<Vertex>& LiquidManager::iGetVertice()
+vector<Vertex>& LiquidManager::iGetVertices()
 {
-	return _sim[_simIndex]->iGetVertice();
+	return _sim[_simIndex]->iGetVertices();
 }
 
-vector<unsigned int>& LiquidManager::iGetIndice()
+vector<unsigned int>& LiquidManager::iGetIndices()
 {
-	return _sim[_simIndex]->iGetIndice();
+	return _sim[_simIndex]->iGetIndices();
 }
 
 UINT LiquidManager::iGetVertexBufferSize()
