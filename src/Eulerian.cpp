@@ -21,8 +21,8 @@ void Eulerian::_update()
 
 	//_project();
 	_advect();
-
 	_project();
+
 	_updateParticlePos();
 	_paintLiquid();
 }
@@ -30,7 +30,6 @@ void Eulerian::_update()
 void Eulerian::_force()
 {
 	float dt = _timeStep;
-
 	XMINT2 N = _gridCount - 2;
 
 	for (int j = 1; j <= N.y; j++)
@@ -39,6 +38,7 @@ void Eulerian::_force()
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
+				// Gravity
 				_gridVelocity[_INDEX(i, j)].y -= 9.8f * dt;
 			}
 			else
@@ -55,7 +55,6 @@ void Eulerian::_force()
 void Eulerian::_advect()
 {
 	float dt = _timeStep;
-
 	XMINT2 N = _gridCount - 2;
 
 	float yMax = _gridPosition[_INDEX(0, N.y + 1)].y - 0.5f;
@@ -76,13 +75,15 @@ void Eulerian::_advect()
 						_gridPosition[_INDEX(i, j)].x - dt * oldVelocity[_INDEX(i, j)].x,
 						_gridPosition[_INDEX(i, j)].y - dt * oldVelocity[_INDEX(i, j)].y
 					);
+
+				// Boundary condition
 				if (backPos.x > xMax) backPos.x = xMax;
 				else if (backPos.x < xMin) backPos.x = xMin;
 
 				if (backPos.y > yMax) backPos.y = yMax;
 				else if (backPos.y < yMin) backPos.y = yMin;
 
-
+				// Semi Largrangian
 				_gridVelocity[_INDEX(i, j)] = gridToParticle(backPos, oldVelocity);
 			}
 			
@@ -95,6 +96,8 @@ void Eulerian::_advect()
 void Eulerian::_project()
 {
 	XMINT2 N = _gridCount - 2;
+
+	// Initialize the divergence and pressure.
 	for (int j = 1; j <= N.y; j++)
 	{
 		for (int i = 1; i <= N.x; i++)
@@ -102,6 +105,7 @@ void Eulerian::_project()
 			_gridDivergence[_INDEX(i, j)] =
 				0.5f * (_gridVelocity[_INDEX(i + 1, j)].x - _gridVelocity[_INDEX(i - 1, j)].x
 					+ _gridVelocity[_INDEX(i, j + 1)].y - _gridVelocity[_INDEX(i, j - 1)].y);
+
 			_gridPressure[_INDEX(i, j)] = 0.0f;
 		}
 	}
@@ -109,6 +113,7 @@ void Eulerian::_project()
 	//_setBoundary(_gridDivergence);
 	_setBoundary(_gridPressure);
 
+	// Gauss-Seidel method
 	for (int iter = 0; iter < 200; iter++)
 	{
 		for (int j = 1; j <= N.y; j++)
@@ -137,6 +142,7 @@ void Eulerian::_project()
 		{
 			if (_gridState[_INDEX(i, j)] == STATE::LIQUID)
 			{
+				// Apply the pressure force to the velocity.
 				_gridVelocity[_INDEX(i, j)].x -= (_gridPressure[_INDEX(i + 1, j)] - _gridPressure[_INDEX(i - 1, j)]) * 0.5f;
 				_gridVelocity[_INDEX(i, j)].y -= (_gridPressure[_INDEX(i, j + 1)] - _gridPressure[_INDEX(i, j - 1)]) * 0.5f;
 			}
@@ -163,6 +169,7 @@ void Eulerian::_updateParticlePos()
 		_particleVelocity[i] = gridToParticle(_particlePosition[i], _gridVelocity);
 		_particlePosition[i] += _particleVelocity[i] * dt;
 
+		// Boundary condition
 		if (_particlePosition[i].x > xMax) _particlePosition[i].x = xMax;
 		else if (_particlePosition[i].x < xMin) _particlePosition[i].x = xMin;
 

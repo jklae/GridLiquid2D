@@ -42,6 +42,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 
 	switch (ex)
 	{
+		// Dam Break
 	case EX::DAM:
 		if (i == 0 || i == N.x + 1
 		||  j == 0 || j == N.y + 1)
@@ -63,6 +64,7 @@ void GridLiquid::_computeGridState(EX ex, int i, int j)
 		_gridVelocity.push_back(XMFLOAT2(0.0f, 0.0f));
 		break;
 
+		// Fluid Drop
 	case EX::DROP:
 		if (i == 0 || i == N.x + 1
 		 || j == 0 || j == N.y + 1)
@@ -126,6 +128,7 @@ void GridLiquid::_setFreeSurface(std::vector<XMFLOAT2>& vec)
 					count++;
 				}
 
+				// Average
 				if (count > 0)
 				{
 					vec[_INDEX(i, j)] = temp / static_cast<float>(count);
@@ -180,14 +183,16 @@ void GridLiquid::_setBoundary(std::vector<XMFLOAT2>& vec)
 	vec[_INDEX(N.x + 1, N.y + 1)].x = vec[_INDEX(N.x + 1, N.y)].x;
 	vec[_INDEX(N.x + 1, N.y + 1)].y = vec[_INDEX(N.x, N.y + 1)].y;
 
-	//// (0, 0)
-	//vec[_INDEX(0, 0)] = (vec[_INDEX(0, 1)] + vec[_INDEX(1, 0)]) / 2.0f;
-	//// (0, yCount)
-	//vec[_INDEX(0, N + 1)] = (vec[_INDEX(0, N)] + vec[_INDEX(1, N + 1)]) / 2.0f;
-	//// (xCount, 0)
-	//vec[_INDEX(N + 1, 0)] = (vec[_INDEX(N + 1, 1)] + vec[_INDEX(N, 0)]) / 2.0f;
-	//// (xCount, yCount)
-	//vec[_INDEX(N + 1, N + 1)] = (vec[_INDEX(N + 1, N)] + vec[_INDEX(N, N + 1)]) / 2.0f;
+	/*
+	// (0, 0)
+	vec[_INDEX(0, 0)] = (vec[_INDEX(0, 1)] + vec[_INDEX(1, 0)]) / 2.0f;
+	// (0, yCount)
+	vec[_INDEX(0, N + 1)] = (vec[_INDEX(0, N)] + vec[_INDEX(1, N + 1)]) / 2.0f;
+	// (xCount, 0)
+	vec[_INDEX(N + 1, 0)] = (vec[_INDEX(N + 1, 1)] + vec[_INDEX(N, 0)]) / 2.0f;
+	// (xCount, yCount)
+	vec[_INDEX(N + 1, N + 1)] = (vec[_INDEX(N + 1, N)] + vec[_INDEX(N, N + 1)]) / 2.0f;
+	*/
 }
 
 void GridLiquid::_setBoundary(std::vector<float>& scalar)
@@ -279,11 +284,10 @@ void GridLiquid::_paintSurface()
 	}
 }
 
-// To calculate the grid index, the calculation result must not depend on the _gridScale.
-// Therefore, the intermediate computed variable "should not be multiplied by the _gridScale".
+// The index of Grid should not be multiplied by the _gridScale.
 // For example, if the scale is 1.0f, the result is (index * 1.0f).
 // But if the scale is 0.5f, the result is (index * 0.5f).
-// The index value should of course be immutable.
+// _paintLiquid() uses the face.
 XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 {
 	XMFLOAT2 value;
@@ -306,23 +310,15 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 	return { static_cast<int>(floor(value.x)), static_cast<int>(floor(value.y)) };
 }
 
-// Different from _computeFaceMinMaxIndex().
-// 1. Subtract the count of offset by 1.
-// 2. Do not subtract particleStride from min, max calculation.
-// 3. ceil maxIndex instead of floor.
-// ------------------------------------------------------------------
-// _PaintGrid() uses the face as the transition point.
-// _updateParticlePosition() uses the center as the transition point.
+// _updateParticlePosition() uses the center. (center-type velocity storage)
 XMINT2 GridLiquid::_computeCenterMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 {
-	// 2.
 	switch (vState)
 	{
 	case VALUE::MIN:
 		return { static_cast<int>(floor(particlePos.x)), static_cast<int>(floor(particlePos.y)) };
 		break;
 	case VALUE::MAX:
-		// 3.
 		return { static_cast<int>(ceil(particlePos.x)), static_cast<int>(ceil(particlePos.y)) };
 		break;
 	default:
@@ -331,7 +327,7 @@ XMINT2 GridLiquid::_computeCenterMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 	}
 }
 
-																	// for semi-Lagrangian and FLIP
+																	// For semi-Lagrangian and FLIP
 XMFLOAT2 GridLiquid::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldVel)
 {
 	XMFLOAT2 pos = particlePos;
@@ -415,7 +411,6 @@ void GridLiquid::iUpdate()
 	else
 		iter = 1;
 
-	//float timeStep;
 	for (int i = 0; i < iter; i++)
 	{
 		_update();
@@ -442,11 +437,13 @@ vector<Vertex>& GridLiquid::iGetVertices()
 {
 	_vertices.clear();
 
+	// Vertex
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(-0.5f, -0.5f, -0.0f) }));
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(-0.5f, +0.5f, -0.0f) }));
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, +0.5f, -0.0f) }));
 	_vertices.push_back(Vertex({ DirectX::XMFLOAT3(+0.5f, -0.5f, -0.0f) }));
 
+	// Velocity field
 	for (int j = 0; j < _gridCount.y; j++)
 	{
 		for (int i = 0; i < _gridCount.x; i++)
@@ -468,7 +465,7 @@ vector<unsigned int>& GridLiquid::iGetIndices()
 	_indices.push_back(0); _indices.push_back(1); _indices.push_back(2);
 	_indices.push_back(0); _indices.push_back(2); _indices.push_back(3);
 
-									// The number of lines needs to be doubled because it needs "position" and "direction".
+									// The number of lines needs to be doubled because it needs "position" and "velocity field".
 	for (int i = 0; i <= _gridCount.x * _gridCount.y * 2; i++)
 	{
 		_indices.push_back(i);
@@ -481,13 +478,13 @@ UINT GridLiquid::iGetVertexBufferSize()
 {
 	return
 		4 +											  // cell, particle
-		(_gridCount.x * 2) * (_gridCount.y * 2);	  // velocity
+		(_gridCount.x * 2) * (_gridCount.y * 2);	  // velocity field
 }
 
 UINT GridLiquid::iGetIndexBufferSize()
 {
-	return 6 +							  // cell, paricle
-		(_gridCount.x * _gridCount.y * 2 + 1);  // velocity
+	return 6 +									// cell, paricle
+		(_gridCount.x * _gridCount.y * 2 + 1);  // velocity field
 }
 
 
@@ -506,11 +503,11 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 			_gridPosition.push_back(pos);
 
 			ConstantBuffer objectCB;
-			// Multiply by a specific value to make a stripe
 			objectCB.world = DXViewer::util::transformMatrix(pos.x, pos.y, 0.0f, 1.0f);
 			objectCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 			objectCB.color = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+			objectCB.lightPos = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 			constantBuffer.push_back(objectCB);
 		}
@@ -545,6 +542,7 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 						particleCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 						particleCB.transInvWorld = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
 						particleCB.color = XMFLOAT4(0.5f, 0.9f, 0.9f, 1.0f);
+						particleCB.lightPos = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 						constantBuffer.push_back(particleCB);
 					}
@@ -557,7 +555,7 @@ void GridLiquid::iCreateObject(vector<ConstantBuffer>& constantBuffer)
 	// ###### ###### ###### ######
 
 
-	// ###### Create Velocity ######
+	// ###### Create Velocity Field ######
 	ConstantBuffer velocityCB;
 	velocityCB.world = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f, 1.0f);
 	velocityCB.worldViewProj = DXViewer::util::transformMatrix(0.0f, 0.0f, 0.0f);
@@ -573,21 +571,21 @@ void GridLiquid::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuff
 	int objectEndIndex = _gridCount.x * _gridCount.y;
 	int size = constantBuffer.size();
 
-	// Set object color					
+	// Set the object color.				
 	if (i < objectEndIndex)
 	{
 		constantBuffer[i].color = _getGridColor(i);
 	}
-	// Set particle position
+	// Set the particle position.
 	else if (i >= objectEndIndex && i < size - 1)
-	{							// Due to velocity field
+	{							// Due to velocity field.
 		int particleIndex = i - objectEndIndex;
 		XMFLOAT2 pos = _particlePosition[particleIndex];
 
 		constantBuffer[i].world._41 = pos.x;
 		constantBuffer[i].world._42 = pos.y;
 
-	}// Set velocity
+	}// Set the velocity field.
 	else
 	{
 
@@ -622,8 +620,8 @@ void GridLiquid::iDraw(ComPtr<ID3D12GraphicsCommandList>& mCommandList, int size
 			mCommandList->DrawIndexedInstanced(
 				indexCount - 6, //count
 				1,
-				6, //  index start 
-				4, //  vertex start
+				6, // index start 
+				4, // vertex start
 				0);
 		}
 	}
@@ -633,7 +631,7 @@ UINT GridLiquid::iGetConstantBufferSize()
 {
 			
 	return (_gridCount.x * _gridCount.y)									 // cell
-		+ (_gridCount.x * _gridCount.y)										 // velocity
+		+ (_gridCount.x * _gridCount.y)										 // velocity field
 		+ (_gridCount.x * _gridCount.y) * _particleCount * _particleCount;   // particle
 }
 
