@@ -16,8 +16,8 @@ public:
 	void iUpdate();
 	void iResetSimulationState(std::vector<ConstantBuffer>& constantBuffer, EX ex);
 
-	std::vector<Vertex>& iGetVertice();
-	std::vector<unsigned int>& iGetIndice();
+	std::vector<Vertex>& iGetVertices();
+	std::vector<unsigned int>& iGetIndices();
 	UINT iGetVertexBufferSize();
 	UINT iGetIndexBufferSize();
 
