@@ -165,7 +165,6 @@ void Eulerian::_updateParticlePos()
 
 	for (int i = 0; i < _particlePosition.size(); i++)
 	{
-		// 2. 3.
 		_particleVelocity[i] = gridToParticle(_particlePosition[i], _gridVelocity);
 		_particlePosition[i] += _particleVelocity[i] * dt;
 
