@@ -332,7 +332,6 @@ XMFLOAT2 GridLiquid::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldV
 {
 	XMFLOAT2 pos = particlePos;
 
-	// 2. 3.
 	XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
 	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
 
