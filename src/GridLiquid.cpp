@@ -292,7 +292,7 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 {
 	XMFLOAT2 value;
 
-	// Compute position by normalizing from (-N, N) to (0, N + 1)
+	// Compute the position by normalizing from (-N, N) to (0, N + 1).
 	switch (vState)
 	{
 	case VALUE::MIN:
@@ -306,7 +306,7 @@ XMINT2 GridLiquid::_computeFaceMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 		break;
 	}
 
-	// Compute Index
+	// Compute the index.
 	return { static_cast<int>(floor(value.x)), static_cast<int>(floor(value.y)) };
 }
 
@@ -327,7 +327,7 @@ XMINT2 GridLiquid::_computeCenterMinMaxIndex(VALUE vState, XMFLOAT2 particlePos)
 	}
 }
 
-																	// For semi-Lagrangian and FLIP
+																	// For semi-Lagrangian and FLIP.
 XMFLOAT2 GridLiquid::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldVel)
 {
 	XMFLOAT2 pos = particlePos;
@@ -335,8 +335,11 @@ XMFLOAT2 GridLiquid::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldV
 	XMINT2 minIndex = _computeCenterMinMaxIndex(VALUE::MIN, pos);
 	XMINT2 maxIndex = _computeCenterMinMaxIndex(VALUE::MAX, pos);
 
+	// Ratio of the Distance.
 	XMFLOAT2 ratio = (pos - _gridPosition[_INDEX(minIndex.x, minIndex.y)]);
 
+	// Since the grid spacing is 1 (i.e. the difference in distance is between 0 and 1), 
+	// Normalization of the difference is not necessary.
 	float minMinRatio = _gridState[_INDEX(minIndex.x, minIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * (1.0f - ratio.y) : 0.0f;
 	float minMaxRatio = _gridState[_INDEX(minIndex.x, maxIndex.y)] == STATE::LIQUID ? (1.0f - ratio.x) * ratio.y : 0.0f;
 	float maxMinRatio = _gridState[_INDEX(maxIndex.x, minIndex.y)] == STATE::LIQUID ? ratio.x * (1.0f - ratio.y) : 0.0f;
@@ -352,12 +355,14 @@ XMFLOAT2 GridLiquid::gridToParticle(XMFLOAT2 particlePos, vector<XMFLOAT2>& oldV
 		maxMaxRatio /= totalRatio;
 	}
 
+	// Velocity of 4 corners.
 	XMFLOAT2 minMinVel = oldVel[_INDEX(minIndex.x, minIndex.y)];
 	XMFLOAT2 minMaxVel = oldVel[_INDEX(minIndex.x, maxIndex.y)];
 	XMFLOAT2 maxMinVel = oldVel[_INDEX(maxIndex.x, minIndex.y)];
 	XMFLOAT2 maxMaxVel = oldVel[_INDEX(maxIndex.x, maxIndex.y)];
 
 	return
+		// Bilinear interpolation
 		minMinVel * minMinRatio + minMaxVel * minMaxRatio
 		+ maxMinVel * maxMinRatio + maxMaxVel * maxMaxRatio;
 
@@ -584,7 +589,8 @@ void GridLiquid::iUpdateConstantBuffer(std::vector<ConstantBuffer>& constantBuff
 		constantBuffer[i].world._41 = pos.x;
 		constantBuffer[i].world._42 = pos.y;
 
-	}// Set the velocity field.
+	}
+	// Set the velocity field.
 	else
 	{
 
