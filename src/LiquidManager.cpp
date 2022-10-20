@@ -176,7 +176,7 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 	CreateWindow(L"static", to_wstring(_simFrame).c_str(), WS_CHILD | WS_VISIBLE,
 		140, 360, 40, 20, hwnd, reinterpret_cast<HMENU>(COM::FRAME_TEXT), hInstance, NULL);
 
-
+	// Example
 	CheckRadioButton(hwnd, static_cast<int>(COM::DAM_RADIO), static_cast<int>(COM::DROP_RADIO), 
 		(_ex == EX::DAM) ? static_cast<int>(COM::DAM_RADIO) : static_cast<int>(COM::DROP_RADIO));
 	CheckRadioButton(hwnd, static_cast<int>(COM::EULERIAN_RADIO), static_cast<int>(COM::PICFLIP_RADIO), 
@@ -187,6 +187,7 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::NEXTSTEP)), false);
 	}
 
+	// If the simulation is Eulerian, scroll bar is disabled.
 	if (_simIndex == 0)
 	{
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::RATIO_BAR)), false);
@@ -196,6 +197,7 @@ void LiquidManager::iWMCreate(HWND hwnd, HINSTANCE hInstance)
 		EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::FLIP_RATIO)), false);
 	}
 
+	// Scroll bar
 	SetScrollRange(scroll, SB_CTL, 0, 100, TRUE);
 	SetScrollPos(scroll, SB_CTL, _scrollPos, TRUE);
 	dynamic_cast<PICFLIP*>(_sim[1])->setFlipRatio(_scrollPos);
@@ -282,6 +284,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 			_simIndex = 0;
 			_dxapp->resetSimulationState();
 
+			// Disable the FLIP ratio scroll bar.
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::RATIO_BAR)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_TEXT)), false);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_RATIO)), false);
@@ -294,6 +297,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 			_simIndex = 1;
 			_dxapp->resetSimulationState();
 
+			// Enable the FLIP ratio scroll bar.
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::RATIO_BAR)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_TEXT)), true);
 			EnableWindow(GetDlgItem(hwnd, static_cast<int>(COM::PIC_RATIO)), true);
@@ -307,6 +311,7 @@ void LiquidManager::iWMCommand(HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam
 
 void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANCE hInstance)
 {
+	// Check which button is pressed.
 	switch (LOWORD(wParam))
 	{
 	case SB_THUMBTRACK:
@@ -330,10 +335,12 @@ void LiquidManager::iWMHScroll(HWND hwnd, WPARAM wParam, LPARAM lParam, HINSTANC
 		break;
 	}
 
+	// Apply the ratio to the text.
 	SetScrollPos((HWND)lParam, SB_CTL, _scrollPos, TRUE);
 	SetDlgItemText(hwnd, static_cast<int>(COM::PIC_RATIO), to_wstring(100 - _scrollPos).c_str());
 	SetDlgItemText(hwnd, static_cast<int>(COM::FLIP_RATIO), to_wstring(_scrollPos).c_str());
 
+	// Apply the ratio to FLIP simulation.
 	dynamic_cast<PICFLIP*>(_sim[_simIndex])->setFlipRatio(_scrollPos);
 	_dxapp->resetSimulationState();
 }
